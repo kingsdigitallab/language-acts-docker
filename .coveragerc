@@ -1,0 +1,5 @@
+[run]
+include = language_acts/*
+omit = *migrations*, *tests*
+plugins =
+    django_coverage_plugin
