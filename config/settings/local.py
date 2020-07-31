@@ -62,3 +62,29 @@ INSTALLED_APPS += ["django_extensions"]  # noqa F405
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+
+# @languageacts Twitter's APIs and tokens
+TWITTER_API_KEY = 'oQ3VZ4DbZrCyYZSOYuW1W3IpO'
+TWITTER_API_SECRET = 'KaeB9PQPDuPtkYziQ5cqLHCrn74qwC53cTMPHNLIq7HvciFVGt'
+TWITTER_ACCESS_TOKEN = '785769633571667969-K4CtguD1oFickS3UxSxHkyuc2JrGJ9n'
+TWITTER_ACCESS_TOKEN_SECRET = 'ZR8WXbXVgAEeVVnsUDqg1MJpmVxh8xOnz7ujWVAbtnAyF'
+
+# ActiveCollab API URL
+AC_BASE_URL = 'https://app.activecollab.com/148987'
+AC_API_URL = AC_BASE_URL + '/api/v1/'
+# ActiveCollab API token
+AC_TOKEN = ''
+# ActiveCollab project ID
+AC_PROJECT_ID = 771
+# ActiveCollab user ID to create the issues
+AC_USER = 36
+
+GA_ID = ''
+
+MEDIA_URL = 'media/'
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    # 'django_auth_ldap.backend.LDAPBackend',
+)
