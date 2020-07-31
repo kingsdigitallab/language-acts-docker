@@ -51,8 +51,8 @@ services:
     image: kibana:7.5.1
     depends_on:
       - elasticsearch
-    env_file:
-      - ./.envs/.local/.kibana
+    #env_file:
+    #  - ./.envs/.local/.kibana
     ports:
       - '5601:5601'
     restart: unless-stopped
