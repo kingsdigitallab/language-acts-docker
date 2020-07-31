@@ -2,9 +2,22 @@
 Base settings to build other settings files upon.
 """
 
+import logging
 import os
 
 import environ
+# from django_auth_ldap.config import LDAPGroupQuery
+from kdl_ldap.settings import *  # noqa
+from twitterhut.settings import *  # noqa
+
+LOGIN_URL = '/wagtail/login/'
+
+# AUTH_LDAP_REQUIRE_GROUP = (
+#     (
+#         LDAPGroupQuery('cn=kdl-staff,' + LDAP_BASE_OU)
+#         | LDAPGroupQuery('cn=owri,' + LDAP_BASE_OU)
+#     )
+# )
 
 ROOT_DIR = (
     environ.Path(__file__) - 3
@@ -72,19 +85,34 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "rest_framework",
-    "wagtail.contrib.forms",
-    "wagtail.contrib.redirects",
-    "wagtail.contrib.settings",
-    "wagtail.embeds",
-    "wagtail.sites",
-    "wagtail.users",
-    "wagtail.snippets",
-    "wagtail.documents",
-    "wagtail.images",
-    "wagtail.contrib.postgres_search",
-    "wagtail.search",
-    "wagtail.admin",
-    "wagtail.core",
+    'haystack',
+    'wagtail.core',
+    'wagtail.admin',
+    'wagtail.documents',
+    'wagtail.snippets',
+    'wagtail.users',
+    'wagtail.images',
+    'wagtail.embeds',
+    'wagtail.search',
+    'wagtail.contrib.redirects',
+    'wagtail.contrib.forms',
+    'wagtail.sites',
+    'wagtail.api',
+    'wagtail.contrib.routable_page',
+    'wagtail.contrib.table_block',
+    # "wagtail.contrib.forms",
+    # "wagtail.contrib.redirects",
+    # "wagtail.contrib.settings",
+    # "wagtail.embeds",
+    # "wagtail.sites",
+    # "wagtail.users",
+    # "wagtail.snippets",
+    # "wagtail.documents",
+    # "wagtail.images",
+    # "wagtail.contrib.postgres_search",
+    # "wagtail.search",
+    # "wagtail.admin",
+    # "wagtail.core",
     "modelcluster",
     "taggit",
     "kdl_wagtail.core",
@@ -93,6 +121,10 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "language_acts.users.apps.UsersConfig",
     # Your stuff: custom apps go here
+    'kdl_ldap',
+    'language_acts.cms',
+    'twitterhut',
+    # 'activecollab_digger',
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -120,7 +152,8 @@ LOGIN_URL = "account_login"
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#password-hashers
 PASSWORD_HASHERS = [
-    # https://docs.djangoproject.com/en/dev/topics/auth/passwords/#using-argon2-with-django
+    # https://docs.djangoproject.com/en/dev/topics/auth/passwords/#using
+    # -argon2-with-django
     "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
@@ -130,11 +163,15 @@ PASSWORD_HASHERS = [
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation"
-        ".UserAttributeSimilarityValidator"
+                ".UserAttributeSimilarityValidator"
     },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation"
+                ".CommonPasswordValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation"
+                ".NumericPasswordValidator"},
 ]
 
 # MIDDLEWARE
@@ -161,9 +198,11 @@ MIDDLEWARE = [
 STATIC_ROOT = str(ROOT_DIR("staticfiles"))
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = "/static/"
-# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
+# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting
+# -STATICFILES_DIRS
 STATICFILES_DIRS = [str(APPS_DIR.path("static"))]
-# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
+# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles
+# -finders
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
@@ -184,18 +223,22 @@ if not os.path.exists(MEDIA_ROOT):
 # https://docs.djangoproject.com/en/dev/ref/settings/#templates
 TEMPLATES = [
     {
-        # https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TEMPLATES-BACKEND
+        # https://docs.djangoproject.com/en/dev/ref/settings/#std:setting
+        # -TEMPLATES-BACKEND
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         # https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
         "DIRS": [str(APPS_DIR.path("templates"))],
         "OPTIONS": {
-            # https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
-            # https://docs.djangoproject.com/en/dev/ref/templates/api/#loader-types
+            # https://docs.djangoproject.com/en/dev/ref/settings/#template
+            # -loaders
+            # https://docs.djangoproject.com/en/dev/ref/templates/api
+            # /#loader-types
             "loaders": [
                 "django.template.loaders.filesystem.Loader",
                 "django.template.loaders.app_directories.Loader",
             ],
-            # https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
+            # https://docs.djangoproject.com/en/dev/ref/settings/#template
+            # -context-processors
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -214,7 +257,8 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#form-renderer
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
-# http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
+# http://django-crispy-forms.readthedocs.io/en/latest/install.html#template
+# -packs
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # FIXTURES
@@ -237,7 +281,8 @@ X_FRAME_OPTIONS = "DENY"
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 EMAIL_BACKEND = env(
-    "DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend"
+    "DJANGO_EMAIL_BACKEND",
+    default="django.core.mail.backends.smtp.EmailBackend"
 )
 # https://docs.djangoproject.com/en/2.2/ref/settings/#email-timeout
 EMAIL_TIMEOUT = 5
@@ -252,6 +297,9 @@ ADMINS = [("""King's Digital Lab""", "kdl-info@kcl.ac.uk")]
 MANAGERS = ADMINS
 
 # LOGGING
+
+LOGGING_LEVEL = logging.WARN
+
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#logging
 # See https://docs.djangoproject.com/en/dev/topics/logging for
@@ -262,7 +310,7 @@ LOGGING = {
     "formatters": {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s "
-            "%(process)d %(thread)d %(message)s"
+                      "%(process)d %(thread)d %(message)s"
         }
     },
     "handlers": {
@@ -272,13 +320,25 @@ LOGGING = {
             "formatter": "verbose",
         }
     },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': LOGGING_LEVEL,
+            'propagate': True
+        },
+        'elasticsearch': {
+            'handlers': ['file'],
+            'level': LOGGING_LEVEL,
+            'propagate': True
+        },
+    },
     "root": {"level": "INFO", "handlers": ["console"]},
 }
 
-
 # django-allauth
 # ------------------------------------------------------------------------------
-ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
+ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION",
+                                      True)
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_AUTHENTICATION_METHOD = "username"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
@@ -297,12 +357,32 @@ STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 
 # Wagtail
 # ------------------------------------------------------------------------------
-# https://docs.wagtail.io/en/v2.7.1/getting_started/integrating_into_django.html
+# https://docs.wagtail.io/en/v2.7.1/getting_started/integrating_into_django
+# .html
 WAGTAIL_SITE_NAME = "Language Acts"
 
 WAGTAILSEARCH_BACKENDS = {
-    "default": {"BACKEND": "wagtail.contrib.postgres_search.backend"}
+    'default': {
+        'BACKEND': 'wagtail.search.backends.elasticsearch2',
+        'AUTO_UPDATE': False,
+        'URLS': ['http://127.0.0.1:9200'],
+        'INDEX': 'owri_wagtail',
+        'TIMEOUT': 5,
+    }
 }
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch2_backend'
+                  '.Elasticsearch2SearchEngine',
+        # noqa
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'owri_haystack',
+    },
+}
+
+WAGTAIL_FRONTEND_LOGIN_TEMPLATE = 'cms/login.html'
+WAGTAILSEARCH_RESULTS_TEMPLATE = 'cms/search_results.html'
 
 # Your stuff...
 # ------------------------------------------------------------------------------
