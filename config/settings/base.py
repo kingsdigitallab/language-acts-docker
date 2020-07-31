@@ -7,8 +7,8 @@ import os
 
 import environ
 # from django_auth_ldap.config import LDAPGroupQuery
-from kdl_ldap.settings import *  # noqa
-from twitterhut.settings import *  # noqa
+# from kdl_ldap.settings import *  # noqa
+# from twitterhut.settings import *  # noqa
 
 LOGIN_URL = '/wagtail/login/'
 
@@ -121,7 +121,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "language_acts.users.apps.UsersConfig",
     # Your stuff: custom apps go here
-    'kdl_ldap',
+    # 'kdl_ldap',
     'language_acts.cms',
     'twitterhut',
     # 'activecollab_digger',
@@ -320,18 +320,18 @@ LOGGING = {
             "formatter": "verbose",
         }
     },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': LOGGING_LEVEL,
-            'propagate': True
-        },
-        'elasticsearch': {
-            'handlers': ['file'],
-            'level': LOGGING_LEVEL,
-            'propagate': True
-        },
-    },
+    # 'loggers': {
+    #     'django': {
+    #         'handlers': ['file'],
+    #         'level': LOGGING_LEVEL,
+    #         'propagate': True
+    #     },
+    #     'elasticsearch': {
+    #         'handlers': ['file'],
+    #         'level': LOGGING_LEVEL,
+    #         'propagate': True
+    #     },
+    # },
     "root": {"level": "INFO", "handlers": ["console"]},
 }
 
