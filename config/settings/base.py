@@ -122,8 +122,7 @@ LOCAL_APPS = [
     "language_acts.users.apps.UsersConfig",
     # Your stuff: custom apps go here
     # 'kdl_ldap',
-    'language_acts.cms',
-    'twitterhut',
+    # 'twitterhut',
     # 'activecollab_digger',
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
