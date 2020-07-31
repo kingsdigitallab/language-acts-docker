@@ -8,6 +8,7 @@ psycopg2==2.8.4 --no-binary psycopg2  # https://github.com/psycopg/psycopg2
 # Django
 # ------------------------------------------------------------------------------
 django-anymail[mailgun]==7.0.0  # https://github.com/anymail/django-anymail
+django-activecollab-digger # EH
 
 # KDL
 # ------------------------------------------------------------------------------
