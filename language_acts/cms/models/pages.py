@@ -10,11 +10,10 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 from django.shortcuts import render
 from django.utils.text import slugify
 from haystack.query import SearchQuerySet
-from kdl_wagtail.core.models import IndexPage
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from taggit.models import TaggedItemBase
@@ -22,8 +21,10 @@ from wagtail.admin.edit_handlers import (
     FieldPanel, MultiFieldPanel, StreamFieldPanel
 )
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
+from wagtail.core import blocks
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Page
+from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
@@ -50,28 +51,28 @@ def _paginate(request, items):
     return items
 
 
-# class IndexPage(Page, WithStreamField):
-#     search_fields = Page.search_fields + [
-#         index.SearchField('body'),
-#     ]
-#     strands = ParentalManyToManyField('cms.StrandPage', blank=True)
-#     subpage_types = ['IndexPage', 'RichTextPage']
-#
-#
-# IndexPage.content_panels = [
-#     FieldPanel('title', classname='full title'),
-#     StreamFieldPanel('body'),
-# ]
-#
-# IndexPage.promote_panels = Page.promote_panels
+class OwriIndexPage(Page, WithStreamField):
+    search_fields = Page.search_fields + [
+        index.SearchField('body'),
+    ]
+    strands = ParentalManyToManyField('cms.StrandPage', blank=True)
+    subpage_types = ['OwriIndexPage', 'OwriRichTextPage']
 
 
-class StrandPage(IndexPage, WithStreamField):
+OwriIndexPage.content_panels = [
+    FieldPanel('title', classname='full title'),
+    StreamFieldPanel('body'),
+]
+
+OwriIndexPage.promote_panels = Page.promote_panels
+
+
+class StrandPage(OwriIndexPage, WithStreamField):
     blogs_contextual_information = RichTextField(blank=True, null=True)
     events_contextual_information = RichTextField(blank=True, null=True)
     news_contextual_information = RichTextField(blank=True, null=True)
 
-    subpage_types = ['kdl_wagtail_core.IndexPage',
+    subpage_types = ['OwriIndexPage',
                      'kdl_wagtail_core.RichTextPage',
                      'RecordIndexPage']
 
@@ -87,13 +88,13 @@ class StrandPage(IndexPage, WithStreamField):
 
         context['blog_posts'] = BlogPost.get_by_strand(
             self.title)
-        # todo ADD!
-        # context['events'] = Event.get_by_strand(
-        #     self.title)
-        # context['past_events'] = Event.get_past_by_strand(
-        #     self.title)
-        # context['news_posts'] = NewsPost.get_by_strand(
-        #     self.title)
+
+        context['events'] = Event.get_by_strand(
+            self.title)
+        context['past_events'] = Event.get_past_by_strand(
+            self.title)
+        context['news_posts'] = NewsPost.get_by_strand(
+            self.title)
 
         return context
 
@@ -446,17 +447,590 @@ BlogPost.settings_panels = Page.settings_panels + [
     FieldPanel('owner'),
 ]
 
-# class RichTextPage(Page, WithStreamField):
-#     search_fields = Page.search_fields + [
-#         index.SearchField('body'),
-#     ]
-#
-#     subpage_types = []
-#
-#
-# RichTextPage.content_panels = [
-#     FieldPanel('title', classname='full title'),
-#     StreamFieldPanel('body'),
-# ]
-#
-# RichTextPage.promote_panels = Page.promote_panels
+
+# News pages
+class NewsIndexPage(RoutablePageMixin, Page, WithStreamField):
+    search_fields = Page.search_fields + [
+        index.SearchField('body'),
+    ]
+
+    subpage_types = ['NewsPost']
+
+    @property
+    def posts(self):
+        today = date.today()
+        posts = NewsPost.objects.live().descendant_of(
+            self).filter(date__lte=today)
+
+        posts = posts.order_by('-date')
+
+        return posts
+
+    @route(r'^$')
+    def all_posts(self, request):
+        posts = self.posts
+
+        return render(request, self.get_template(request),
+                      {'self': self, 'posts': _paginate(request, posts)})
+
+    @route(r'^tag/(?P<tag>[\w\-\_ ]+)/$')
+    def tag(self, request, tag=None):
+        if not tag:
+            # Invalid tag filter
+            logger.error('Invalid tag filter')
+            return self.all_posts(request)
+
+        posts = self.posts.filter(tags__name=tag)
+
+        return render(
+            request, self.get_template(request), {
+                'self': self, 'posts': _paginate(request, posts),
+                'filter_type': 'tag', 'filter': tag
+            }
+        )
+
+
+NewsIndexPage.content_panels = [
+    FieldPanel('title', classname='full title'),
+    StreamFieldPanel('body'),
+]
+
+NewsIndexPage.promote_panels = Page.promote_panels
+
+
+class NewsPostTag(TaggedItemBase):
+    content_object = ParentalKey(
+        'NewsPost', on_delete=models.CASCADE, related_name='tagged_items'
+    )
+
+    @property
+    def name(self):
+        if self.tag:
+            return self.tag.name
+        return ''
+
+
+class NewsPost(Page, WithStreamField, WithFeedImage):
+    date = models.DateField()
+    tags = ClusterTaggableManager(through=NewsPostTag, blank=True)
+    strands = ParentalManyToManyField('cms.StrandPage', blank=True)
+    search_fields = Page.search_fields + [
+        index.SearchField('body'),
+        index.SearchField('date'),
+        index.RelatedFields('tags', [
+            index.SearchField('name'),
+            index.SearchField('slug'),
+        ]),
+    ]
+
+    subpage_types = []
+
+    def get_index_page(self):
+        # Find closest ancestor which is a news index
+        return NewsIndexPage.objects.ancestor_of(self).last()
+
+    @classmethod
+    def get_by_tag(self, tag=None):
+        today = date.today()
+        if tag:
+            return self.objects.live().filter(
+                tags__name=tag).filter(date__lte=today).order_by('-date')
+        else:
+            return self.objects.none()
+
+    @classmethod
+    def get_by_strand(self, strand_name=None):
+        today = date.today()
+        if strand_name:
+            try:
+                strand = StrandPage.objects.get(title=strand_name)
+                return self.objects.live().filter(
+                    strands=strand).filter(date__lte=today).order_by('-date')
+            except ObjectDoesNotExist:
+                return self.objects.none()
+        else:
+            return self.objects.none()
+
+
+NewsPost.content_panels = [
+    FieldPanel('title', classname='full title'),
+    FieldPanel('date'),
+    StreamFieldPanel('body'),
+]
+
+NewsPost.promote_panels = Page.promote_panels + [
+    FieldPanel('tags'),
+    ImageChooserPanel('feed_image'),
+    FieldPanel('strands', widget=forms.CheckboxSelectMultiple),
+]
+
+
+class EventIndexPage(RoutablePageMixin, Page, WithStreamField):
+    search_fields = Page.search_fields + [
+        index.SearchField('body'),
+    ]
+
+    subpage_types = ['Event', 'PastEventIndexPage']
+
+    @property
+    def events(self):
+        # Events that have not ended.
+        events = Event.objects.live().filter().order_by('-date_from')
+        return events
+
+    @route(r'^$')
+    def all_events(self, request):
+        events = self.events
+
+        return render(request, self.get_template(request),
+                      {'self': self, 'paginated_events': _paginate(
+                          request, events)})
+
+    @route(r'^tag/(?P<tag>[\w\- ]+)/$')
+    def tag(self, request, tag=None):
+        if not tag:
+            # Invalid tag filter
+            logger.error('Invalid tag filter')
+            return self.all_events(request)
+
+        posts = self.events.filter(tags__name=tag)
+
+        return render(
+            request, self.get_template(request), {
+                'self': self, 'events': _paginate(request, posts),
+                'filter_type': 'tag', 'filter': tag
+            }
+        )
+
+
+EventIndexPage.content_panels = [
+    FieldPanel('title', classname='full title'),
+    StreamFieldPanel('body'),
+]
+
+EventIndexPage.promote_panels = Page.promote_panels
+
+
+class PastEventIndexPage(RoutablePageMixin, Page, WithStreamField):
+    search_fields = Page.search_fields + [
+        index.SearchField('body'),
+    ]
+
+    subpage_types = []
+
+    @property
+    def events(self):
+        # Events that have not ended.
+        today = date.today()
+        events = Event.objects.live().filter(
+            Q(date_from__lt=today) & (
+                Q(date_to__isnull=True) | Q(date_to__lt=today)
+            )
+        ).order_by('-date_from')
+        return events
+
+    @route(r'^$')
+    def all_events(self, request):
+        events = self.events
+        return render(request, self.get_template(request),
+                      {'self': self, 'events': _paginate(request, events)})
+
+    @route(r'^tag/(?P<tag>[\w\- ]+)/$')
+    def tag(self, request, tag=None):
+        if not tag:
+            # Invalid tag filter
+            logger.error('Invalid tag filter')
+            return self.all_events(request)
+
+        posts = self.events.filter(tags__name=tag)
+
+        return render(
+            request, self.get_template(request), {
+                'self': self, 'events': _paginate(request, posts),
+                'filter_type': 'tag', 'filter': tag
+            }
+        )
+
+
+PastEventIndexPage.content_panels = [
+    FieldPanel('title', classname='full title'),
+    StreamFieldPanel('body'),
+]
+
+PastEventIndexPage.promote_panels = Page.promote_panels
+
+
+class EventTag(TaggedItemBase):
+    content_object = ParentalKey(
+        'Event', on_delete=models.CASCADE, related_name='tagged_items')
+
+    @property
+    def name(self):
+        if self.tag:
+            return self.tag.name
+        return ''
+
+
+class Event(Page, WithStreamField, WithFeedImage):
+    date_from = models.DateField(verbose_name="Start Date")
+    date_to = models.DateField(verbose_name="End Date (Leave blank if\
+                               not required)", blank=True, null=True)
+    time = models.TimeField(verbose_name="Time of Event")
+    time_end = models.TimeField(verbose_name="End Time (leave blank if\
+                                not required)", blank=True, null=True)
+
+    location = models.TextField(verbose_name="Location")
+
+    tags = ClusterTaggableManager(through=EventTag, blank=True)
+    strands = ParentalManyToManyField('cms.StrandPage', blank=True)
+    search_fields = Page.search_fields + [
+        index.SearchField('body'),
+        index.SearchField('date_from'),
+        index.SearchField('date_to'),
+        index.RelatedFields('tags', [
+            index.SearchField('name'),
+            index.SearchField('slug'),
+        ]),
+    ]
+
+    subpage_types = []
+
+    def get_index_page(self):
+        # Find closest ancestor which is a blog index
+        return EventIndexPage.objects.ancestor_of(self).last()
+
+    @property
+    def is_past(self):
+        return date.today() > self.date_from and (
+            self.date_to is None or date.today() > self.date_to
+        )
+
+    @classmethod
+    def get_by_tag(self, tag=None):
+
+        if tag:
+            today = date.today()
+            return self.objects.filter(tags__name=tag).filter(
+                Q(date_from__gte=today) | (
+                    Q(date_to__isnull=False) & Q(date_to__gte=today)
+                )
+            ).order_by('date_from')
+        else:
+            return self.objects.none()
+
+    @classmethod
+    def get_by_strand(self, strand_name=None):
+        if strand_name:
+            try:
+                today = date.today()
+                strand = StrandPage.objects.get(title=strand_name)
+                return self.objects.filter(strands=strand).filter(
+                    Q(date_from__gte=today) | (
+                        Q(date_to__isnull=False) & Q(date_to__gte=today)
+                    )
+                ).order_by('date_from')
+            except ObjectDoesNotExist:
+                return self.objects.none()
+        else:
+            return self.objects.none()
+
+    @classmethod
+    def get_past_by_strand(self, strand_name=None):
+        if strand_name:
+            try:
+                today = date.today()
+                strand = StrandPage.objects.get(title=strand_name)
+                return self.objects.filter(strands=strand).filter(
+                    Q(date_from__lt=today) | (
+                        Q(date_to__isnull=False) & Q(date_to__lt=today)
+                    )
+                ).order_by('date_from')
+            except ObjectDoesNotExist:
+                return self.objects.none()
+        else:
+            return self.objects.none()
+
+
+Event.content_panels = [
+    FieldPanel('title', classname='full title'),
+    FieldPanel('date_from'),
+    FieldPanel('date_to'),
+    FieldPanel('time'),
+    FieldPanel('time_end'),
+    FieldPanel('location'),
+    StreamFieldPanel('body'),
+]
+
+Event.promote_panels = Page.promote_panels + [
+    FieldPanel('tags'),
+    ImageChooserPanel('feed_image'),
+    FieldPanel('strands', widget=forms.CheckboxSelectMultiple),
+]
+
+
+class TagResults(RoutablePageMixin, Page):
+
+    @route(r'^$')
+    def results(self, request):
+        context = {
+            'blog': None,
+            'events': None,
+            'news': None,
+            'pages': None,
+            'result_count': 0,
+            'self': self
+        }
+
+        # Sanity checking
+        if 'tag' in request.GET:
+            tag = request.GET['tag']
+        else:
+            context['result_count'] = 0
+            return render(request, self.get_template(request),
+                          context)
+
+        # Check if we have a strand, and if so, get that strand
+        # page's children
+        try:
+            strand = StrandPage.objects.get(title=tag)
+            pages = strand.get_children()
+        except ObjectDoesNotExist:
+            pages = StrandPage.objects.none()
+
+        # Get tagged content
+        blog_tag = BlogPost.get_by_tag(tag)
+        blog_strand = BlogPost.get_by_strand(tag)
+        events_tag = Event.get_by_tag(tag)
+        events_strand = Event.get_by_strand(tag)
+        news_tag = NewsPost.get_by_tag(tag)
+        news_strand = NewsPost.get_by_strand(tag)
+
+        # Merge tagged content
+        blog = blog_tag | blog_strand
+        events = events_tag | events_strand
+        news = news_tag | news_strand
+
+        # Assign them
+        context['blog'] = blog
+        context['events'] = events
+        context['news'] = news
+        context['pages'] = pages
+
+        # Get counts
+        context['result_count'] = (
+            blog.count() + events.count() + news.count() + pages.count()
+        )
+
+        return render(request, self.get_template(request),
+                      context)
+
+
+""" Carousel Blocks """
+
+
+class BaseSlideBlock(blocks.StructBlock):
+    """Core methods for all carousel slides"""
+
+    class Meta:
+        abstract = True
+        template = 'cms/blocks/slide_block.html'
+
+    @staticmethod
+    def get_slide_data_from_page(context, post):
+        """Extract slide data from page with feedimage"""
+        context['page'] = post
+        context['title'] = post.title
+        context['description'] = post.search_description
+        context['url'] = post.url
+        if post.feed_image:
+            context['image'] = post.feed_image
+        return context
+
+
+class SlideBlock(BaseSlideBlock):
+    """A basic slide to be used in a carousel block"""
+    title = blocks.CharBlock(required=True)
+    description = blocks.CharBlock(required=False)
+    url = blocks.URLBlock(required=False)
+    page = blocks.PageChooserBlock(required=False, help_text='Overrides url')
+    image = ImageChooserBlock(required=True)
+    caption = blocks.CharBlock(required=False, label='Image caption')
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        context['title'] = value['title']
+        context['description'] = value['description']
+        if 'page' in value and value['page'] is not None:
+            context['url'] = value['page'].url
+        else:
+            context['url'] = value['url']
+        context['image'] = value['image']
+        context['caption'] = value['caption']
+        return context
+
+    class Meta:
+        template = 'cms/blocks/slide_block.html'
+
+
+class BlogSlideBlock(BaseSlideBlock):
+    """Link to blog pages
+    use_latest overrides selection to show most recent post"""
+    page = blocks.PageChooserBlock(required=False, page_type=BlogPost)
+    caption = blocks.CharBlock(required=False)
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        context = BaseSlideBlock.get_slide_data_from_page(
+            context,
+            value['page']
+        )
+        context['caption'] = value['caption']
+        return context
+
+
+class NewsSlideBlock(BaseSlideBlock):
+    """Link to news pages
+    use_latest overrides selection to show most recent post"""
+    page = blocks.PageChooserBlock(required=False, page_type=NewsPost)
+    caption = blocks.CharBlock(required=False)
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        context = BaseSlideBlock.get_slide_data_from_page(
+            context,
+            value['page']
+        )
+        context['caption'] = value['caption']
+        return context
+
+    class Meta:
+        template = 'cms/blocks/slide_block.html'
+
+
+class EventSlideBlock(BaseSlideBlock):
+    """Slide based on event
+    if use_upcoming template will show most_recent upcoming event """
+    page = blocks.PageChooserBlock(required=True, page_type=Event)
+    caption = blocks.CharBlock(required=False)
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        context = BaseSlideBlock.get_slide_data_from_page(context, value)
+        context['caption'] = value['caption']
+        return context
+
+
+class UpcomingEventSlideBlock(blocks.StaticBlock):
+    class Meta:
+        icon = 'date'
+        label = 'Upcoming event'
+        admin_text = 'Show next upcoming event'
+        template = 'cms/blocks/slide_block.html'
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        event = None
+        if Event.objects.live().filter(
+            date_from__gte=date.today()
+        ).order_by('date_from').count() > 0:
+            event = Event.objects.live().filter(
+                date_from__gte=date.today()
+            ).order_by('date_from')[0]
+        elif Event.objects.live().order_by('-date_from').count() > 0:
+            # No upcoming events, use most recent instead
+            event = Event.objects.live().order_by('-date_from')[0]
+        if event:
+            context = BaseSlideBlock.get_slide_data_from_page(context, event)
+        # context['caption'] = post.feed_image.caption
+        return context
+
+
+class LatestBlogSlideBlock(blocks.StaticBlock):
+    class Meta:
+        icon = 'edit'
+        label = 'Latest blog post'
+        admin_text = 'Latest blog post'
+        template = 'cms/blocks/slide_block.html'
+
+    def get_post(self):
+        posts = BlogPost.objects.filter(live=True).order_by('-date')
+        if posts and posts.count() > 0:
+            return posts[0]
+        return None
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        context = BaseSlideBlock.get_slide_data_from_page(
+            context,
+            self.get_post()
+        )
+        # context['caption'] = post.feed_image.caption
+        return context
+
+
+class LatestNewsSlideBlock(LatestBlogSlideBlock):
+    class Meta:
+        icon = 'doc-empty-inverse'
+        label = 'Latest news'
+        admin_text = 'Latest news'
+        template = 'cms/blocks/slide_block.html'
+
+    def get_post(self):
+        posts = NewsPost.objects.filter(live=True).order_by('-date')
+        if posts and posts.count() > 0:
+            return posts[0]
+        return None
+
+
+class CarouselBlock(blocks.StreamBlock):
+    slides = SlideBlock(label='Slide', icon='image')
+    blog_slide = BlogSlideBlock(label='Blog slide', icon='edit')
+    latest_news = LatestNewsSlideBlock()
+    latest_post = LatestBlogSlideBlock()
+    next_event = UpcomingEventSlideBlock()
+    event_slide = EventSlideBlock(label='Event slide', icon='date')
+
+    class Meta:
+        template = 'cms/blocks/carousel_block.html'
+        icon = 'image'
+
+
+class CarouselCMSStreamBlock(CMSStreamBlock):
+    carousel = CarouselBlock()
+
+
+class HomePage(Page):
+    body = StreamField(CarouselCMSStreamBlock())
+    search_fields = Page.search_fields + [
+        index.SearchField('body'),
+    ]
+
+    subpage_types = [
+        'BlogIndexPage', 'EventIndexPage', 'OwriIndexPage',
+        'NewsIndexPage', 'PastEventIndexPage', 'OwriRichTextPage',
+        'StrandPage', 'TagResults'
+    ]
+
+
+HomePage.content_panels = [
+    FieldPanel('title', classname='full title'),
+    StreamFieldPanel('body'),
+]
+
+HomePage.promote_panels = Page.promote_panels
+
+
+class OwriRichTextPage(Page, WithStreamField):
+    search_fields = Page.search_fields + [
+        index.SearchField('body'),
+    ]
+
+    subpage_types = []
+
+
+OwriRichTextPage.content_panels = [
+    FieldPanel('title', classname='full title'),
+    StreamFieldPanel('body'),
+]
+
+OwriRichTextPage.promote_panels = Page.promote_panels
