@@ -51,12 +51,36 @@ def _paginate(request, items):
     return items
 
 
-class OwriIndexPage(Page, WithStreamField):
+class StrandChildMixin(object):
+    """Quick mixin to get a parent strand from Treebeard(wagtail)
+    parent tree.  Looks at all ancestors"""
+
+    @property
+    def parent_strands(self):
+        return StrandPage.objects.ancestor_of(self).specific()
+
+    def add_parent_strand_content_to_context(self, context):
+        if self.parent_strands.count() > 0:
+            # Right now this assumes 1 strand parent
+            # will need to be refactored IF strands manymany actually used
+            for strand in self.parent_strands:
+                context['strand'] = strand
+                context = StrandPage.get_strand_related_content(
+                    context, strand.title)
+        return context
+
+
+class OwriIndexPage(StrandChildMixin, Page, WithStreamField):
     search_fields = Page.search_fields + [
         index.SearchField('body'),
     ]
     strands = ParentalManyToManyField('cms.StrandPage', blank=True)
     subpage_types = ['OwriIndexPage', 'OwriRichTextPage']
+
+    def get_context(self, request, *args, **kwargs):
+        context = super(OwriIndexPage, self).get_context(request)
+        context = self.add_parent_strand_content_to_context(context)
+        return context
 
 
 OwriIndexPage.content_panels = [
@@ -83,19 +107,24 @@ class StrandPage(OwriIndexPage, WithStreamField):
     def show_filtered_content(self):
         return True
 
+    @classmethod
+    def get_strand_related_content(cls, context: dict, title: str) -> dict:
+        """ Add posts, events, news for strand to context"""
+        if context and title:
+            context['blog_posts'] = BlogPost.get_by_strand(
+                title)
+            context['events'] = Event.get_by_strand(
+                title)
+            context['past_events'] = Event.get_past_by_strand(
+                title)
+            context['news_posts'] = NewsPost.get_by_strand(
+                title)
+        return context
+
     def get_context(self, request, *args, **kwargs):
         context = super(StrandPage, self).get_context(request)
-
-        context['blog_posts'] = BlogPost.get_by_strand(
-            self.title)
-
-        context['events'] = Event.get_by_strand(
-            self.title)
-        context['past_events'] = Event.get_past_by_strand(
-            self.title)
-        context['news_posts'] = NewsPost.get_by_strand(
-            self.title)
-
+        context['strand'] = self
+        context = StrandPage.get_strand_related_content(context, self.title)
         return context
 
 
@@ -251,6 +280,27 @@ RecordEntry.content_panels = [
 ]
 
 
+class RichTextPage(StrandChildMixin, Page, WithStreamField):
+    search_fields = Page.search_fields + [
+        index.SearchField('body'),
+    ]
+
+    subpage_types = []
+
+    def get_context(self, request, *args, **kwargs):
+        context = super(RichTextPage, self).get_context(request)
+        context = self.add_parent_strand_content_to_context(context)
+        return context
+
+
+RichTextPage.content_panels = [
+    FieldPanel('title', classname='full title'),
+    StreamFieldPanel('body'),
+]
+
+RichTextPage.promote_panels = Page.promote_panels
+
+
 @register_snippet
 class BlogAuthor(models.Model):
     author_name = models.CharField(max_length=512, default='')
@@ -323,6 +373,14 @@ class BlogIndexPage(RoutablePageMixin, Page, WithStreamField):
                 'filter_type': 'author', 'filter': author
             }
         )
+
+
+BlogIndexPage.content_panels = [
+    FieldPanel('title', classname='full title'),
+    StreamFieldPanel('body'),
+]
+
+BlogIndexPage.promote_panels = Page.promote_panels
 
 
 class BlogPostTag(TaggedItemBase):
@@ -623,9 +681,8 @@ class PastEventIndexPage(RoutablePageMixin, Page, WithStreamField):
         # Events that have not ended.
         today = date.today()
         events = Event.objects.live().filter(
-            Q(date_from__lt=today) & (
-                Q(date_to__isnull=True) | Q(date_to__lt=today)
-            )
+            Q(date_from__lt=today) & (Q(date_to__isnull=True) | Q(
+                date_to__lt=today))
         ).order_by('-date_from')
         return events
 
@@ -707,13 +764,11 @@ class Event(Page, WithStreamField, WithFeedImage):
 
     @classmethod
     def get_by_tag(self, tag=None):
-
         if tag:
             today = date.today()
             return self.objects.filter(tags__name=tag).filter(
-                Q(date_from__gte=today) | (
-                    Q(date_to__isnull=False) & Q(date_to__gte=today)
-                )
+                Q(date_from__gte=today)
+                | (Q(date_to__isnull=False) & Q(date_to__gte=today))
             ).order_by('date_from')
         else:
             return self.objects.none()
@@ -726,8 +781,7 @@ class Event(Page, WithStreamField, WithFeedImage):
                 strand = StrandPage.objects.get(title=strand_name)
                 return self.objects.filter(strands=strand).filter(
                     Q(date_from__gte=today) | (
-                        Q(date_to__isnull=False) & Q(date_to__gte=today)
-                    )
+                        Q(date_to__isnull=False) & Q(date_to__gte=today))
                 ).order_by('date_from')
             except ObjectDoesNotExist:
                 return self.objects.none()
@@ -742,8 +796,7 @@ class Event(Page, WithStreamField, WithFeedImage):
                 strand = StrandPage.objects.get(title=strand_name)
                 return self.objects.filter(strands=strand).filter(
                     Q(date_from__lt=today) | (
-                        Q(date_to__isnull=False) & Q(date_to__lt=today)
-                    )
+                        Q(date_to__isnull=False) & Q(date_to__lt=today))
                 ).order_by('date_from')
             except ObjectDoesNotExist:
                 return self.objects.none()
@@ -846,11 +899,28 @@ class BaseSlideBlock(blocks.StructBlock):
             context['image'] = post.feed_image
         return context
 
+    @staticmethod
+    def get_default_values(value: dict, context: dict) -> dict:
+        """Get the default slide fields from value dict
+        return context"""
+        if 'title' in value and value['title'] is not None:
+            context['title'] = value['title']
+        if 'description' in value and value['description'] is not None:
+            context['description'] = value['description']
+        if 'heading' in value and value['heading'] is not None:
+            context['heading'] = value['heading']
+        return context
+
 
 class SlideBlock(BaseSlideBlock):
     """A basic slide to be used in a carousel block"""
     title = blocks.CharBlock(required=True)
-    description = blocks.CharBlock(required=False)
+    heading = blocks.CharBlock(
+        required=False,
+        default='',
+        label='Section heading'
+    )
+    description = blocks.RichTextBlock(required=False)
     url = blocks.URLBlock(required=False)
     page = blocks.PageChooserBlock(required=False, help_text='Overrides url')
     image = ImageChooserBlock(required=True)
@@ -858,8 +928,7 @@ class SlideBlock(BaseSlideBlock):
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
-        context['title'] = value['title']
-        context['description'] = value['description']
+        context = BaseSlideBlock.get_default_values(value, context)
         if 'page' in value and value['page'] is not None:
             context['url'] = value['page'].url
         else:
@@ -877,14 +946,18 @@ class BlogSlideBlock(BaseSlideBlock):
     use_latest overrides selection to show most recent post"""
     page = blocks.PageChooserBlock(required=False, page_type=BlogPost)
     caption = blocks.CharBlock(required=False)
+    heading = blocks.CharBlock(required=False, default='Blog')
+    css_class = 'blog-section'
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
+        context = BaseSlideBlock.get_default_values(value, context)
         context = BaseSlideBlock.get_slide_data_from_page(
             context,
             value['page']
         )
         context['caption'] = value['caption']
+        context['css_class'] = 'blog-section'
         return context
 
 
@@ -893,14 +966,20 @@ class NewsSlideBlock(BaseSlideBlock):
     use_latest overrides selection to show most recent post"""
     page = blocks.PageChooserBlock(required=False, page_type=NewsPost)
     caption = blocks.CharBlock(required=False)
+    heading = blocks.CharBlock(required=False, default='News')
+    css_class = 'news-section'
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
+        context = BaseSlideBlock.get_default_values(value, context)
         context = BaseSlideBlock.get_slide_data_from_page(
             context,
             value['page']
         )
+        if 'heading' in value and value['heading'] is not None:
+            context['heading'] = value['heading']
         context['caption'] = value['caption']
+        context['css_class'] = 'news-section'
         return context
 
     class Meta:
@@ -912,15 +991,23 @@ class EventSlideBlock(BaseSlideBlock):
     if use_upcoming template will show most_recent upcoming event """
     page = blocks.PageChooserBlock(required=True, page_type=Event)
     caption = blocks.CharBlock(required=False)
+    heading = blocks.CharBlock(required=False, default='Event')
+    css_class = 'events-section'
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
-        context = BaseSlideBlock.get_slide_data_from_page(context, value)
+        context = BaseSlideBlock.get_default_values(value, context)
+        context = BaseSlideBlock.get_slide_data_from_page(context,
+                                                          value['page'])
+
         context['caption'] = value['caption']
+        context['css_class'] = 'events-section'
         return context
 
 
 class UpcomingEventSlideBlock(blocks.StaticBlock):
+    css_class = 'events-section'
+
     class Meta:
         icon = 'date'
         label = 'Upcoming event'
@@ -931,7 +1018,7 @@ class UpcomingEventSlideBlock(blocks.StaticBlock):
         context = super().get_context(value, parent_context=parent_context)
         event = None
         if Event.objects.live().filter(
-            date_from__gte=date.today()
+                date_from__gte=date.today()
         ).order_by('date_from').count() > 0:
             event = Event.objects.live().filter(
                 date_from__gte=date.today()
@@ -941,11 +1028,15 @@ class UpcomingEventSlideBlock(blocks.StaticBlock):
             event = Event.objects.live().order_by('-date_from')[0]
         if event:
             context = BaseSlideBlock.get_slide_data_from_page(context, event)
+        context['heading'] = 'Upcoming Event'
+        context['css_class'] = 'events-section'
         # context['caption'] = post.feed_image.caption
         return context
 
 
 class LatestBlogSlideBlock(blocks.StaticBlock):
+    css_class = 'blog-section'
+
     class Meta:
         icon = 'edit'
         label = 'Latest blog post'
@@ -964,11 +1055,15 @@ class LatestBlogSlideBlock(blocks.StaticBlock):
             context,
             self.get_post()
         )
+        context['heading'] = 'Latest Post'
+        context['css_class'] = 'blog-section'
         # context['caption'] = post.feed_image.caption
         return context
 
 
 class LatestNewsSlideBlock(LatestBlogSlideBlock):
+    css_class = 'news-section'
+
     class Meta:
         icon = 'doc-empty-inverse'
         label = 'Latest news'
@@ -981,6 +1076,12 @@ class LatestNewsSlideBlock(LatestBlogSlideBlock):
             return posts[0]
         return None
 
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        context['heading'] = 'Latest News'
+        context['css_class'] = 'news-section'
+        return context
+
 
 class CarouselBlock(blocks.StreamBlock):
     slides = SlideBlock(label='Slide', icon='image')
@@ -989,6 +1090,7 @@ class CarouselBlock(blocks.StreamBlock):
     latest_post = LatestBlogSlideBlock()
     next_event = UpcomingEventSlideBlock()
     event_slide = EventSlideBlock(label='Event slide', icon='date')
+    news_slide = NewsSlideBlock(label='News slide', icon='edit')
 
     class Meta:
         template = 'cms/blocks/carousel_block.html'
