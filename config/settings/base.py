@@ -381,7 +381,7 @@ HAYSTACK_CONNECTIONS = {
 }
 
 WAGTAIL_FRONTEND_LOGIN_TEMPLATE = 'cms/login.html'
-WAGTAILSEARCH_RESULTS_TEMPLATE = 'cms/search_results.html'
+WAGTAILSEARCH_RESULTS_TEMPLATE = 'cms/search_results_page.html'
 
 # Your stuff...
 # ------------------------------------------------------------------------------
