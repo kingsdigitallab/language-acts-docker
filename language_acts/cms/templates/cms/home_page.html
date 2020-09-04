@@ -1,0 +1,48 @@
+{% extends "cms/base.html" %}
+{% load cms_tags staticfiles wagtailcore_tags %}
+
+{% block title %}
+{% endblock %}
+
+{% block bodyclass %} class="homepage"{% endblock %}
+
+{% block main %}
+
+{% include "cms/includes/streamfield_nohome.html" with blocks=self.body %}
+
+{% comment %}
+{% include "cms/includes/carousel.html" %}
+{% get_news_preview as news_posts %}
+{% include "cms/includes/news_preview.html" with pages=news_posts %}
+
+{% get_homepage_events as events %}
+{% include "cms/includes/event_preview.html" with event=event_posts %}
+
+{% get_blog_posts_preview as blog_posts %}
+{% include "cms/includes/blog_post_preview.html" with pages=blog_posts %}
+
+{% endcomment %}
+
+<h2>Our Research Strands</h2>
+
+<ol class="custom-counter">
+    <div class="row small-up-1 medium-up-2 large-up-3" data-equalizer data-equalizer
+        data-equalize-by-row="true" data-equalize-on="medium">
+        {% include "cms/includes/streamfield_home.html" with blocks=self.body %}
+    </div>
+</ol>
+
+{# Twitter #}
+<div class="row">
+    <div class="small-12 columns">
+        <p>
+            <a href="//twitter.com/languageacts">
+                <span class="fa fa-twitter" aria-label="icon for twitter"></span>Follow us @languageacts
+            </a>
+        </p>
+    </div>
+</div>
+
+{% include "cms/includes/twitter_feeds.html" with screen_name=value.twitter %}
+
+{% endblock %}

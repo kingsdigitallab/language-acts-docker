@@ -71,6 +71,7 @@ class StrandChildMixin(object):
 
 
 class OwriIndexPage(StrandChildMixin, Page, WithStreamField):
+
     search_fields = Page.search_fields + [
         index.SearchField('body'),
     ]

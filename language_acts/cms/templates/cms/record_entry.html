@@ -1,0 +1,26 @@
+{% extends "cms/rich_text_page.html" %}
+{% load cms_tags wagtailcore_tags wagtailimages_tags %}
+
+{% block bodyclass %} class="record"{% endblock %}
+
+
+{% block dictionary %}
+{% comment %}
+This section should be populated with the fields filled in Wagtail when
+creating a single record page
+{% endcomment %}
+
+<div class="row">
+  <div class="content preview">
+    {% include "cms/includes/record_entry.html" with record=self %}
+  </div>
+
+  {% if self.specific.cultural_transmission %}
+  <h2>Cultural transmission</h2>
+  {{ self.specific.cultural_transmission|safe }}
+  {% endif %}
+</div>
+
+</div>
+
+{% endblock %}
