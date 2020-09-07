@@ -1,0 +1,84 @@
+{% extends "cms/rich_text_page.html" %}
+{% load cms_tags wagtailcore_tags wagtailimages_tags %}
+
+{% block bodyclass %} class="record"{% endblock %}
+
+
+{% block dictionary %}
+{% comment %}
+This section should be populated with the fields filled in Wagtail when
+creating a single record page
+{% endcomment %}
+
+<div class="row">
+  <div class="small-12 medium-8 large-9 columns">
+
+    <div class="row section">
+      <div class="small-6 medium-4 columns">
+        <p><strong>Latin Lemma</strong></p>
+      </div>
+      <div class="small-6 medium-8 columns">
+        <p>{{ page.specific.latin_lemma|safe }}</p>
+      </div>
+    </div>
+
+    {% if page.specific.latin_pos.all %}
+    <div class="row section">
+      <div class="small-6 medium-4 columns">
+        <p><strong>Latin POS</strong></p>
+      </div>
+      <div class="small-6 medium-8 columns">
+        <p>
+          {% for p in page.specific.latin_pos.all %}
+          {{ p }}{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        </p>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="row section">
+      <div class="small-6 medium-4 columns">
+        <p><strong>Latin Meaning</strong></p>
+      </div>
+      <div class="small-6 medium-8 columns">
+        <p>{{ page.specific.latin_meaning|safe }}</p>
+      </div>
+    </div>
+
+
+
+    {% for page in self.get_languages %}
+        {% get_toggler_status page=page as is_open%}
+    <h2 class="toggler {% if is_open %}open{% else %}close{% endif %}">
+      <a id="page-{{page.id}}">
+        <i class="fa fa-link"></i> {{ page.specific.period}}
+        {{page.specific.language}}</a>
+    </h2>
+
+    <div class="content {% if is_open %}show{% else %}hide{% endif %}">
+      {% include "cms/includes/record_entry.html"  with record=page %}
+    </div>
+
+    {% endfor %}
+
+    {% if self.specific.cultural_transmission %}
+    <h2>Cultural transmission</h2>
+    {% include "cms/includes/streamfield.html" with blocks=self.specific.cultural_transmission %}
+    {% endif %}
+  </div>
+  {# TODO #}
+  <div class="small-12 medium-4 large-3 columns">
+    <h3>Languages</h3>
+    <ul class="no-bullet">
+      {% for page in self.get_children.live %}
+      <li><a href="{% pageurl self %}?toggler_open={{page.id}}"
+          class="button label-like expanded">{{ page.specific.period }}
+          {{ page.specific.language }}</a></li>
+      {% endfor %}
+    </ul>
+    <h3><a href="#references">References</a></h3>
+  </div>
+</div>
+
+{% endblock %}

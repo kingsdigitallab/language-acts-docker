@@ -1,0 +1,59 @@
+{% if pages %}
+{% load cms_tags wagtailcore_tags %}
+
+<ul class="menu vertical subnav">
+    {% with pages|get_section as index %}
+    <li class="top-level">
+        <a href="{% pageurl index %}"{% if page.url == self.url %}
+             class="active"{% endif %}>
+            {{ index.title }}
+        </a>
+    </li>
+    {% for page in index.get_children.live.in_menu %}
+    <li>
+        <a href="{% pageurl page %}" class="ninety{% if page.url == self.url %} active{% endif %}">
+            {{ page.title }}
+        </a>
+        {% page_in_submenu self page as in_submenu %}
+        {% if page.get_children.live.exists %}
+        <span class="toggler {% if in_submenu %}open{% else %}close{% endif %} added"></span>
+        {% endif %}
+
+        <ul class="vertical menu nested {% if in_submenu %}show{% else %}hide{% endif %} content">
+            {% for sub in page.get_children.live.in_menu %}
+            <li>
+                <a href="{% pageurl sub %}"{% if sub.url == self.url %} class="active"{% endif %}>
+                 {{ sub.title }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
+        {# Strand related content, moved from strand_page #}
+        {% if news_posts %}
+            <li>
+                <a href="{% pageurl strand %}?content=news" {% if request.GET.content == 'news' %}class="active"{% endif %}>
+                    {{ strand.title }} News
+                </a>
+            </li>
+            {% endif %}
+            {% if events or past_events %}
+            <li>
+                <a href="{% pageurl strand %}?content=events" {% if request.GET.content == 'events' %}class="active"{% endif %}>
+                    {{ strand.title }} Events
+                </a>
+            </li>
+            {% endif %}
+            {% if blog_posts %}
+            <li>
+                <a href="{% pageurl strand %}?content=blog" {% if request.GET.content == 'blog' %}class="active"{% endif %}>
+                    {{ strand.title }} Blog Posts
+                </a>
+            </li>
+            {% endif %}
+
+    {% endwith %}
+</ul>
+
+{% endif %}

@@ -1,0 +1,35 @@
+{% load cms_tags wagtailimages_tags wagtailcore_tags wagtailroutablepage_tags %}
+
+<div class="row news-block small-up-1 medium-up-3" data-equalizer="newsheight" data-equalize-by-row="true" data-equalize-on="medium">
+    {% for page in pages %}
+    <div class="column column-block">
+        <div class="card news" data-equalizer-watch="newsheight">
+            {% if page.specific.feed_image %}
+            {% image page.specific.feed_image max-600x300 as tmp_image %}
+            <div class="image-container">
+                <a href="{% pageurl page %}" aria-label="{% pageurl page %}">
+                    <img src="{{ tmp_image.url }}" alt="{{ tmp_image.alt }}">
+                </a>
+            </div>
+            {% endif %}
+
+            <div class="card-section">
+                <div role="heading" aria-level="1" class="title"><a href="{% pageurl page %}">{{ page.title }}</a></div>
+                <p class="byline newspost">
+                    <time datetime="{{ page.specific.date }}">
+                    {{ page.specific.date|date:'j b Y' }}</time>
+
+                    {% are_comments_allowed as allow_comments %}
+                    {% if allow_comments %}
+                     | <span class="disqus-comment-count" data-disqus-identifier="{{ page.id }}">Comments</span>
+                    {% endif %}
+                </p>
+                <p>{{ page.search_description }}</p>
+            </div>
+        </div>
+        {% if self.slug != 'home' %}
+        {% include "cms/includes/tags.html" with obj=page %}
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>

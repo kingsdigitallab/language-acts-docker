@@ -1,0 +1,53 @@
+{% extends "cms/base.html" %}
+{% load cms_tags wagtailcore_tags wagtailroutablepage_tags %}
+
+
+{% block title %}
+<header class="section-header">
+  <h1>
+    {{ self.title }}
+    {% has_view_restrictions page as is_private %}
+    {% if is_private %}
+     <small><i class="fa fa-eye-slash"></i> <em>Private</em></small>
+    {% endif %}
+  </h1>
+</header>
+{% endblock %}
+
+{% block main %}
+
+<article class="post" id="post{{ self.id }}">
+    <header>
+        {% block blog_post_author %}
+        <p class="byline blog">Posted by {% comment %}<a href="{% routablepageurl self.get_index_page "author" author=self.author.author_name %}"> {% endcomment %}<strong>{{ self.author.first_name }} {{ self.author.last_name }}</strong>{% comment %}</a>{% endcomment %} on
+            <time datetime="{{ self.date }}">{{ self.date|date:'j M Y' }}</time>
+
+            {% are_comments_allowed as allow_comments %}
+            {% if allow_comments %}
+            {% block blog_post_comments_link %}
+             | <span class="disqus-comment-count" data-disqus-identifier="{{ self.id }}">Comments</span>
+            {% endblock %}
+            {% endif %}
+        </p>
+        {% endblock %}
+        {% include "cms/includes/tags.html" with obj=page %}
+    </header>
+
+    {{ block.super }}
+</article>
+
+{% are_comments_allowed as allow_comments %}
+{% if allow_comments %}
+{% block comments %}
+<div id="disqus_thread"></div>
+{% endblock %}
+{% endif %}
+
+{% are_comments_allowed as allow_comments %}
+{% if allow_comments %}
+{% block footer_scripts %}
+{% include "cms/includes/disqus_setup.html" %}
+<script id="dsq-count-scr" src="//lawm.disqus.com/count.js" async></script>
+{% endblock %}
+{% endif %}
+{% endblock %}
