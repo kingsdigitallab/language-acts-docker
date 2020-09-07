@@ -120,7 +120,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "language_acts.users.apps.UsersConfig",
-    "language_acts.cms",
+    "language_acts.cms.apps.CmsConfig",
     # 'kdl_ldap',
     # 'twitterhut',
     # 'activecollab_digger',
