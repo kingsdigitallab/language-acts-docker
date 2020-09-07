@@ -97,7 +97,7 @@ class StrandPage(OwriIndexPage, WithStreamField):
     news_contextual_information = RichTextField(blank=True, null=True)
 
     subpage_types = ['OwriIndexPage',
-                     'kdl_wagtail_core.RichTextPage',
+                     'OwriRichTextPage',
                      'RecordIndexPage']
 
     search_fields = Page.search_fields + [
@@ -278,27 +278,6 @@ RecordEntry.content_panels = [
     StreamFieldPanel('diatopic_variation'),
     StreamFieldPanel('diaphasic_variation'),
 ]
-
-
-class RichTextPage(StrandChildMixin, Page, WithStreamField):
-    search_fields = Page.search_fields + [
-        index.SearchField('body'),
-    ]
-
-    subpage_types = []
-
-    def get_context(self, request, *args, **kwargs):
-        context = super(RichTextPage, self).get_context(request)
-        context = self.add_parent_strand_content_to_context(context)
-        return context
-
-
-RichTextPage.content_panels = [
-    FieldPanel('title', classname='full title'),
-    StreamFieldPanel('body'),
-]
-
-RichTextPage.promote_panels = Page.promote_panels
 
 
 @register_snippet
