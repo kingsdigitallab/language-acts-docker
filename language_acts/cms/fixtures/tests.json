@@ -246,28 +246,28 @@
         "fields": {
             "body": "[]"
         },
-        "model": "cms.indexpage",
+        "model": "cms.owriindexpage",
         "pk": 5
     },
     {
         "fields": {
             "body": "[]"
         },
-        "model": "cms.richtextpage",
+        "model": "cms.owririchtextpage",
         "pk": 6
     },
     {
         "fields": {
             "body": "[]"
         },
-        "model": "cms.richtextpage",
+        "model": "cms.owririchtextpage",
         "pk": 7
     },
     {
         "fields": {
             "body": "[]"
         },
-        "model": "cms.richtextpage",
+        "model": "cms.owririchtextpage",
         "pk": 8
     },
     {
