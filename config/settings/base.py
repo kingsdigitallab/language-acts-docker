@@ -69,23 +69,20 @@ WSGI_APPLICATION = "config.wsgi.application"
 # APPS
 # ------------------------------------------------------------------------------
 DJANGO_APPS = [
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.sites",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    # "django.contrib.humanize", # Handy template tags
-    "django.contrib.admin",
-    "django.forms",
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+
 ]
 THIRD_PARTY_APPS = [
-    "crispy_forms",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "rest_framework",
     'haystack',
+    'modelcluster',
+    'rest_framework',
+    'taggit',
     'wagtail.core',
     'wagtail.admin',
     'wagtail.documents',
@@ -94,29 +91,16 @@ THIRD_PARTY_APPS = [
     'wagtail.images',
     'wagtail.embeds',
     'wagtail.search',
+    'wagtail.contrib.redirects',
     'wagtail.contrib.forms',
     'wagtail.sites',
     'wagtail.api',
     'wagtail.contrib.routable_page',
     'wagtail.contrib.table_block',
-    "wagtail.contrib.settings",
-    'wagtail.contrib.redirects',
-    # "wagtail.embeds",
-    # "wagtail.sites",
-    # "wagtail.users",
-    # "wagtail.snippets",
-    # "wagtail.documents",
-    # "wagtail.images",
-    # "wagtail.contrib.postgres_search",
-    # "wagtail.search",
-    # "wagtail.admin",
-    # "wagtail.core",
-    "modelcluster",
-    "taggit",
 ]
 
 LOCAL_APPS = [
-    "language_acts.users.apps.UsersConfig",
+    # "language_acts.users.apps.UsersConfig",
     "language_acts.cms.apps.CmsConfig",
     # 'kdl_ldap',
     # 'twitterhut',
@@ -138,10 +122,11 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
-AUTH_USER_MODEL = "users.User"
+# AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = "users:redirect"
+# LOGIN_REDIRECT_URL = "users:redirect"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
+# todo update
 LOGIN_URL = "account_login"
 
 # PASSWORDS
