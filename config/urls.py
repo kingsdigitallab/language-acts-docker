@@ -18,8 +18,8 @@ urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
-    path("users/", include("language_acts.users.urls", namespace="users")),
-    path("accounts/", include("allauth.urls")),
+    # path("users/", include("language_acts.users.urls", namespace="users")),
+    # path("accounts/", include("allauth.urls")),
     path("wagtail/", include(wagtailadmin_urls)),
     # path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
