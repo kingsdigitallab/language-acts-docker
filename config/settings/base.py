@@ -126,8 +126,7 @@ AUTHENTICATION_BACKENDS = (
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
 # LOGIN_REDIRECT_URL = "users:redirect"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
-# todo update
-LOGIN_URL = "account_login"
+LOGIN_URL = '/wagtail/login/'
 
 # PASSWORDS
 # ------------------------------------------------------------------------------
@@ -233,11 +232,11 @@ TEMPLATES = [
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#form-renderer
-FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
+# FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 # http://django-crispy-forms.readthedocs.io/en/latest/install.html#template
 # -packs
-CRISPY_TEMPLATE_PACK = "bootstrap4"
+# CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # FIXTURES
 # ------------------------------------------------------------------------------
@@ -343,7 +342,7 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-WAGTAIL_FRONTEND_LOGIN_TEMPLATE = 'cms/login.html'
+WAGTAIL_FRONTEND_LOGIN_TEMPLATE = 'language_acts/cms/login.html'
 WAGTAILSEARCH_RESULTS_TEMPLATE = 'cms/search_results_page.html'
 
 # Your stuff...
