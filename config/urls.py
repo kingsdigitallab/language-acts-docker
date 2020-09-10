@@ -1,6 +1,6 @@
 from django.conf import settings
-from django.urls import include, path
-from django.conf.urls.static import static
+from django.urls import include, path, re_path
+# from django.conf.urls.static import static
 from django.contrib import admin
 from django.views import defaults as default_views
 
@@ -8,27 +8,35 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
-urlpatterns = [
-    # path("",
-    # TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    # path(
-    #     "about/",
-    # TemplateView.as_view(template_name="pages/about.html"), name="about"
-    # ),
-    # Django Admin, use {% url 'admin:index' %}
-    path(settings.ADMIN_URL, admin.site.urls),
-    # User management
-    # path("users/", include("language_acts.users.urls", namespace="users")),
-    # path("accounts/", include("allauth.urls")),
-    path("wagtail/", include(wagtailadmin_urls)),
-    # path("cms/", include(wagtailadmin_urls)),
-    path("documents/", include(wagtaildocs_urls)),
-    path("pages/", include(wagtail_urls)),
-    # Your stuff: custom urls includes go here
-    path('', include('language_acts.cms.urls')),
-    path('', include(wagtail_urls)),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# urlpatterns = [
+#     # Django Admin, use {% url 'admin:index' %}
+#     path(settings.ADMIN_URL, admin.site.urls),
+#     # User management
+#     path("wagtail/", include(wagtailadmin_urls)),
+#     # path("cms/", include(wagtailadmin_urls)),
+#     path("documents/", include(wagtaildocs_urls)),
+#     path("pages/", include(wagtail_urls)),
+#     # Your stuff: custom urls includes go here
+#     path('', include('language_acts.cms.urls')),
+#     path('', include(wagtail_urls)),
+# ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    # re_path('digger/', include('activecollab_digger.urls')),
+]
+
+# -----------------------------------------------------------------------------
+# Wagtail CMS
+# -----------------------------------------------------------------------------
+
+urlpatterns += [
+    re_path('wagtail/', include(wagtailadmin_urls)),
+    re_path('documents/', include(wagtaildocs_urls)),
+    # re_path(r'^search/', include(wagtailsearch_frontend_urls)), TODO
+    re_path('', include('language_acts.cms.urls')),
+    re_path('', include(wagtail_urls)),
+]
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
@@ -54,4 +62,6 @@ if settings.DEBUG:
     if "debug_toolbar" in settings.INSTALLED_APPS:
         import debug_toolbar
 
-        urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
+        urlpatterns = [
+                          path("__debug__/", include(debug_toolbar.urls))
+                      ] + urlpatterns
