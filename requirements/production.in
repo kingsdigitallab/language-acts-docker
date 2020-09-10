@@ -12,4 +12,4 @@ django-activecollab-digger # EH
 
 # KDL
 # ------------------------------------------------------------------------------
-django-auth-ldap==2.1.0  # https://github.com/django-auth-ldap/django-auth-ldap
+django-auth-ldap  # https://github.com/django-auth-ldap/django-auth-ldap

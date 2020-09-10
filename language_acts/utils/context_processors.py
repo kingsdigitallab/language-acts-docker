@@ -1,5 +1,8 @@
-from django.conf import settings
+from django.conf import settings as s
 
 
-def settings_context(_request):
-    return {"settings": settings}
+def settings(request):
+    return {
+        'GA_ID': s.GA_ID,
+        'PROJECT_TITLE': s.PROJECT_TITLE
+    }
