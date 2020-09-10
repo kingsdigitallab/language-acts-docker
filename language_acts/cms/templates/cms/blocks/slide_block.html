@@ -1,0 +1,58 @@
+{% load cms_tags staticfiles wagtailcore_tags wagtailimages_tags  %}
+
+<li class="is-active orbit-slide">
+    {% if image %}
+    <figure class="orbit-figure">
+        <a href="{{ url }}">
+            {% image image width-1024 as theimage %}
+            <img class="orbit-image" src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}">
+        </a>
+        {% if caption %}
+        <figcaption class="orbit-caption">{{ caption }}</figcaption>
+        {% endif %}
+    </figure>
+    {% endif %}
+    <div class="orbit-slide-content">
+        {% if heading %}
+        <span class="section-heading{% if css_class %} {{ css_class }}{% endif %}">
+            {{ heading }}
+        </span>
+        {% endif %}
+
+        <h2>{{ title }}</h2>
+
+        {% if page.date %}
+        <p class="meta">
+            {{ page.date|date:'j M Y' }}
+            {% if page.author %}
+            - by <strong>{{ page.author.first_name }} {{ page.author.last_name }}</strong>
+            {% endif %}
+        </p>
+        {% endif %}
+
+        {% if page.date_from %}
+        <p class="meta">
+            <i class="fa fa-clock-o"></i>
+            <time datetime="{{ page.date }}">
+                {{ page.date_from|date:'j M Y' }}
+                {% if page.date_to %} - {{ page.date_to|date:'j M Y' }}{% endif %} / 
+                {{ page.time|date:'H:i' }} 
+                {% if page.time_end %} - {{ page.time_end|date:'H:i' }}{% endif %}
+            </time>
+        </p>
+        {% endif %}
+
+        {% if page.location %}
+        <p class="meta">
+            <i class="fa fa-map-marker"></i> {{ page.location }}
+        </p>
+        {% endif %}
+
+        {% if description %}
+        <p>{{ description|truncatewords:40 }}</p>
+        {% endif %}
+        {% if url %}
+        <a href="{{ url }}" class="button secondary expanded">Read more</a>
+        {% endif %}
+    </div>
+</li>

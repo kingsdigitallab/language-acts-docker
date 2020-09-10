@@ -113,7 +113,6 @@ THIRD_PARTY_APPS = [
     # "wagtail.core",
     "modelcluster",
     "taggit",
-    "kdl_wagtail.core",
 ]
 
 LOCAL_APPS = [
