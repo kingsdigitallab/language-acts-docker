@@ -25,12 +25,9 @@ coreapi==2.3.3  # https://github.com/core-api/python-client
 
 # KDL
 # ------------------------------------------------------------------------------
-elasticsearch>=2.0.0,<3.0.0 # eh
-# elasticsearch-dsl>=7.0.0,<8.0.0  # https://github.com/elastic/elasticsearch-dsl-py
+# elasticsearch>=2.0.0,<3.0.0 # eh
+elasticsearch-dsl>=7.0.0,<8.0.0  # https://github.com/elastic/elasticsearch-dsl-py
 
 wagtail>=2.7,<2.8 # EH
 # wagtail==2.8  # https://github.com/wagtail/wagtail
-# django-kdl-wagtail==0.9.0  # https://github.com/kingsdigitallab/django-kdl-wagtail
-
-# Twitter Hut
-twython
+django-kdl-wagtail==0.9.0  # https://github.com/kingsdigitallab/django-kdl-wagtail

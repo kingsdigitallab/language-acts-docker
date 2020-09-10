@@ -8,7 +8,7 @@ import os
 import environ
 # from django_auth_ldap.config import LDAPGroupQuery
 # from kdl_ldap.settings import *  # noqa
-# from twitterhut.settings import *  # noqa
+from twitterhut.settings import *  # noqa
 
 LOGIN_URL = '/wagtail/login/'
 
@@ -103,7 +103,7 @@ LOCAL_APPS = [
     # "language_acts.users.apps.UsersConfig",
     "language_acts.cms.apps.CmsConfig",
     # 'kdl_ldap',
-    # 'twitterhut',
+    'language_acts.twitterhut.apps.TwitterhutConfig',
     # 'activecollab_digger',
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -313,22 +313,6 @@ LOGGING = {
     "root": {"level": "INFO", "handlers": ["console"]},
 }
 
-# django-allauth
-# ------------------------------------------------------------------------------
-# ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION",
-#                                       True)
-# # https://django-allauth.readthedocs.io/en/latest/configuration.html
-# ACCOUNT_AUTHENTICATION_METHOD = "username"
-# # https://django-allauth.readthedocs.io/en/latest/configuration.html
-# ACCOUNT_EMAIL_REQUIRED = True
-# # https://django-allauth.readthedocs.io/en/latest/configuration.html
-# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-# # https://django-allauth.readthedocs.io/en/latest/configuration.html
-# ACCOUNT_ADAPTER = "language_acts.users.adapters.AccountAdapter"
-# # https://django-allauth.readthedocs.io/en/latest/configuration.html
-# SOCIALACCOUNT_ADAPTER = "language_acts.users.adapters.SocialAccountAdapter"
-# django-compressor
-# ------------------------------------------------------------------------------
 # https://django-compressor.readthedocs.io/en/latest/quickstart/#installation
 INSTALLED_APPS += ["compressor"]
 STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
@@ -364,3 +348,9 @@ WAGTAILSEARCH_RESULTS_TEMPLATE = 'cms/search_results_page.html'
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Twitter
+# -----------------------------------------------------------------------------
+
+TWITTER_SCREEN_NAME = 'languageacts'
