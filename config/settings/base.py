@@ -315,6 +315,21 @@ LOGGING = {
 # https://django-compressor.readthedocs.io/en/latest/quickstart/#installation
 INSTALLED_APPS += ["compressor"]
 STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
+# -----------------------------------------------------------------------------
+# Django Compressor
+# http://django-compressor.readthedocs.org/en/latest/
+# -----------------------------------------------------------------------------
+
+COMPRESS_ENABLED = True
+
+COMPRESS_CSS_FILTERS = [
+    # CSS minimizer
+    'compressor.filters.cssmin.CSSMinFilter'
+]
+
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
 
 # Wagtail
 # ------------------------------------------------------------------------------
