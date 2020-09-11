@@ -336,6 +336,7 @@ COMPRESS_PRECOMPILERS = (
 # https://docs.wagtail.io/en/v2.7.1/getting_started/integrating_into_django
 # .html
 WAGTAIL_SITE_NAME = "Language Acts"
+ITEMS_PER_PAGE = 10
 
 WAGTAILSEARCH_BACKENDS = {
     'default': {
