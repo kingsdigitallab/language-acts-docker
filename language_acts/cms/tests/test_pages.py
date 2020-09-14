@@ -3,20 +3,20 @@ from datetime import date
 from typing import Union, Optional
 from unittest.mock import MagicMock, create_autospec, patch
 import factory
-from language_acts.cms.models.pages import (
+from cms.models.pages import (
     BlogIndexPage, EventIndexPage, HomePage, IndexPage, NewsIndexPage,
     PastEventIndexPage, RichTextPage, StrandPage, _paginate, TagResults,
     BlogAuthor, BlogPost, NewsPost, Event, SlideBlock,
     BlogSlideBlock, EventSlideBlock, NewsSlideBlock, UpcomingEventSlideBlock,
     LatestBlogSlideBlock, LatestNewsSlideBlock
 )
-from language_acts.cms.tests.factories import (
+from cms.tests.factories import (
     BlogIndexPageFactory, BlogPostFactory, BlogAuthorFactory,
     NewsIndexPageFactory, NewsPostFactory, StrandPageFactory,
     EventIndexPageFactory, PastEventIndexPageFactory,
     EventFactory, UserFactory, HomePageFactory
 )
-from language_acts.cms.views.search import SearchView
+from cms.views.search import SearchView
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
 from django.test import RequestFactory, TestCase
