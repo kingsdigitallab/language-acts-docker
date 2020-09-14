@@ -8,7 +8,7 @@ import os
 import environ
 # from django_auth_ldap.config import LDAPGroupQuery
 # from kdl_ldap.settings import *  # noqa
-from twitterhut.settings import *  # noqa
+from language_acts.twitterhut.settings import *  # noqa
 
 LOGIN_URL = '/wagtail/login/'
 
