@@ -1,2 +1,2 @@
-from .pages import *  # noqa
-from .snippets import *  # noqa
+from cms.models.pages import *  # noqa
+from cms.models.snippets import *  # noqa
