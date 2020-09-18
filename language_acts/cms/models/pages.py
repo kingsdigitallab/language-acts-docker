@@ -856,9 +856,9 @@ class TagResults(RoutablePageMixin, Page):
         news_strand = NewsPost.get_by_strand(tag)
 
         # Merge tagged content
-        blog = blog_tag | blog_strand
-        events = events_tag | events_strand
-        news = news_tag | news_strand
+        blog = blog_tag.union(blog_strand)
+        events = events_tag.union(events_strand)
+        news = news_tag.union(news_strand)
 
         # Assign them
         context['blog'] = blog
