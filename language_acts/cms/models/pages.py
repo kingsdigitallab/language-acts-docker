@@ -12,7 +12,6 @@ from django.db import models
 from django.db.models import Q, QuerySet
 from django.shortcuts import render
 from django.utils.text import slugify
-from haystack.query import SearchQuerySet
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from taggit.models import TaggedItemBase
@@ -142,31 +141,31 @@ class RecordIndexPage(Page):
         context = super(RecordIndexPage, self).get_context(request)
 
         # Get selected facets
-        selected_facets = set(request.GET.getlist('selected_facets'))
+        # selected_facets = set(request.GET.getlist('selected_facets'))
 
+        # Todo replacing with django elasticsearch
         # Init a search query set
-        sqs = SearchQuerySet().models(RecordPage)
-
+        # sqs = SearchQuerySet().models(RecordPage)
         # Apply currently selected facets
-        for facet in selected_facets:
-            sqs = sqs.narrow(facet)
-
-        # Get facet counts
-        sqs = sqs.facet('language').facet('word_type').facet('first_letter')
-
-        # Generate presentable facet data
-        selected_facets_ui = []
-
-        for facet in selected_facets:
-            f = {
-                'value': facet.split(':')[1],
-                'remove_url': request.get_full_path().replace(
-                    '&selected_facets={}'.format(facet), '')
-            }
-            selected_facets_ui.append(f)
-
-        context['selected_facets'] = selected_facets_ui
-        context['sqs'] = sqs
+        # for facet in selected_facets:
+        #     sqs = sqs.narrow(facet)
+        #
+        # # Get facet counts
+        # sqs = sqs.facet('language').facet('word_type').facet('first_letter')
+        #
+        # # Generate presentable facet data
+        # selected_facets_ui = []
+        #
+        # for facet in selected_facets:
+        #     f = {
+        #         'value': facet.split(':')[1],
+        #         'remove_url': request.get_full_path().replace(
+        #             '&selected_facets={}'.format(facet), '')
+        #     }
+        #     selected_facets_ui.append(f)
+        #
+        # context['selected_facets'] = selected_facets_ui
+        # context['sqs'] = sqs
 
         return context
 
