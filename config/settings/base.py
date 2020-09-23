@@ -350,7 +350,7 @@ WAGTAILSEARCH_BACKENDS = {
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch2_backend'
+        'ENGINE': 'haystack.backends.elasticsearch5_backend'
                   '.Elasticsearch2SearchEngine',
         # noqa
         'URL': 'http://127.0.0.1:9200/',
