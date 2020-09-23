@@ -79,7 +79,6 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    'haystack',
     'modelcluster',
     'rest_framework',
     'taggit',
@@ -348,15 +347,6 @@ WAGTAILSEARCH_BACKENDS = {
     }
 }
 
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch5_backend'
-                  '.Elasticsearch2SearchEngine',
-        # noqa
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'owri_haystack',
-    },
-}
 
 WAGTAIL_FRONTEND_LOGIN_TEMPLATE = 'language_acts/cms/login.html'
 WAGTAILSEARCH_RESULTS_TEMPLATE = 'cms/search_results_page.html'

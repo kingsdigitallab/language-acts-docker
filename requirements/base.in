@@ -15,7 +15,6 @@ django-crispy-forms==1.8.1  # https://github.com/django-crispy-forms/django-cris
 django-compressor==2.4  # https://github.com/django-compressor/django-compressor
 django-redis==4.11.0  # https://github.com/niwinz/django-redis
 django-taggit==1.2.0  # EH
-django-haystack==2.8.1
 django-libsass==0.8
 django-model-utils==4.0.0
 django-modelcluster==5.0.2
@@ -25,8 +24,8 @@ coreapi==2.3.3  # https://github.com/core-api/python-client
 
 # KDL
 # ------------------------------------------------------------------------------
-elasticsearch>=2.0.0,<3.0.0 # eh
-# elasticsearch-dsl>=7.0.0,<8.0.0  # https://github.com/elastic/elasticsearch-dsl-py
+elasticsearch-dsl>=7.0.0,<8.0.0  # https://github.com/elastic/elasticsearch-dsl-py
+django-elasticsearch-dsl>=7.1,<7.2  # https://github.com/django-es/django-elasticsearch-dsl
 
 wagtail>=2.7,<2.8 # EH
 # wagtail==2.8  # https://github.com/wagtail/wagtail
