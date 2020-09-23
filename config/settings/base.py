@@ -96,6 +96,7 @@ THIRD_PARTY_APPS = [
     'wagtail.api',
     'wagtail.contrib.routable_page',
     'wagtail.contrib.table_block',
+    'django_elasticsearch_dsl'
 ]
 
 LOCAL_APPS = [
@@ -353,6 +354,12 @@ WAGTAILSEARCH_RESULTS_TEMPLATE = 'cms/search_results_page.html'
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+# Elasticsearch
+# ------------------------------------------------------------------------------
+# https://github.com/django-es/django-elasticsearch-dsl
+ELASTICSEARCH_DSL = {"default": {"hosts": "elasticsearch:9200"}}
+
 
 # -----------------------------------------------------------------------------
 # Twitter
