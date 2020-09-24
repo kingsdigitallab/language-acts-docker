@@ -1,7 +1,7 @@
 from cms.models.pages import (
     RecordPage, RecordEntry
 )
-from django_elasticsearch_dsl import Document, TextField
+from django_elasticsearch_dsl import Document, fields
 from django_elasticsearch_dsl.registries import registry
 
 
@@ -19,11 +19,15 @@ class RecordPageDocument(Document):
             'title',
         ]
 
-        language = TextField()
+    language = fields.KeywordField(type="keyword")
 
-        def prepare_language(self, obj):
-            return (obj.specific.language.name
-                    if obj.specific.language else None)
+    def prepare_language(self, instance):
+        languages = []
+        if instance.get_languages():
+            for entry in instance.get_languages():
+                if entry.specific.language:
+                    languages.append(entry.specific.language.name)
+        return languages
 
 
 @registry.register_document
@@ -40,13 +44,17 @@ class RecordEntryDocument(Document):
             'title'
         ]
 
-        language = TextField()
-        first_letter = TextField()
+    language = fields.KeywordField(type="keyword")
+    first_letter = fields.KeywordField(type="keyword")
 
-        def prepare_first_letter(self, obj):
-            return obj.title.upper()[0] if obj.title else None
+    def prepare_first_letter(self, instance):
+        return instance.title.upper()[0] if instance.title else None
 
-        def prepare_language(self, obj):
-            return [entry.specific.language.name for entry in
-                    obj.get_children() if entry.specific.language is
-                    not None]
+    def prepare_language(self, instance):
+        return (instance.specific.language.name
+                if instance.specific.language else None)
+
+
+# rs = RecordSearch(None, {'language':'Italian'})
+# response = rs.execute()
+# total = response.hits.total
