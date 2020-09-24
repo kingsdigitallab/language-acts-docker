@@ -340,11 +340,9 @@ ITEMS_PER_PAGE = 10
 
 WAGTAILSEARCH_BACKENDS = {
     'default': {
-        'BACKEND': 'wagtail.search.backends.elasticsearch2',
-        'AUTO_UPDATE': False,
-        'URLS': ['http://127.0.0.1:9200'],
+        'BACKEND': 'wagtail.search.backends.elasticsearch7',
+        'URLS': ["http://elasticsearch:9200"],
         'INDEX': 'owri_wagtail',
-        'TIMEOUT': 5,
     }
 }
 
