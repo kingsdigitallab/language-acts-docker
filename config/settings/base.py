@@ -79,7 +79,6 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    'haystack',
     'modelcluster',
     'rest_framework',
     'taggit',
@@ -97,6 +96,7 @@ THIRD_PARTY_APPS = [
     'wagtail.api',
     'wagtail.contrib.routable_page',
     'wagtail.contrib.table_block',
+    'django_elasticsearch_dsl'
 ]
 
 LOCAL_APPS = [
@@ -348,21 +348,18 @@ WAGTAILSEARCH_BACKENDS = {
     }
 }
 
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch5_backend'
-                  '.Elasticsearch2SearchEngine',
-        # noqa
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'owri_haystack',
-    },
-}
 
 WAGTAIL_FRONTEND_LOGIN_TEMPLATE = 'language_acts/cms/login.html'
 WAGTAILSEARCH_RESULTS_TEMPLATE = 'cms/search_results_page.html'
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+# Elasticsearch
+# ------------------------------------------------------------------------------
+# https://github.com/django-es/django-elasticsearch-dsl
+ELASTICSEARCH_DSL = {"default": {"hosts": "elasticsearch:9200"}}
+
 
 # -----------------------------------------------------------------------------
 # Twitter

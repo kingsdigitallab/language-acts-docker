@@ -330,3 +330,5 @@ language_acts/media/
 .env
 .envs/*
 !.envs/.local/
+# api keys etc. for local django
+config/settings/local_protected.py

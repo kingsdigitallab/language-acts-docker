@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import logging
 from datetime import date
-
+from cms.search import RecordPageSearch
 # from django.contrib.auth.models import User
 from django import forms
 from django.conf import settings
@@ -12,7 +12,6 @@ from django.db import models
 from django.db.models import Q, QuerySet
 from django.shortcuts import render
 from django.utils.text import slugify
-from haystack.query import SearchQuerySet
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from taggit.models import TaggedItemBase
@@ -140,33 +139,31 @@ class RecordIndexPage(Page):
 
     def get_context(self, request, *args, **kwargs):
         context = super(RecordIndexPage, self).get_context(request)
+        # Haystack replaced with django elasticsearch
 
         # Get selected facets
         selected_facets = set(request.GET.getlist('selected_facets'))
-
-        # Init a search query set
-        sqs = SearchQuerySet().models(RecordPage)
-
-        # Apply currently selected facets
-        for facet in selected_facets:
-            sqs = sqs.narrow(facet)
-
-        # Get facet counts
-        sqs = sqs.facet('language').facet('word_type').facet('first_letter')
-
-        # Generate presentable facet data
         selected_facets_ui = []
+        facet_search = {}
 
         for facet in selected_facets:
+            facet_split = facet.split(':')
+            facet_search[facet_split[0]] = facet_split[1]
             f = {
-                'value': facet.split(':')[1],
+                'value': facet_split[1],
                 'remove_url': request.get_full_path().replace(
                     '&selected_facets={}'.format(facet), '')
             }
             selected_facets_ui.append(f)
 
+        # Init a search query set
+        # Apply currently selected facets
+        search = RecordPageSearch(None, facet_search)
+        response = search.execute()
+
+        context['facets'] = response.facets
         context['selected_facets'] = selected_facets_ui
-        context['sqs'] = sqs
+        context['search_result'] = response
 
         return context
 
