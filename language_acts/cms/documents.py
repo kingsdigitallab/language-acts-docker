@@ -16,7 +16,8 @@ class RecordEntryDocument(Document):
         model = RecordEntry
 
         fields = [
-            'title'
+            'title',
+            'lemma'
         ]
 
     language = fields.KeywordField(type="keyword")
@@ -24,10 +25,14 @@ class RecordEntryDocument(Document):
     page_url = fields.TextField()
 
     def prepare_page_url(self, instance):
-        return instance.url
+        parent = instance.get_ancestors().last()
+        if parent:
+            return parent.url+'?toggler_open={}#page-{}'.format(
+                instance.pk, instance.pk)
+        return ''
 
     def prepare_first_letter(self, instance):
-        return instance.title.upper()[0] if instance.title else None
+        return instance.lemma.upper()[0] if instance.lemma else None
 
     def prepare_language(self, instance):
         return (instance.specific.language.name

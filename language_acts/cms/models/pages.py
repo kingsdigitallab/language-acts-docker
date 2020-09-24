@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import logging
 from datetime import date
-
+from cms.search import RecordPageSearch
 # from django.contrib.auth.models import User
 from django import forms
 from django.conf import settings
@@ -139,33 +139,31 @@ class RecordIndexPage(Page):
 
     def get_context(self, request, *args, **kwargs):
         context = super(RecordIndexPage, self).get_context(request)
+        # Haystack replaced with django elasticsearch
 
         # Get selected facets
-        # selected_facets = set(request.GET.getlist('selected_facets'))
+        selected_facets = set(request.GET.getlist('selected_facets'))
+        selected_facets_ui = []
+        facet_search = {}
 
-        # Todo replacing with django elasticsearch
+        for facet in selected_facets:
+            facet_split = facet.split(':')
+            facet_search[facet_split[0]] = facet_split[1]
+            f = {
+                'value': facet_split[1],
+                'remove_url': request.get_full_path().replace(
+                    '&selected_facets={}'.format(facet), '')
+            }
+            selected_facets_ui.append(f)
+
         # Init a search query set
-        # sqs = SearchQuerySet().models(RecordPage)
         # Apply currently selected facets
-        # for facet in selected_facets:
-        #     sqs = sqs.narrow(facet)
-        #
-        # # Get facet counts
-        # sqs = sqs.facet('language').facet('word_type').facet('first_letter')
-        #
-        # # Generate presentable facet data
-        # selected_facets_ui = []
-        #
-        # for facet in selected_facets:
-        #     f = {
-        #         'value': facet.split(':')[1],
-        #         'remove_url': request.get_full_path().replace(
-        #             '&selected_facets={}'.format(facet), '')
-        #     }
-        #     selected_facets_ui.append(f)
-        #
-        # context['selected_facets'] = selected_facets_ui
-        # context['sqs'] = sqs
+        search = RecordPageSearch(None, facet_search)
+        response = search.execute()
+
+        context['facets'] = response.facets
+        context['selected_facets'] = selected_facets_ui
+        context['search_result'] = response
 
         return context
 

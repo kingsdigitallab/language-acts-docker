@@ -3,7 +3,7 @@
 
 {% block dictionary %}
 {# Filters #}
-{% with facets=sqs.facet_counts request_full_path=request.get_full_path|querify %}
+{% with request_full_path=request.get_full_path|querify %}
 <div class="filters">
   <div class="applied">
     {% comment %}
@@ -31,9 +31,9 @@
           </div>
           <div class="card-section">
             <ul>
-              {% for l in facets.fields.language %}
+              {% for l in facets.language %}
               <li><a
-                  href="{{ request_full_path }}&amp;selected_facets=language_exact:{{ l.0|urlencode }}">{{ l.0 }}
+                  href="{{ request_full_path }}&amp;selected_facets=language:{{ l.0|urlencode }}">{{ l.0 }}
                   ({{l.1}})</a></li>
               {% endfor %}
             </ul>
@@ -47,28 +47,12 @@
           </div>
           <div class="card-section clearfix">
             <ul class="no-bullet grid-like">
-              {% for f in facets.fields.first_letter %}
+              {% for f in facets.first_letter %}
               <li><a
-                  href="{{ request_full_path }}&amp;selected_facets=first_letter_exact:{{ f.0|urlencode }}">{{ f.0 }}
+                  href="{{ request_full_path }}&amp;selected_facets=first_letter:{{ f.0|urlencode }}">{{ f.0 }}
                   ({{f.1}})</a></li>
               {% endfor %}
 
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="column column-block">
-        <div class="card" data-equalizer-watch>
-          <div class="card-divider">
-            Type / Part of speech
-          </div>
-          <div class="card-section">
-            <ul>
-              {% for w in facets.fields.word_type %}
-              <li><a
-                  href="{{ request_full_path }}&amp;selected_facets=word_type_exact:{{ w.0|urlencode }}">{{ w.0 }}
-                  ({{w.1}})</a></li>
-              {% endfor %}
             </ul>
           </div>
         </div>
@@ -79,16 +63,16 @@
 {% endwith %}
 
 <ul>
-  {% for page in sqs %}
+  {% for result in search_result %}
   {% comment %}
   This list should be in alphabetical order by default
   Other filters will be available
   {% endcomment %}
-  {% if page.object %}
+
   <li>
-    <a href="{% pageurl page.object %}" class="entry">{{ page.object }}</a>
+    <a href="{{ result.page_url }}" class="entry">{{ result.lemma }}</a>
   </li>
-  {% endif %}
+
   {% endfor %}
 </ul>
 {% endblock %}
