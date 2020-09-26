@@ -14,7 +14,8 @@ from cms.tests.factories import (
     BlogIndexPageFactory, BlogPostFactory, BlogAuthorFactory,
     NewsIndexPageFactory, NewsPostFactory, StrandPageFactory,
     EventIndexPageFactory, PastEventIndexPageFactory,
-    EventFactory, UserFactory, HomePageFactory
+    EventFactory, UserFactory, HomePageFactory,
+    RecordIndexPageFactory, RecordPageFactory, RecordEntryFactory
 )
 from cms.views.search import SearchView
 from django.core.paginator import Paginator
@@ -22,7 +23,7 @@ from django.template.loader import render_to_string
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 from wagtail.core.models import Page
-from wagtail.search.backends.elasticsearch2 import Elasticsearch2SearchResults
+from wagtail.search.backends.elasticsearch7 import Elasticsearch7SearchResults
 from wagtail.tests.utils import WagtailPageTests
 from django.core.files.images import ImageFile
 from django.core.files import File
@@ -444,7 +445,7 @@ class TestSearchView(TestCase):
         self.event_2.strands.add(self.strand_1)
         self.event_2.tags.add('test_tag')
         self.event_2.save()
-        self.mock_qs = MagicMock(spec=Elasticsearch2SearchResults)
+        self.mock_qs = MagicMock(spec=Elasticsearch7SearchResults)
         self.mock_qs.return_value = [self.event_2]
         self.request = RequestFactory().get('/test?q=Lang')
 
@@ -764,12 +765,41 @@ class TestEvent(TestCase):
         self.assertIn(self.event_1, events)
 
 
-# todo finish once haystack test added
-# class TestRecordIndexPage(TestCase):
-#
-#     def test_get_context(self):
-#         factory = RequestFactory()
-#         request = factory.get('/test?selected_facets=first_letter:E')
+class TestRecordIndexPage(TestCase):
+
+    def setUp(self) -> None:
+        self.home_page, created = Page.objects.get_or_create(id=2)
+        self.record_index_page = RecordIndexPageFactory.build(
+                title='Record Index Test'
+            )
+        self.home_page.add_child(
+            instance=self.record_index_page
+        )
+        self.record_page_1 = RecordPageFactory.build()
+        self.record_index_page.add_child(
+            instance=self.record_page_1
+        )
+
+    def test_get_context(self):
+        record_entry = RecordEntryFactory.build()
+        record_entry.lemma = 'Emma'
+        self.record_page_1.add_child(
+            instance=record_entry
+        )
+        request = RequestFactory().get(
+            '/test?selected_facets=first_letter:E')
+        with patch(
+                'cms.models.pages.RecordPageSearch.execute'
+                ) as mock_response:
+            # todo simplified this for now, as I was just testing my own mock
+            mock_response.facets = {'first_letter': {'E': 1}}
+            mock_response.__iter__.return_value = [record_entry]
+            context = self.record_index_page.get_context(request)
+
+        self.assertIn('facets', context)
+        self.assertIn('selected_facets', context)
+        self.assertIn('search_result', context)
+
 
 """ Block function tests """
 

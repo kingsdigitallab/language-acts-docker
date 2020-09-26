@@ -3,7 +3,8 @@ import factory
 from cms.models.pages import (
     BlogIndexPage, BlogPost, BlogAuthor, RichTextPage,
     NewsIndexPage, NewsPost, StrandPage, IndexPage,
-    PastEventIndexPage, EventIndexPage, Event, HomePage
+    PastEventIndexPage, EventIndexPage, Event, HomePage,
+    RecordIndexPage, RecordPage, RecordEntry
 )
 
 
@@ -135,3 +136,35 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'auth.User'
         django_get_or_create = ('username',)
+
+
+class RecordIndexPageFactory(factory.DjangoModelFactory):
+    title = factory.Faker('sentence', nb_words=4)
+    path = "00010009"
+    depth = 2
+
+    class Meta:
+        model = RecordIndexPage
+        django_get_or_create = ["title", "path", "depth"]
+
+
+class RecordPageFactory(factory.DjangoModelFactory):
+    title = factory.Faker('sentence', nb_words=4)
+    path = factory.Sequence(lambda n: "00010009%04d" % n)
+    live = True
+    depth = 3
+
+    class Meta:
+        model = RecordPage
+        django_get_or_create = ["title", "path", "depth"]
+
+
+class RecordEntryFactory(factory.DjangoModelFactory):
+    title = factory.Faker('sentence', nb_words=4)
+    path = factory.Sequence(lambda n: "000100090008%04d" % n)
+    live = True
+    depth = 4
+
+    class Meta:
+        model = RecordEntry
+        django_get_or_create = ["title", "path", "depth"]
