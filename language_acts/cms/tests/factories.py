@@ -4,7 +4,7 @@ from cms.models.pages import (
     BlogIndexPage, BlogPost, BlogAuthor, RichTextPage,
     NewsIndexPage, NewsPost, StrandPage, IndexPage,
     PastEventIndexPage, EventIndexPage, Event, HomePage,
-    RecordIndexPage, RecordPage, RecordEntry
+    RecordIndexPage, RecordPage, RecordEntry, TagResults
 )
 
 
@@ -13,6 +13,13 @@ class BlogAuthorFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = BlogAuthor
+
+
+class TagResultsFactory(factory.DjangoModelFactory):
+    title = factory.Faker('sentence', nb_words=4)
+
+    class Meta:
+        model = TagResults
 
 
 class StrandPageFactory(factory.DjangoModelFactory):

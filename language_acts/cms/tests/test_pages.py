@@ -14,7 +14,7 @@ from cms.tests.factories import (
     BlogIndexPageFactory, BlogPostFactory, BlogAuthorFactory,
     NewsIndexPageFactory, NewsPostFactory, StrandPageFactory,
     EventIndexPageFactory, PastEventIndexPageFactory,
-    EventFactory, UserFactory, HomePageFactory,
+    EventFactory, UserFactory, HomePageFactory, TagResultsFactory,
     RecordIndexPageFactory, RecordPageFactory, RecordEntryFactory
 )
 from cms.views.search import SearchView
@@ -799,6 +799,73 @@ class TestRecordIndexPage(TestCase):
         self.assertIn('facets', context)
         self.assertIn('selected_facets', context)
         self.assertIn('search_result', context)
+
+
+class TestTagResults(TestCase):
+    test_image_filename = 'test_image'
+    uri = (default_storage.location
+           + '/images/' + test_image_filename + '.jpg')
+    orig_uri = (default_storage.location
+                + '/original_images/' + test_image_filename + '.jpg')
+
+    @classmethod
+    def setUpClass(cls):
+        create_wagtail_test_image(
+            uri=cls.uri, filename=cls.test_image_filename
+        )
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        delete_wagtail_test_image(cls.uri)
+        delete_wagtail_test_image(cls.orig_uri)
+        Image.objects.all().delete()
+
+    def setUp(self) -> None:
+        self.author_1 = BlogAuthorFactory()
+        self.author_2 = BlogAuthorFactory()
+        self.site_root = create_site_root()
+        self.home_page = HomePageFactory.build()
+        self.site_root.add_child(
+            instance=self.home_page
+        )
+        self.home_page, self.blog_index_page = create_blog_index(None)
+        self.blog_index_page, self.blog_1 = create_blog_post(
+            self.blog_index_page, self.author_1)
+        self.test_image = Image.objects.get(
+            title=self.test_image_filename
+        )
+        self.blog_1.feed_image = self.test_image
+        self.blog_1.save()
+        self.tag_results = TagResultsFactory.build()
+        self.home_page.add_child(
+            instance=self.tag_results
+        )
+
+    def test_get_context(self):
+
+        self.blog_index_page, self.blog_2 = create_blog_post(
+            self.blog_index_page, self.author_1)
+        self.blog_2.tags.add('test-tag')
+        self.blog_2.save()
+        request = RequestFactory().get(
+            "/test?tag={}".format('test-tag'))
+        context = self.tag_results.get_context(request)
+        self.assertIn('result_count', context)
+        self.assertIn('blog', context)
+        blogs = context['blog']
+        self.assertEqual(self.blog_2.pk, blogs[0].pk)
+        # Test strands as tags
+        self.strand_1 = StrandPageFactory.build()
+        self.home_page.add_child(
+            instance=self.strand_1
+        )
+        self.blog_1.strands.add(self.strand_1)
+        self.blog_1.save()
+        request = RequestFactory().get(
+            "/test?tag={}".format(self.strand_1.title))
+        context = self.tag_results.get_context(request)
+        blogs = context['blog']
+        self.assertEqual(self.blog_1.pk, blogs[0].pk)
 
 
 """ Block function tests """

@@ -817,8 +817,8 @@ Event.promote_panels = Page.promote_panels + [
 
 class TagResults(RoutablePageMixin, Page):
 
-    @route(r'^$')
-    def results(self, request):
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request)
         context = {
             'blog': None,
             'events': None,
@@ -833,8 +833,7 @@ class TagResults(RoutablePageMixin, Page):
             tag = request.GET['tag']
         else:
             context['result_count'] = 0
-            return render(request, self.get_template(request),
-                          context)
+            return context
 
         # Check if we have a strand, and if so, get that strand
         # page's children
@@ -867,9 +866,12 @@ class TagResults(RoutablePageMixin, Page):
         context['result_count'] = (
             blog.count() + events.count() + news.count() + pages.count()
         )
+        return context
 
-        return render(request, self.get_template(request),
-                      context)
+    @route(r'^$')
+    def results(self, request):
+        context = self.get_context(request)
+        return render(request, self.get_template(request), context)
 
 
 IndexPage.content_panels = [
