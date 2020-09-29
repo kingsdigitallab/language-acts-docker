@@ -332,3 +332,4 @@ language_acts/media/
 !.envs/.local/
 # api keys etc. for local django
 config/settings/local_protected.py
+/coverage_annotations/
