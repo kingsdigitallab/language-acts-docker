@@ -73,17 +73,10 @@
         <p>{{ page.events_contextual_information|safe }}</p>
         {% endif %}
 
-        {% if events %}
-            {% include "cms/includes/event_index_page_children.html" with events=events %}
+        {% if past_events or upcoming_events %}
+            {% include "cms/includes/event_index_page_children.html" %}
         {% endif %}
 
-        {% if past_events %}
-            <header class="section-header">
-              <h3>Past</h3>
-            </header>
-
-            {% include "cms/includes/event_index_page_children.html" with events=past_events %}
-        {% endif %}
 
         {% elif request.GET.content == 'news' %}
 

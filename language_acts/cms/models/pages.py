@@ -110,10 +110,14 @@ class StrandPage(IndexPage, WithStreamField):
         if context and title:
             context['blog_posts'] = BlogPost.get_by_strand(
                 title)
-            context['events'] = Event.get_by_strand(
-                title)
-            context['past_events'] = Event.get_past_by_strand(
-                title)
+            events = Event.get_by_strand(title)
+            upcoming_events = list()
+            past_events = list()
+            if events.count() > 0:
+                upcoming_events, past_events = EventIndexPage.split_events(
+                    list(events))
+            context['upcoming_events'] = upcoming_events
+            context['past_events'] = past_events
             context['news_posts'] = NewsPost.get_by_strand(
                 title)
         return context
@@ -643,16 +647,24 @@ class EventIndexPage(RoutablePageMixin, Page, WithStreamField):
             else:
                 past_events.append(events[0])
         elif events and len(events) > 0:
-            split_point = 0
-            for event in events:
-                if event.is_past:
-                    break
-                else:
-                    split_point += 1
-            if split_point > 0:
-                # split events into upcoming and past
-                upcoming_events = events[:split_point]
-                past_events = events[split_point:]
+            if events[0].is_past:
+                # all events on this page are past
+                past_events = events
+            elif events[-1].is_past is False:
+                # all future events
+                upcoming_events = events
+            else:
+                # split between upcoming and past
+                split_point = 0
+                for event in events:
+                    if event.is_past:
+                        break
+                    else:
+                        split_point += 1
+                if split_point > 0:
+                    # split events into upcoming and past
+                    upcoming_events = events[:split_point]
+                    past_events = events[split_point:]
         if len(upcoming_events) > 0:
             upcoming_events.reverse()
         return upcoming_events, past_events
@@ -664,17 +676,8 @@ class EventIndexPage(RoutablePageMixin, Page, WithStreamField):
         upcoming_events = list()
         past_events = list()
         if len(paginated_events.object_list) > 0:
-            events = list(paginated_events.object_list)
-            if events[0].is_past:
-                # all events on this page are past
-                past_events = events
-            elif events[-1].is_past is False:
-                # all future events
-                upcoming_events = events
-            else:
-                # split between upcoming and past
-                upcoming_events, past_events = EventIndexPage.split_events(
-                    events)
+            upcoming_events, past_events = EventIndexPage.split_events(
+                list(paginated_events.object_list))
         # If the current page of upcoming events is less than pagination
         # include past events
         return render(request, self.get_template(request),
