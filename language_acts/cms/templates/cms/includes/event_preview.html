@@ -1,9 +1,9 @@
 {% load cms_tags wagtailimages_tags wagtailcore_tags wagtailroutablepage_tags %}
-
-<div class="row events-block small-up-1 medium-up-2" 
-    data-equalizer="eventheight" 
+{% if upcoming_events %}
+<div class="row events-block small-up-1 medium-up-2"
+    data-equalizer="eventheight"
     data-equalize-by-row="true" data-equalize-on="medium">
-    {% for event in events.object_list %}
+    {% for event in upcoming_events %}
     <div class="column column-block">
         <div class="card event{% if event.is_past  %} past-event{% endif %}" data-equalizer-watch="eventheight">
             <div class="card-section">
@@ -16,7 +16,7 @@
                         <time datetime="{{ page.specific.date }}">
                         {{ event.date_from|date:'j M Y' }}
                         {% if event.date_to %} - {{ event.date_to|date:'j M Y' }}{% endif %}<br>
-                        {{ event.time|date:'H:i' }} 
+                        {{ event.time|date:'H:i' }}
                         {% if event.time_end %} - {{ event.time_end|date:'H:i' }}{% endif %}
                         </time>
                     </div>
@@ -40,3 +40,49 @@
     </div>
     {% endfor %}
 </div>
+{% endif %}
+{% if upcoming_events and past_events %}
+<h2>Past Events</h2>
+{% endif %}
+{% if past_events %}
+<div class="row events-block small-up-1 medium-up-2"
+    data-equalizer="eventheight"
+    data-equalize-by-row="true" data-equalize-on="medium">
+    {% for event in past_events %}
+    <div class="column column-block">
+        <div class="card event{% if event.is_past  %} past-event{% endif %}" data-equalizer-watch="eventheight">
+            <div class="card-section">
+                <h3 class="title"><a href="{% pageurl event %}">{{ event.title }}</a></h3>
+                <div class="row collapse meta info">
+                    <div class="small-1 columns">
+                        <i class="fa fa-clock-o"></i>
+                    </div>
+                    <div class="small-11 columns">
+                        <time datetime="{{ page.specific.date }}">
+                        {{ event.date_from|date:'j M Y' }}
+                        {% if event.date_to %} - {{ event.date_to|date:'j M Y' }}{% endif %}<br>
+                        {{ event.time|date:'H:i' }}
+                        {% if event.time_end %} - {{ event.time_end|date:'H:i' }}{% endif %}
+                        </time>
+                    </div>
+                </div>
+                <div class="row collapse meta info bottom-margin">
+                    <div class="small-1 columns">
+                        <i class="fa fa-map-marker"></i>
+                    </div>
+                    <div class="small-11 columns">
+                        {{ event.location }}
+                    </div>
+                </div>
+                {% if event.search_description %}
+                <p>{{ event.search_description|safe }}</p>
+                {% endif %}
+            </div>
+        {% if self.slug != 'home' %}
+        {% include "cms/includes/tags.html" with obj=event %}
+        {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

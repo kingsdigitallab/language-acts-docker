@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import logging
+import typing
 from datetime import date
 from cms.search import RecordPageSearch
 # from django.contrib.auth.models import User
@@ -630,13 +631,57 @@ class EventIndexPage(RoutablePageMixin, Page, WithStreamField):
         events = Event.objects.live().filter().order_by('-date_from')
         return events
 
+    @classmethod
+    def split_events(cls, events: typing.List):
+        """Split the events into future and past
+        reverse sort future events"""
+        upcoming_events = list()
+        past_events = list()
+        if events and len(events) == 0:
+            if events[0].is_past():
+                upcoming_events.append(events[0])
+            else:
+                past_events.append(events[0])
+        elif events and len(events) > 0:
+            split_point = 0
+            for event in events:
+                if event.is_past:
+                    break
+                else:
+                    split_point += 1
+            if split_point > 0:
+                # split events into upcoming and past
+                upcoming_events = events[:split_point]
+                past_events = events[split_point:]
+        if len(upcoming_events) > 0:
+            upcoming_events.reverse()
+        return upcoming_events, past_events
+
     @route(r'^$')
     def all_events(self, request):
-        events = self.events
-
+        # len(items.object_list)
+        paginated_events = _paginate(request, self.events)
+        upcoming_events = list()
+        past_events = list()
+        if len(paginated_events.object_list) > 0:
+            events = list(paginated_events.object_list)
+            if events[0].is_past:
+                # all events on this page are past
+                past_events = events
+            elif events[-1].is_past is False:
+                # all future events
+                upcoming_events = events
+            else:
+                # split between upcoming and past
+                upcoming_events, past_events = EventIndexPage.split_events(
+                    events)
+        # If the current page of upcoming events is less than pagination
+        # include past events
         return render(request, self.get_template(request),
-                      {'self': self, 'paginated_events': _paginate(
-                          request, events)})
+                      {'self': self, 'paginated_events': paginated_events,
+                       'upcoming_events': upcoming_events,
+                       'past_events': past_events
+                       })
 
     @route(r'^tag/(?P<tag>[\w\- ]+)/$')
     def tag(self, request, tag=None):

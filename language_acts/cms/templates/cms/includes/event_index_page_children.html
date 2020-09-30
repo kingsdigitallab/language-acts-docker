@@ -1,10 +1,10 @@
-{% if events %}
+{% if upcoming_events or past_events %}
 {% load cms_tags wagtailimages_tags wagtailcore_tags wagtailroutablepage_tags %}
 
 {% block eventitem %}
 {% include "cms/includes/event_preview.html" %}
 {% endblock %}
-    {% include "cms/includes/pagination.html" with pages=events %}
+    {% include "cms/includes/pagination.html" with pages=paginated_events %}
 {% else %}
 <p>There are no events planned for the immediate future.</p>
 {% endif %}
