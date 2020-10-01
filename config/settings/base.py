@@ -346,6 +346,17 @@ WAGTAILSEARCH_BACKENDS = {
     }
 }
 
+WAGTAILADMIN_RICH_TEXT_EDITORS = {
+    'default': {
+        'WIDGET': 'wagtail.admin.rich_text.DraftailRichTextArea',
+    },
+    'carousel': {
+        'WIDGET': 'wagtail.admin.rich_text.DraftailRichTextArea',
+        'OPTIONS': {
+            'features': ['bold', 'italic', 'underline']
+        }
+    }
+}
 
 WAGTAIL_FRONTEND_LOGIN_TEMPLATE = 'language_acts/cms/login.html'
 WAGTAILSEARCH_RESULTS_TEMPLATE = 'cms/search_results_page.html'
