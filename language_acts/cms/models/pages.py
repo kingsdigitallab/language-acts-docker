@@ -965,8 +965,9 @@ class BaseSlideBlock(blocks.StructBlock):
 
 class SlideBlock(BaseSlideBlock):
     """A basic slide to be used in a carousel block"""
-    title = blocks.CharBlock(required=True)
-    heading = blocks.CharBlock(
+    title = blocks.RichTextBlock(editor='carousel', required=True)
+    heading = blocks.RichTextBlock(
+        editor='carousel',
         required=False,
         default='',
         label='Section heading'
@@ -998,7 +999,8 @@ class BlogSlideBlock(BaseSlideBlock):
     use_latest overrides selection to show most recent post"""
     page = blocks.PageChooserBlock(required=False, page_type=BlogPost)
     caption = blocks.RichTextBlock(editor='carousel', required=False)
-    heading = blocks.CharBlock(required=False, default='Blog')
+    heading = blocks.RichTextBlock(
+        editor='carousel', required=False, default='Blog')
     css_class = 'blog-section'
 
     def get_context(self, value, parent_context=None):
@@ -1018,7 +1020,8 @@ class NewsSlideBlock(BaseSlideBlock):
     use_latest overrides selection to show most recent post"""
     page = blocks.PageChooserBlock(required=False, page_type=NewsPost)
     caption = blocks.RichTextBlock(editor='carousel', required=False)
-    heading = blocks.CharBlock(required=False, default='News')
+    heading = blocks.RichTextBlock(
+        editor='carousel', required=False, default='News')
     css_class = 'news-section'
 
     def get_context(self, value, parent_context=None):
@@ -1043,7 +1046,8 @@ class EventSlideBlock(BaseSlideBlock):
     if use_upcoming template will show most_recent upcoming event """
     page = blocks.PageChooserBlock(required=True, page_type=Event)
     caption = blocks.RichTextBlock(editor='carousel', required=False)
-    heading = blocks.CharBlock(required=False, default='Event')
+    heading = blocks.RichTextBlock(
+        editor='carousel', required=False, default='Event')
     css_class = 'events-section'
 
     def get_context(self, value, parent_context=None):
