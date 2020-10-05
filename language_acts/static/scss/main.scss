@@ -250,7 +250,9 @@ time {
 }
 
 .tags {
+    background: rgba($dark-blue, .035);
     margin: 0;
+    padding: rem-calc(12);
 
     .label {
         background: scale-color($light-blue, $lightness: -60%);

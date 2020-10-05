@@ -1,6 +1,7 @@
 {% load cms_tags wagtailcore_tags %}
 
-<div class="tags" data-equalizer-watch="tags-box">
+{% if obj.strands.all or obj.tags.all %}
+<div class="tags">
     {% if obj.strands.all %}
     {% for strand in obj.strands.all %}
     <span class="label secondary"><a href="/tagged-pages/?tag={{ strand.title|urlencode }}" class="strand">{{ strand.title }}</a></span>
@@ -13,3 +14,4 @@
     {% endfor %}
     {% endif %}
 </div>
+{% endif %}
