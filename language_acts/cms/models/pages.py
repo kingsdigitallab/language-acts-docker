@@ -641,11 +641,11 @@ class EventIndexPage(RoutablePageMixin, Page, WithStreamField):
         reverse sort future events"""
         upcoming_events = list()
         past_events = list()
-        if events and len(events) == 0:
-            if events[0].is_past():
-                upcoming_events.append(events[0])
-            else:
+        if events and len(events) == 1:
+            if events[0].is_past:
                 past_events.append(events[0])
+            else:
+                upcoming_events.append(events[0])
         elif events and len(events) > 0:
             if events[0].is_past:
                 # all events on this page are past

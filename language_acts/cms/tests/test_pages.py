@@ -15,7 +15,8 @@ from cms.tests.factories import (
     NewsIndexPageFactory, NewsPostFactory, StrandPageFactory,
     EventIndexPageFactory, PastEventIndexPageFactory,
     EventFactory, UserFactory, HomePageFactory, TagResultsFactory,
-    RecordIndexPageFactory, RecordPageFactory, RecordEntryFactory
+    RecordIndexPageFactory, RecordPageFactory,
+    RecordEntryFactory, IndexPageFactory, RichTextPageFactory
 )
 from cms.views.search import SearchView
 from django.core.paginator import Paginator
@@ -173,12 +174,65 @@ class TestHomePage(WagtailPageTests):
 class TestIndexPage(WagtailPageTests):
     fixtures = ['tests.json']
 
+    def setUp(self):
+        super().setUp()
+        self.home_page, created = Page.objects.get_or_create(id=2)
+        self.strand_1 = StrandPageFactory.build()
+        self.strand_2 = StrandPageFactory.build()
+        self.home_page.add_child(
+            instance=self.strand_1
+        )
+        self.home_page.add_child(
+            instance=self.strand_2
+        )
+        self.index_1 = IndexPageFactory.build()
+        self.index_2 = IndexPageFactory.build()
+        self.strand_1.add_child(
+            instance=self.index_1
+        )
+        self.strand_1.add_child(
+            instance=self.index_2
+        )
+
+    def test_parent_strands(self):
+        # index_1 should have strand_1 as parent
+        self.assertEqual(self.index_1.parent_strands.count(), 1)
+
+    def test_add_parent_strand_content_to_context(self):
+        test_context = {}
+        test_context = self.index_1.add_parent_strand_content_to_context(
+            test_context)
+        self.assertIn('strand', test_context)
+        self.assertEqual(self.strand_1.pk, test_context['strand'].pk)
+
     def test_subpage_types(self):
         self.assertAllowedSubpageTypes(IndexPage, {IndexPage, RichTextPage})
 
 
 class TestRichTextPage(WagtailPageTests):
     fixtures = ['tests.json']
+
+    def setUp(self):
+        super().setUp()
+        self.home_page, created = Page.objects.get_or_create(id=2)
+        self.strand_1 = StrandPageFactory.build()
+        self.strand_2 = StrandPageFactory.build()
+        self.home_page.add_child(
+            instance=self.strand_1
+        )
+        self.home_page.add_child(
+            instance=self.strand_2
+        )
+        self.rich_1 = RichTextPageFactory.build()
+        self.strand_1.add_child(
+            instance=self.rich_1
+        )
+
+    def test_get_context(self):
+        test_context = self.rich_1.get_context(
+            RequestFactory().get('/test'))
+        self.assertIn('strand', test_context)
+        self.assertEqual(self.strand_1.pk, test_context['strand'].pk)
 
     def test_subpage_types(self):
         self.assertAllowedSubpageTypes(RichTextPage, {})
@@ -610,6 +664,39 @@ class TestEventIndexPage(TestCase):
         self.assertEqual(events.count(), 2)
         self.assertEqual(events[0].title, 'Event Today')
 
+    def test_split_events(self):
+        past_event = EventFactory.build()
+        self.event_index.add_child(
+            instance=past_event
+        )
+        # single event, make sure it goes to correct list
+        upcoming_events, past_events = EventIndexPage.split_events(
+            [past_event])
+        self.assertEqual(len(past_events), 1)
+        self.assertEqual(len(upcoming_events), 0)
+        upcoming_events, past_events = EventIndexPage.split_events(
+            [self.event_2])
+        self.assertEqual(len(past_events), 0)
+        self.assertEqual(len(upcoming_events), 1)
+
+        # Default to all past
+        past_event_2 = EventFactory.build()
+        self.event_index.add_child(
+            instance=past_event_2
+        )
+        upcoming_events, past_events = EventIndexPage.split_events(
+            [past_event, past_event_2])
+        self.assertEqual(len(past_events), 2)
+        self.assertEqual(len(upcoming_events), 0)
+
+        # two events today, all upcoming
+        upcoming_events, past_events = EventIndexPage.split_events(
+            [self.event_2, EventFactory.build(
+                title='Event Today 2',
+                date_from=date.today())])
+        self.assertEqual(len(past_events), 0)
+        self.assertEqual(len(upcoming_events), 2)
+
     def test_all_events(self):
         response = self.client.get(
             self.event_index.url
@@ -623,6 +710,7 @@ class TestEventIndexPage(TestCase):
         self.event_2.tags.add(test_tag_label)
         self.event_2.save()
         # Bad tag, we should get nothing
+        self.event_index.tag(RequestFactory().get('/test'))
         response = self.client.get(
             self.event_index.url
             + self.event_index.reverse_subpage(
@@ -751,6 +839,7 @@ class TestEvent(TestCase):
         self.assertIn(self.event_2, events)
 
     def test_get_by_tag(self):
+        self.event_index.tag(RequestFactory().get('/test'))
         test_tag_label = 'test_tag'
         self.event_2.tags.add(test_tag_label)
         self.event_2.save()
