@@ -250,35 +250,35 @@ time {
 }
 
 .tags {
-    background: rgba($dark-blue, .035);
     margin: 0;
-    padding: rem-calc(12);
 
     .label {
         background: scale-color($light-blue, $lightness: -60%);
         border-radius: 2px;
+        display: inline-block;
         line-height: rem-calc(18);
         margin-bottom: rem-calc(3px);
+        padding: 0;
         white-space: normal;
 
         &.secondary {
-            background: scale-color($secondary-color, $lightness: -50%);
+            background: $secondary-color;
 
-            &:hover {
-                background: rgba($dark-blue, .55);
+            a {
+                color: $black;
             }
-        }
-
-        &:hover {
-            background: rgba($dark-blue, .25);
         }
 
         a {
             color: $white;
+            display: block;
             font-weight: normal;
+            padding: rem-calc(5) rem-calc(12);
 
             &:hover {
+                background: scale-color($dark-blue, $lightness: 70%);
                 border-bottom: 0;
+                color: $black;
             }
         }
     }
@@ -298,15 +298,12 @@ time {
         font-size: 3rem;
         padding-bottom: .875rem;
 
-        &:hover {
-            background: rgba($dark-blue, .25);
-        }
-
         a {
             font-weight: normal;
 
             &:hover {
                 border-bottom: 0;
+                color: $black;
             }
         }
     }
