@@ -16,7 +16,9 @@
         </a>
         {% page_in_submenu self page as in_submenu %}
         {% if page.get_children.live.exists %}
-        <span class="toggler {% if in_submenu %}open{% else %}close{% endif %} added"></span>
+        <span class="button secondary toggler {% if in_submenu %}open{% else %}close{% endif %} added">
+            <span class="show-for-sr">Expand/Collapse submenu</span>
+        </span>
         {% endif %}
 
         <ul class="vertical menu nested {% if in_submenu %}show{% else %}hide{% endif %} content">
