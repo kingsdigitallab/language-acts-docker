@@ -105,14 +105,12 @@ button i,
 
     &.close {
         &::after {
-            // content: "\f055";
             content: "\f0d7";
         }
     }
 
     &.open {
         &::after {
-            // content: "\f056";
             content: "\f0da";
         }
     }
@@ -193,7 +191,6 @@ time {
     height: 0;
     overflow: hidden;
     clear: both;
-    // border: 1px solid scale-color($primary-color, $lightness: 50%);
 
     iframe {
         position: absolute;
@@ -255,11 +252,9 @@ time {
 .tags {
     background: rgba($dark-blue, .035);
     margin: 0;
-    // min-height: rem-calc(52);
     padding: rem-calc(12);
 
     .label {
-        // background: rgba($dark-blue, .1);
         background: scale-color($light-blue, $lightness: -60%);
         border-radius: 2px;
         line-height: rem-calc(18);
@@ -279,7 +274,6 @@ time {
         }
 
         a {
-            // color: scale-color($dark-gray, $lightness: -30%);
             color: $white;
             font-weight: normal;
 
@@ -414,11 +408,7 @@ h4, h5, h6 {
         font-weight: 400 !important;
 
         &:hover {
-            // background: $white;
-            // background: $turquoise;
             background: $light-gray;
-            // border-bottom: 1px solid $white !important;
-            // color: $white;
         }
 
         &.active {
@@ -435,7 +425,6 @@ h4, h5, h6 {
         }
 
         &.top-level {
-            // background: $light-gray;
             background: rgba($dark-blue, .05);
         }
     }
@@ -498,9 +487,6 @@ h4, h5, h6 {
 .blog-section,
 .events-section,
 .news-section {
-    // background: $light-gray;
-    // color: black;
-    // padding: .125rem .5rem;
     &::before {
         font-family: "FontAwesome";
         font-size: rem-calc(16);
@@ -546,12 +532,6 @@ section.main {
             font-weight: normal;
         }
     }
-
-    // h1,
-    // h2,
-    // h3 {
-    //     font-weight: 700;
-    // }
 
     h1 {
         color: scale-color($bright-blue, $lightness:-50%);
@@ -837,8 +817,6 @@ article {
 // Search box
 
 .search-box {
-    // margin-top: rem-calc(12);
-
     input {
         border: none;
         -moz-box-shadow: inset rem-calc(0 0 2) $primary-color;
