@@ -834,6 +834,9 @@ class TestEvent(TestCase):
     def test_get_by_strand(self):
         self.event_2.strands.add(self.strand_1)
         self.event_2.save()
+        # Handle bad strand name
+        events = Event.get_by_strand(None)
+        self.assertEqual(events.count(), 0)
         events = Event.get_by_strand(self.strand_title)
         self.assertEqual(events.count(), 1)
         self.assertIn(self.event_2, events)
@@ -843,12 +846,19 @@ class TestEvent(TestCase):
         test_tag_label = 'test_tag'
         self.event_2.tags.add(test_tag_label)
         self.event_2.save()
+        events = Event.get_by_tag(None)
+        self.assertEqual(events.count(), 0)
         events = Event.get_by_tag(test_tag_label)
         self.assertEqual(events.count(), 1)
 
     def test_get_past_by_strand(self):
         self.event_1.strands.add(self.strand_1)
         self.event_1.save()
+        # Handle bad strand name
+        events = Event.get_by_strand(None)
+        self.assertEqual(events.count(), 0)
+        events = Event.get_by_strand('Nope')
+        self.assertEqual(events.count(), 0)
         events = Event.get_past_by_strand(self.strand_title)
         self.assertEqual(events.count(), 1)
         self.assertIn(self.event_1, events)
