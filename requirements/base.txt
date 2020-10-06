@@ -17,7 +17,6 @@ django-redis==4.11.0  # https://github.com/niwinz/django-redis
 django-taggit==1.2.0  # EH
 django-haystack
 django-libsass
-django-model-utils
 django-modelcluster
 # Django REST Framework
 djangorestframework==3.11.0  # https://github.com/encode/django-rest-framework
