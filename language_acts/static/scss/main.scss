@@ -69,7 +69,7 @@ button i,
 
 .ninety {
     float: left;
-    width: 90%;
+    width: 80%;
 }
 
 .toggler {
@@ -84,32 +84,34 @@ button i,
         border-bottom: 0;
         float: left;
         height: rem-calc(40);
+        margin: 0;
         padding-top: rem-calc(10);
-        text-align: right;
-        width: 10%;
+        text-align: center;
+        width: 20%;
+    }
+
+    &.button {
+        background-color: $turquoise;
     }
 
     &.close,
     &.open {
         &::after {
-            color: $secondary-color;
+            color: $white;
             font-family: "FontAwesome";
-            font-size: .875em;
-            padding-left: rem-calc(4);
-            position: absolute;
-            right: 0;
+            font-size: 1.25em;
         }
     }
 
     &.close {
         &::after {
-            content: "\f055";
+            content: "\f0d7";
         }
     }
 
     &.open {
         &::after {
-            content: "\f056";
+            content: "\f0da";
         }
     }
 }
@@ -189,7 +191,6 @@ time {
     height: 0;
     overflow: hidden;
     clear: both;
-    // border: 1px solid scale-color($primary-color, $lightness: 50%);
 
     iframe {
         position: absolute;
@@ -251,36 +252,35 @@ time {
 .tags {
     background: rgba($dark-blue, .035);
     margin: 0;
-    // min-height: rem-calc(52);
     padding: rem-calc(12);
 
     .label {
-        // background: rgba($dark-blue, .1);
         background: scale-color($light-blue, $lightness: -60%);
         border-radius: 2px;
+        display: inline-block;
         line-height: rem-calc(18);
         margin-bottom: rem-calc(3px);
+        padding: 0;
         white-space: normal;
 
         &.secondary {
-            background: scale-color($secondary-color, $lightness: -50%);
+            background: $secondary-color;
 
-            &:hover {
-                background: rgba($dark-blue, .55);
+            a {
+                color: $black;
             }
         }
 
-        &:hover {
-            background: rgba($dark-blue, .25);
-        }
-
         a {
-            // color: scale-color($dark-gray, $lightness: -30%);
             color: $white;
+            display: block;
             font-weight: normal;
+            padding: rem-calc(5) rem-calc(12);
 
             &:hover {
+                background: scale-color($dark-blue, $lightness: 70%);
                 border-bottom: 0;
+                color: $black;
             }
         }
     }
@@ -300,15 +300,12 @@ time {
         font-size: 3rem;
         padding-bottom: .875rem;
 
-        &:hover {
-            background: rgba($dark-blue, .25);
-        }
-
         a {
             font-weight: normal;
 
             &:hover {
                 border-bottom: 0;
+                color: $black;
             }
         }
     }
@@ -410,8 +407,7 @@ h4, h5, h6 {
         font-weight: 400 !important;
 
         &:hover {
-            background: $white;
-            border-bottom: 1px solid $white !important;
+            background: $light-gray;
         }
 
         &.active {
@@ -428,7 +424,6 @@ h4, h5, h6 {
         }
 
         &.top-level {
-            // background: $light-gray;
             background: rgba($dark-blue, .05);
         }
     }
@@ -491,9 +486,6 @@ h4, h5, h6 {
 .blog-section,
 .events-section,
 .news-section {
-    // background: $light-gray;
-    // color: black;
-    // padding: .125rem .5rem;
     &::before {
         font-family: "FontAwesome";
         font-size: rem-calc(16);
@@ -539,12 +531,6 @@ section.main {
             font-weight: normal;
         }
     }
-
-    // h1,
-    // h2,
-    // h3 {
-    //     font-weight: 700;
-    // }
 
     h1 {
         color: scale-color($bright-blue, $lightness:-50%);
@@ -830,8 +816,6 @@ article {
 // Search box
 
 .search-box {
-    // margin-top: rem-calc(12);
-
     input {
         border: none;
         -moz-box-shadow: inset rem-calc(0 0 2) $primary-color;
