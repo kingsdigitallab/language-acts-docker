@@ -16,7 +16,6 @@ django-compressor==2.4  # https://github.com/django-compressor/django-compressor
 django-redis==4.11.0  # https://github.com/niwinz/django-redis
 django-taggit==1.2.0  # EH
 django-libsass==0.8
-django-model-utils==4.0.0
 django-modelcluster==5.0.2
 # Django REST Framework
 djangorestframework==3.11.0  # https://github.com/encode/django-rest-framework
