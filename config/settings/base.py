@@ -6,18 +6,10 @@ import logging
 import os
 
 import environ
-# from django_auth_ldap.config import LDAPGroupQuery
-# from kdl_ldap.settings import *  # noqa
 from language_acts.twitterhut.settings import *  # noqa
 
 LOGIN_URL = '/wagtail/login/'
 
-# AUTH_LDAP_REQUIRE_GROUP = (
-#     (
-#         LDAPGroupQuery('cn=kdl-staff,' + LDAP_BASE_OU)
-#         | LDAPGroupQuery('cn=owri,' + LDAP_BASE_OU)
-#     )
-# )
 
 ROOT_DIR = (
     environ.Path(__file__) - 3
@@ -119,7 +111,6 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    # 'django_auth_ldap.backend.LDAPBackend',
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 # AUTH_USER_MODEL = "users.User"
