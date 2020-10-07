@@ -9,7 +9,7 @@ entryPoints:
 http:
   routers:
     web-router:
-      rule: "Host(`language_acts.info`)"
+      rule: "Host(`languageacts3-stg.kdl.kcl.ac.uk`)"
       entryPoints:
         - web
       middlewares:
@@ -17,7 +17,7 @@ http:
       service: django
 
     web-media-router:
-      rule: "Host(`language_acts.info`) && PathPrefix(`/media/`)"
+      rule: "Host(`languageacts3-stg.kdl.kcl.ac.uk`) && PathPrefix(`/media/`)"
       entryPoints:
         - web
       middlewares:
