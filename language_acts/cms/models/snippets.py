@@ -1,10 +1,10 @@
 from django.db import models
 from wagtail.snippets.models import register_snippet
 from wagtail.search import index
-from wagtail.admin.edit_handlers import FieldPanel
-# from wagtail.core.models import Orderable
-# from wagtail.snippets.edit_handlers import SnippetChooserPanel
-# from modelcluster.fields import ParentalKey
+from wagtail.admin.edit_handlers import FieldPanel, InlinePanel
+from wagtail.core.models import Orderable, Page
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
+from modelcluster.fields import ParentalKey
 
 
 @register_snippet
@@ -51,8 +51,15 @@ class POSLabel(index.Indexed, models.Model):
         return self.name
 
 
+"""
+
+Glossary Terms and Bibliography Items
+
+"""
+
+
 @register_snippet
-class GlossaryItem(models.Model):
+class GlossaryTerm(models.Model):
     term = models.CharField(max_length=256)
     description = models.TextField()
 
@@ -70,7 +77,7 @@ class GlossaryItem(models.Model):
 
 
 @register_snippet
-class BibliographyItem(models.Model):
+class BibliographyEntry(models.Model):
     author = models.CharField(max_length=256)
     title = models.CharField(max_length=256)
     publisher = models.CharField(max_length=256)
@@ -87,3 +94,45 @@ class BibliographyItem(models.Model):
 
     def __str__(self):
         return "{}. {}".format(self.author, self.title)
+
+
+class GlossaryTermItem(Orderable, models.Model):
+    page = ParentalKey('cms.GlossaryPage', on_delete=models.CASCADE,
+                       related_name='glossary_terms')
+    term = models.ForeignKey(
+        'cms.GlossaryTerm', on_delete=models.CASCADE, related_name='+')
+
+    class Meta:
+        verbose_name = "Glossary item"
+        verbose_name_plural = "Glossary items"
+
+    panels = [
+        SnippetChooserPanel('term'),
+    ]
+
+
+class BibliographyEntryItem(Orderable, models.Model):
+    page = ParentalKey('cms.BibliographyPage', on_delete=models.CASCADE,
+                       related_name='bibliography_entries')
+    entry = models.ForeignKey('cms.BibliographyEntry',
+                              on_delete=models.CASCADE, related_name='+')
+
+    class Meta:
+        verbose_name = 'Bibliography item'
+        verbose_name_plural = 'Bibliography items'
+
+    panels = [
+        SnippetChooserPanel('entry')
+    ]
+
+
+class BibliographyPage(Page):
+    content_panels = Page.content_panels + [
+        InlinePanel('bibliography_entries', 'Entries')
+    ]
+
+
+class GlossaryPage(Page):
+    content_panels = Page.content_panels + [
+        InlinePanel('glossary_terms', label="Terms"),
+    ]
