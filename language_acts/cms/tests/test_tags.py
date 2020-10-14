@@ -7,6 +7,9 @@ from cms.tests.factories import (
     BlogAuthorFactory, HomePageFactory, EventFactory, EventIndexPageFactory,
     NewsIndexPageFactory, NewsPostFactory
 )
+from cms.models.snippets import (
+    GlossaryTerm
+)
 from django.test import RequestFactory, TestCase
 from wagtail.core.models import Page
 from datetime import date
@@ -257,3 +260,20 @@ class TestShowChildrenInMenu(CMSTagsTestCase):
         # children for blogs shouldn't be displayed
         self.assertFalse(tag_dict['show_children'])
         self.assertTemplateUsed('cms/tags/show_children_show_in_menus.html')
+
+
+class AddReferencesTestCase(TestCase):
+    def test_add_references(self):
+        term = GlossaryTerm(
+            term='term', description='term description'
+        )
+        term.save()
+        # nothing should be found
+        value = cms_tags.add_references("not here")
+        self.assertTrue(value, "not here")
+        # term should be found here
+        value = cms_tags.add_references("term here")
+        self.assertTrue(value,
+                        '<a title="term description" href="#">term</a> here')
+
+        # todo add bib test when ready

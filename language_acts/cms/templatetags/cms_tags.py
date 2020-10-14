@@ -4,6 +4,9 @@ from cms.models.pages import (
     BlogPost, Event, NewsPost, HomePage, BlogIndexPage,
     NewsIndexPage, EventIndexPage
 )
+from cms.models.snippets import (
+    GlossaryTerm
+)
 from django import template
 from django.conf import settings
 from wagtail.core.models import Page
@@ -223,3 +226,21 @@ def get_toggler_status(context, page):
         except TypeError:
             pass
     return False
+
+
+@register.filter
+def add_references(value):
+    """ Add links from glossary terms and bibliography
+    May be split to only add one type later if necessary"""
+    # add glossary links
+    for term in GlossaryTerm.objects.all():
+        if term.term in value:
+            value = value.replace(
+                term.term,
+                "<a title=\"{}\" href=\"{}\">{}</a>".format(
+                    term.description, '#', term.term
+                )
+            )
+    # todo bibliography refs
+    # for entry in BibliographyEntry.objects.all():
+    return value

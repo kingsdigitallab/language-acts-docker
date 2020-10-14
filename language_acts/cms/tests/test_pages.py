@@ -1,4 +1,5 @@
 # BlogPost,
+import PIL
 from datetime import date
 from typing import Union, Optional
 from unittest.mock import MagicMock, create_autospec, patch
@@ -31,7 +32,8 @@ from django.core.files import File
 from wagtail.images.models import Image
 from django.core.files.storage import default_storage
 from wagtail.tests.utils.form_data import streamfield, nested_form_data
-import PIL
+from cms.models.snippets import (BibliographyPage, GlossaryPage)
+
 
 """ Helper functions to make trees of wagtail objects for tests  """
 
@@ -167,7 +169,9 @@ class TestHomePage(WagtailPageTests):
                 PastEventIndexPage,
                 RichTextPage,
                 StrandPage,
-                TagResults
+                TagResults,
+                BibliographyPage,
+                GlossaryPage
             })
 
 

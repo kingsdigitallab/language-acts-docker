@@ -1,11 +1,11 @@
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags cms_tags %}
 
 <div class="page-content">
   {% for block in blocks %}
   {% if block.block_type == 'text' %}
   {{ block.value|richtext }}
   {% elif block.block_type == 'html' %}
-  {{ block.value.bound_blocks.html.render }}
+  {{ block.value.bound_blocks.html.render|add_references }}
   {% endif %}
   {% endfor %}
 </div>
