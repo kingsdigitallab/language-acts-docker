@@ -99,7 +99,7 @@ class BibliographyEntry(models.Model):
 class GlossaryTermItem(Orderable, models.Model):
     page = ParentalKey('cms.GlossaryPage', on_delete=models.CASCADE,
                        related_name='glossary_terms')
-    term = models.ForeignKey(
+    glossary_term = models.ForeignKey(
         'cms.GlossaryTerm', on_delete=models.CASCADE, related_name='+')
 
     class Meta:
@@ -107,8 +107,11 @@ class GlossaryTermItem(Orderable, models.Model):
         verbose_name_plural = "Glossary items"
 
     panels = [
-        SnippetChooserPanel('term'),
+        SnippetChooserPanel('glossary_term'),
     ]
+
+    def __str__(self):
+        return self.page.title + " -> " + self.glossary_term.term
 
 
 class BibliographyEntryItem(Orderable, models.Model):
@@ -124,6 +127,9 @@ class BibliographyEntryItem(Orderable, models.Model):
     panels = [
         SnippetChooserPanel('entry')
     ]
+
+    def __str__(self):
+        return self.page.title + " -> " + self.entry.title
 
 
 class BibliographyPage(Page):
