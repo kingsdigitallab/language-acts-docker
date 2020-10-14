@@ -1166,7 +1166,7 @@ class HomePage(Page):
     subpage_types = [
         'BlogIndexPage', 'EventIndexPage', 'IndexPage',
         'NewsIndexPage', 'PastEventIndexPage', 'RichTextPage',
-        'StrandPage', 'TagResults'
+        'StrandPage', 'TagResults', 'BibliographyPage', 'GlossaryPage'
     ]
 
 

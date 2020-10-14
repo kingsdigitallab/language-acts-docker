@@ -1,10 +1,10 @@
 from django.db import models
-from wagtail.snippets.models import register_snippet
-from wagtail.search import index
+from modelcluster.fields import ParentalKey
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel
 from wagtail.core.models import Orderable, Page
+from wagtail.search import index
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
-from modelcluster.fields import ParentalKey
+from wagtail.snippets.models import register_snippet
 
 
 @register_snippet
@@ -81,16 +81,18 @@ class BibliographyEntry(models.Model):
     author = models.CharField(max_length=256)
     title = models.CharField(max_length=256)
     publisher = models.CharField(max_length=256)
+    reference = models.CharField(max_length=256, blank=True)
 
     panels = [
         FieldPanel('author'),
         FieldPanel('title'),
         FieldPanel('publisher'),
+        FieldPanel('reference'),
     ]
 
     class Meta:
-        verbose_name = "Glossary term"
-        verbose_name_plural = "Glossary terms"
+        verbose_name = "Bibliography entry"
+        verbose_name_plural = "Bibliography entries"
 
     def __str__(self):
         return "{}. {}".format(self.author, self.title)
@@ -117,24 +119,25 @@ class GlossaryTermItem(Orderable, models.Model):
 class BibliographyEntryItem(Orderable, models.Model):
     page = ParentalKey('cms.BibliographyPage', on_delete=models.CASCADE,
                        related_name='bibliography_entries')
-    entry = models.ForeignKey('cms.BibliographyEntry',
-                              on_delete=models.CASCADE, related_name='+')
+    bibliography_entry = models.ForeignKey(
+        'cms.BibliographyEntry',
+        on_delete=models.CASCADE, related_name='+')
 
     class Meta:
         verbose_name = 'Bibliography item'
         verbose_name_plural = 'Bibliography items'
 
     panels = [
-        SnippetChooserPanel('entry')
+        SnippetChooserPanel('bibliography_entry')
     ]
 
     def __str__(self):
-        return self.page.title + " -> " + self.entry.title
+        return self.page.title + " -> " + self.bibliography_entry.title
 
 
 class BibliographyPage(Page):
     content_panels = Page.content_panels + [
-        InlinePanel('bibliography_entries', 'Entries')
+        InlinePanel('bibliography_entries', label='Entries')
     ]
 
 
