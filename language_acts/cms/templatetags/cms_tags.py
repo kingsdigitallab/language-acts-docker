@@ -98,7 +98,7 @@ def get_site_root(context):
 
     :rtype: `wagtail.core.models.Page`
     """
-    if hasattr(context['request'], 'site'):
+    if 'request' in context and hasattr(context['request'], 'site'):
         return context['request'].site.root_page
     else:
         return None

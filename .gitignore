@@ -333,3 +333,7 @@ language_acts/media/
 # api keys etc. for local django
 config/settings/local_protected.py
 /coverage_annotations/
+
+# postgres backups
+backups/
+backups/*
