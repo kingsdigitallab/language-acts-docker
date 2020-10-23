@@ -109,9 +109,10 @@ ANYMAIL = {
 # django-compressor
 # ------------------------------------------------------------------------------
 # https://django-compressor.readthedocs.io/en/latest/settings/#django.conf.settings.COMPRESS_ENABLED
-# COMPRESS_ENABLED = env.bool("COMPRESS_ENABLED", default=True)
+COMPRESS_ENABLED = False
+# env.bool("COMPRESS_ENABLED", default=True)
 # https://django-compressor.readthedocs.io/en/latest/settings/#django.conf.settings.COMPRESS_URL
-# COMPRESS_URL = STATIC_URL  # noqa F405
+COMPRESS_URL = STATIC_URL  # noqa F405
 
 # LOGGING
 # ------------------------------------------------------------------------------
