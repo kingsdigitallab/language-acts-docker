@@ -164,7 +164,8 @@ MIDDLEWARE = [
 # STATIC
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = \
+    "language_acts.storage.CompressedManifestStaticFilesStorage"
 
 STATIC_ROOT = str(ROOT_DIR("staticfiles"))
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-url
@@ -313,8 +314,6 @@ STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 # Django Compressor
 # http://django-compressor.readthedocs.org/en/latest/
 # -----------------------------------------------------------------------------
-
-COMPRESS_ENABLED = True
 
 COMPRESS_CSS_FILTERS = [
     # CSS minimizer

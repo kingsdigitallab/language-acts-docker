@@ -18,10 +18,12 @@ except ImportError:
     TWITTER_ACCESS_TOKEN = ''
     TWITTER_ACCESS_TOKEN_SECRET = ''
 
+COMPRESS_ENABLED = True
+
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = True
+DEBUG = False
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = env(
     "DJANGO_SECRET_KEY",
