@@ -110,12 +110,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='recordentrym2m',
             name='related_word',
-            field=models.ForeignKey(on_delete='models.CASCADE', related_name='+', to='cms.RecordEntry'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='+', to='cms.RecordEntry'),
         ),
         migrations.AlterField(
             model_name='recordentrywordtype',
             name='word_type',
-            field=models.ForeignKey(on_delete='models.CASCADE', related_name='+', to='cms.WordType'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='+', to='cms.WordType'),
         ),
         migrations.AlterField(
             model_name='recordpage',
