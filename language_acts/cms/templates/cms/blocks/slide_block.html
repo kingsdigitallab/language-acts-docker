@@ -1,4 +1,4 @@
-{% load cms_tags staticfiles wagtailcore_tags wagtailimages_tags  %}
+{% load cms_tags static wagtailcore_tags wagtailimages_tags  %}
 
 <li class="is-active orbit-slide">
     {% if image %}
@@ -35,8 +35,8 @@
             <i class="fa fa-clock-o"></i>
             <time datetime="{{ page.date }}">
                 {{ page.date_from|date:'j M Y' }}
-                {% if page.date_to %} - {{ page.date_to|date:'j M Y' }}{% endif %} / 
-                {{ page.time|date:'H:i' }} 
+                {% if page.date_to %} - {{ page.date_to|date:'j M Y' }}{% endif %} /
+                {{ page.time|date:'H:i' }}
                 {% if page.time_end %} - {{ page.time_end|date:'H:i' }}{% endif %}
             </time>
         </p>
