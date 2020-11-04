@@ -9,7 +9,8 @@ from cms.models.snippets import (
 )
 from django import template
 from django.conf import settings
-from wagtail.core.models import Page
+from wagtail.core.models import Page, Site
+
 
 register = template.Library()
 
@@ -99,7 +100,7 @@ def get_site_root(context):
     :rtype: `wagtail.core.models.Page`
     """
     if 'request' in context and hasattr(context['request'], 'site'):
-        return context['request'].site.root_page
+        return Site.find_for_request(context['request']).root_page
     else:
         return None
 
@@ -149,12 +150,12 @@ def main_menu(context, root, current_page=None):
     pages that have the show_in_menus setting on are returned."""
     if not root:
         root = current_page
-
+    # Added for wagtail 2.11
+    if 'request' in context:
+        root = Site.find_for_request(context['request']).root_page
     menu_pages = root.get_children().live().in_menu()
-
     root.active = (current_page.url == root.url
                    if current_page else False)
-
     for page in menu_pages:
         page.active = (current_page.url.startswith(page.url)
                        if current_page else False)
