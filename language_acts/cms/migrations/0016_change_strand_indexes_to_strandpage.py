@@ -1,37 +1,37 @@
 # -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
+from django.conf import settings
 
 from django.db import migrations, models
 from django.contrib.contenttypes.models import ContentType
 from cms.models import HomePage, IndexPage, StrandPage
-import modelcluster 
+import modelcluster
 import django.db.models.deletion
+
 
 def swap_types(apps, schema_editor):
     # Define our content types
     index_ct = ContentType.objects.get_for_model(IndexPage)
     strand_ct = ContentType.objects.get_for_model(StrandPage)
+    if settings.RUN_DATA_MIGRATIONS:
+        # Find the homepage and its indexpage children
+        homepage = HomePage.objects.first()
+        if homepage:
+            index_pages = homepage.get_children().filter(content_type=index_ct).exclude(title__icontains='about')
 
-    # Find the homepage and its indexpage children
-    homepage = HomePage.objects.first()
-    if homepage:
-        index_pages = homepage.get_children().filter(content_type=index_ct).exclude(title__icontains='about')
+            for p in index_pages.all():
+                children = p.get_children()
 
-        for p in index_pages.all():
-            children = p.get_children()
+                sp = StrandPage()
+                sp.title = p.title
+                sp.specific.body = p.specific.body
+                sp.slug = "strand_{}".format(p.slug)
 
-            sp = StrandPage()
-            sp.title = p.title
-            sp.specific.body = p.specific.body
-            sp.slug = "strand_{}".format(p.slug)
+                homepage.add_child(instance=sp)
 
-            homepage.add_child(instance=sp)
+                for c in children.all():
+                    c.move(sp, pos='last-child')
 
-            for c in children.all():
-                c.move(sp, pos='last-child')
-
-            p.delete()
+                p.delete()
 
 
 class Migration(migrations.Migration):

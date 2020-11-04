@@ -4,7 +4,6 @@ Base settings to build other settings files upon.
 
 import logging
 import os
-
 import environ
 from language_acts.twitterhut.settings import *  # noqa
 
@@ -367,3 +366,7 @@ ELASTICSEARCH_DSL = {"default": {"hosts": "elasticsearch:9200"}}
 # -----------------------------------------------------------------------------
 
 TWITTER_SCREEN_NAME = 'languageacts'
+
+# Run data migrations
+# False by default so that clean builds and tests won't fail
+RUN_DATA_MIGRATIONS = False

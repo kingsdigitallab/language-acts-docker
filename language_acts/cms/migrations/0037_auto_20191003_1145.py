@@ -3,6 +3,7 @@
 from django.db import migrations
 import modelcluster.fields
 from cms.models import RecordEntry, RecordPage
+from django.conf import settings
 
 
 class Migration(migrations.Migration):
@@ -12,26 +13,28 @@ class Migration(migrations.Migration):
     ]
 
     def fk_to_m2m(apps, schema_editor):
-        for entry in RecordEntry.objects.all():
-            if entry.pos:
-                entry.pos_multi.add(entry.pos)
+        if settings.RUN_DATA_MIGRATIONS:
+            for entry in RecordEntry.objects.all():
+                if entry.pos:
+                    entry.pos_multi.add(entry.pos)
 
-        for page in RecordPage.objects.all():
-            if page.latin_pos:
-                page.latin_pos_multi.add(page.latin_pos)
-    
+            for page in RecordPage.objects.all():
+                if page.latin_pos:
+                    page.latin_pos_multi.add(page.latin_pos)
+
 
     def m2m_to_fk(apps, schema_editor):
         # WARNING!!!
         # Since we're going from M2M to FK, we take the first one. We have no
         # way to be more specific than this.
-        for entry in RecordEntry.objects.all():
-            if entry.pos_multi.all():
-                entry.pos = entry.pos_multi.all()[0]
-            
-            for page in RecordPage.objects.all():
-                if page.latin_pos_multi.all():
-                    page.latin_pos = page.latin_pos_multi.all()[0]
+        if not settings.RUN_DATA_MIGRATIONS:
+            for entry in RecordEntry.objects.all():
+                if entry.pos_multi.all():
+                    entry.pos = entry.pos_multi.all()[0]
+
+                for page in RecordPage.objects.all():
+                    if page.latin_pos_multi.all():
+                        page.latin_pos = page.latin_pos_multi.all()[0]
 
 
     operations = [
