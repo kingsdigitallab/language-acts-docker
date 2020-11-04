@@ -157,9 +157,13 @@ class TestStrandPage(TestCase):
 
 
 class TestHomePage(WagtailPageTests):
-    fixtures = ['tests.json']
 
     def test_subpage_types(self):
+        self.site_root = create_site_root()
+        self.home_page = HomePageFactory.build()
+        self.site_root.add_child(
+            instance=self.home_page
+        )
         self.assertAllowedSubpageTypes(
             HomePage, {
                 BlogIndexPage,
@@ -176,7 +180,6 @@ class TestHomePage(WagtailPageTests):
 
 
 class TestIndexPage(WagtailPageTests):
-    fixtures = ['tests.json']
 
     def setUp(self):
         super().setUp()
@@ -214,7 +217,6 @@ class TestIndexPage(WagtailPageTests):
 
 
 class TestRichTextPage(WagtailPageTests):
-    fixtures = ['tests.json']
 
     def setUp(self):
         super().setUp()
@@ -480,7 +482,6 @@ class TestBlogIndexPage(TestCase):
 
 class TestSearchView(TestCase):
     search_view_name = 'search'
-    fixtures = ['tests.json']
 
     def setUp(self):
         """Set up a mock results class for basic results test"""
