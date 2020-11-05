@@ -1,22 +1,6 @@
 from .base import *  # noqa
 from .base import env
-""" Put api keys or other protected settings in local_protected.py
-    They will be imported if present"""
-try:
-    from .local_protected import (
-        TWITTERHUT_TWITTER_API_KEY, TWITTERHUT_TWITTER_API_SECRET,
-        TWITTERHUT_TWITTER_ACCESS_TOKEN,
-        TWITTERHUT_TWITTER_ACCESS_TOKEN_SECRET
-    )
-    TWITTER_API_KEY = TWITTERHUT_TWITTER_API_KEY
-    TWITTER_API_SECRET = TWITTERHUT_TWITTER_API_SECRET
-    TWITTER_ACCESS_TOKEN = TWITTERHUT_TWITTER_ACCESS_TOKEN
-    TWITTER_ACCESS_TOKEN_SECRET = TWITTERHUT_TWITTER_ACCESS_TOKEN_SECRET
-except ImportError:
-    TWITTER_API_KEY = ''
-    TWITTER_API_SECRET = ''
-    TWITTER_ACCESS_TOKEN = ''
-    TWITTER_ACCESS_TOKEN_SECRET = ''
+
 
 COMPRESS_ENABLED = True
 

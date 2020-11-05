@@ -367,6 +367,24 @@ ELASTICSEARCH_DSL = {"default": {"hosts": "elasticsearch:9200"}}
 
 TWITTER_SCREEN_NAME = 'languageacts'
 
+""" Put api keys or other protected settings in local_protected.py
+    They will be imported if present"""
+try:
+    from .local_protected import (
+        TWITTERHUT_TWITTER_API_KEY, TWITTERHUT_TWITTER_API_SECRET,
+        TWITTERHUT_TWITTER_ACCESS_TOKEN,
+        TWITTERHUT_TWITTER_ACCESS_TOKEN_SECRET
+    )
+    TWITTER_API_KEY = TWITTERHUT_TWITTER_API_KEY
+    TWITTER_API_SECRET = TWITTERHUT_TWITTER_API_SECRET
+    TWITTER_ACCESS_TOKEN = TWITTERHUT_TWITTER_ACCESS_TOKEN
+    TWITTER_ACCESS_TOKEN_SECRET = TWITTERHUT_TWITTER_ACCESS_TOKEN_SECRET
+except ImportError:
+    TWITTER_API_KEY = ''
+    TWITTER_API_SECRET = ''
+    TWITTER_ACCESS_TOKEN = ''
+    TWITTER_ACCESS_TOKEN_SECRET = ''
+
 # Run data migrations
 # False by default so that clean builds and tests won't fail
 RUN_DATA_MIGRATIONS = False
