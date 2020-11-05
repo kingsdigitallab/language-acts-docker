@@ -209,9 +209,3 @@ AUTH_LDAP_USER_FLAGS_BY_GROUP = {
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
-
-
-TWITTER_API_KEY = env('TWITTER_API_KEY')
-TWITTER_API_SECRET = env('TWITTER_API_SECRET')
-TWITTER_ACCESS_TOKEN = env('TWITTER_ACCESS_TOKEN')
-TWITTER_ACCESS_TOKEN_SECRET = env('TWITTER_ACCESS_TOKEN_SECRET')
