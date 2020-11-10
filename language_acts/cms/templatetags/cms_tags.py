@@ -1,3 +1,5 @@
+import re
+
 from datetime import date
 
 from cms.models.pages import (
@@ -5,12 +7,16 @@ from cms.models.pages import (
     NewsIndexPage, EventIndexPage
 )
 from cms.models.snippets import (
-    GlossaryTerm
+    GlossaryTerm, BibliographyEntry
 )
 from django import template
 from django.conf import settings
 from wagtail.core.models import Page, Site
+from django.core.exceptions import ObjectDoesNotExist
+from cms.views.ref_chooser import get_page_model
 
+from wagtail.core.rich_text import RichText
+from html.parser import HTMLParser
 
 register = template.Library()
 
@@ -229,19 +235,114 @@ def get_toggler_status(context, page):
     return False
 
 
-@register.filter
-def add_references(value):
-    """ Add links from glossary terms and bibliography
-    May be split to only add one type later if necessary"""
+def add_glossary_terms(value: str) -> str:
     # add glossary links
     for term in GlossaryTerm.objects.all():
-        if term.term in value:
+        if term.term in str(value):
             value = value.replace(
                 term.term,
                 "<a title=\"{}\" href=\"{}\">{}</a>".format(
                     term.description, '#', term.term
                 )
             )
-    # todo bibliography refs
-    # for entry in BibliographyEntry.objects.all():
     return value
+
+
+class ReferenceTagParser(HTMLParser):
+    """ Parser to find reference tags in html
+    and replace them with reference links """
+    page_model = get_page_model()
+    tags = {}
+    ref = None
+    page = None
+
+    def handle_starttag(self, tag, attrs):
+        import pdb
+        pdb.set_trace()
+        if tag == 'span':
+            ref_id = 0
+            for attr in attrs:
+                # if the ref_id is in attrs
+                # this is the span we're looking for
+                if attr[0] == 'data-reference_id' and len(attr[1]) > 0:
+                    ref_id = int(attr[1])
+            if ref_id > 0:
+                try:
+                    self.ref = BibliographyEntry.objects.get(pk=ref_id)
+                    for usage in self.ref.get_usage():
+                        # make sure we've got the right
+                        # linked object
+                        if type(usage.specific) == self.page_model:
+                            self.page = usage
+
+                except ObjectDoesNotExist:
+                    print(' ref not found ')
+
+        print("Encountered a start tag:", tag)
+
+    def handle_endtag(self, tag):
+
+        print("Encountered an end tag :", tag)
+
+    def handle_data(self, data):
+        print("Encountered some data  :", data)
+
+    def get_tags(self):
+        return self.tags
+
+
+def create_ref_link(ref, page) -> str:
+    """
+    Create a link to the bibliography page that jumps to our ref
+    """
+    bibliography_url = page.url + '#reference-{}'.format(page.pk)
+    ref_link = "<a href=\"{}\">{}</a>".format(
+        bibliography_url, ref.author_surname)
+    return ref_link
+
+
+def add_bibliography_references(value: str) -> str:
+    ref_path = re.compile(r'<span data-reference_id="(\d+)">([^<]*)</span>')
+    while True:
+        result = ref_path.search(value)
+        if result:
+            ref_id = int(result.group(1))
+            if ref_id > 0:
+                try:
+                    ref = BibliographyEntry.objects.get(pk=ref_id)
+                    page = None
+                    for usage in ref.get_usage():
+                        # make sure we've got the right
+                        # linked object
+                        if type(usage.specific) == get_page_model():
+                            page = usage
+                    if ref and page:
+                        # create a link to the bibliography page
+                        # that jumps to our ref
+                        value = value.replace(
+                            result.group(0),
+                            create_ref_link(ref, page)
+                        )
+                    else:
+                        print('WARNING: Ref called without page {}'.format(
+                            ref_id
+                        ))
+                        value = value.replace(result.group(0), '')
+
+                except ObjectDoesNotExist:
+                    print(' ref not found ')
+        else:
+            break
+
+    return value
+
+
+@register.filter
+def add_references(value):
+    """ Add links from glossary terms and bibliography
+    May be split to only add one type later if necessary"""
+    value_str = value.source
+    value_str = add_glossary_terms(value_str)
+    # bibliography refs
+    value_str = add_bibliography_references(value_str)
+    return RichText(value_str)

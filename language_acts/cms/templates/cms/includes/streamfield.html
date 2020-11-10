@@ -1,4 +1,4 @@
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags cms_tags %}
 
 <div class="page-content">
     {% for block in blocks %}
@@ -13,7 +13,7 @@
     {% elif block.block_type == 'intro' %}
     <div class="intro">{{ block }}</div>
     {% elif block.block_type == 'paragraph' %}
-    {{ block.value|richtext }}
+    {{ block.value|richtext|add_references }}
     {% elif block.block_type == 'html' %}
     {% comment %}
     <div class="iframe-container {{ block.value.alignment }}">
