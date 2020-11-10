@@ -1,6 +1,12 @@
 const React = window.React;
 const Modifier = window.DraftJS.Modifier;
 const EditorState = window.DraftJS.EditorState;
+const RichUtils = window.DraftJS.RichUtils;
+
+// Since we can't know which page we should use for the snippet
+// They should be specificed here
+// Can be refactored later to be more flexible
+const referenceURL= '/reference/choose/';
 
 //Chooser url: http://127.0.0.1:8000/wagtail/snippets/choose/cms/bibliographyentry/
 
@@ -31,8 +37,24 @@ const EditorState = window.DraftJS.EditorState;
 //     }
 // }
 
+const filterEntityData = (entityType, data) => {
+    let entity_data = {};
+    switch (entityType.type) {
+        case ("REF"):
+            entity_data = {
+                reference_id: data.reference_id,
+            };
+            break;
+
+        default:
+            break;
+    }
+    return entity_data;
+
+};
+
 REF_MODEL_CHOOSER_MODAL_ONLOAD_HANDLERS = {
-    'choose': function(modal, jsonData) {
+    /*'choose': function(modal, jsonData) {
         console.log('setup');
         $('a.snippet-choice').on('click', function (event) {
             let snippetData = {'href':$(this).attr('href'), 'label': $(this).html()}
@@ -41,8 +63,86 @@ REF_MODEL_CHOOSER_MODAL_ONLOAD_HANDLERS = {
             modal.close();
             return false;
         });
+    }*/
+    'choose': function (modal, jsonData) {
+        function ajaxifyLinks(context) {
+            $('a.snippet-choice', modal.body).on('click', function (event) {
+                event.preventDefault();
+                // Hijack these snippet edit links and send it to reference instad
+                let re = /.*\/(\d+)\/$/;
+                var found = re.exec($(this).attr('href'));
+                modal.loadUrl(referenceURL+found[1]+'/');
+
+                return false;
+            });
+
+            $('.pagination a', context).on('click', function () {
+                var page = this.getAttribute('data-page');
+                setPage(page);
+                return false;
+            });
+        }
+
+        var searchUrl = $('form.snippet-search', modal.body).attr('action');
+        var request;
+
+        function search() {
+            request = $.ajax({
+                url: searchUrl,
+                data: {q: $('#id_q').val(), results: 'true'},
+                success: function (data, status) {
+                    request = null;
+                    $('#search-results').html(data);
+                    ajaxifyLinks($('#search-results'));
+                },
+                error: function () {
+                    request = null;
+                }
+            });
+            return false;
+        }
+
+        function setPage(page) {
+            var dataObj = {p: page, results: 'true'};
+
+            if ($('#id_q').length && $('#id_q').val().length) {
+                dataObj.q = $('#id_q').val();
+            }
+
+            request = $.ajax({
+                url: searchUrl,
+                data: dataObj,
+                success: function (data, status) {
+                    request = null;
+                    $('#search-results').html(data);
+                    ajaxifyLinks($('#search-results'));
+                },
+                error: function () {
+                    request = null;
+                }
+            });
+            return false;
+        }
+
+        $('form.snippet-search', modal.body).on('submit', search);
+
+        $('#id_q').on('input', function () {
+            if (request) {
+                request.abort();
+            }
+            clearTimeout($.data(this, 'timer'));
+            var wait = setTimeout(search, 200);
+            $(this).data('timer', wait);
+        });
+
+        ajaxifyLinks(modal.body);
+    },
+    'chosen': function (modal, jsonData) {
+        modal.respond('refChosen', jsonData['result']);
+        modal.close();
     }
 };
+
 
 const getChooserConfig = (entityType, entity, selectedText) => {
     let url;
@@ -50,7 +150,7 @@ const getChooserConfig = (entityType, entity, selectedText) => {
 
     if (entityType.type === 'REF') {
         return {
-            url: "/wagtail/snippets/choose/cms/bibliographyentry/",
+            url: referenceURL,
             urlParams: {},
             onload: REF_MODEL_CHOOSER_MODAL_ONLOAD_HANDLERS,
         };
@@ -159,49 +259,45 @@ class BibliographicReferenceSource extends React.Component {
     }
 
     onChosen(data) {
+
         const {editorState, entity, entityKey, entityType, onComplete} = this.props;
         const content = editorState.getCurrentContent();
         const selection = editorState.getSelection();
         const entityData = filterEntityData(entityType, data);
-        const mutability = MUTABILITY[entityType.type];
+        const mutability = 'MUTABLE';
 
         let nextState;
+        console.log(entityData);
+
+        const contentWithEntity = content.createEntity(entityType.type, mutability, entityData);
+        const newEntityKey = contentWithEntity.getLastCreatedEntityKey();
+
+        // Replace text if the chooser demands it, or if there is no selected text in the first place.
+        const shouldReplaceText = selection.isCollapsed();
+        if (shouldReplaceText) {
+            // If there is a title attribute, use it. Otherwise we inject the URL.
+            const newText = 'ref_'+data.reference_id; //data.title || data.url;
+            const newContent = Modifier.replaceText(content, selection, newText, null, newEntityKey);
+            nextState = EditorState.push(editorState, newContent, 'insert-characters');
+        } else {
+            nextState = RichUtils.toggleLink(editorState, selection, newEntityKey);
+        }
+
+        this.workflow.close();
+
+        onComplete(nextState);
 
         /*
-        if (entityType.block) {
-            if (entity && entityKey) {
-                // Replace the data for the currently selected block
-                const blockKey = selection.getAnchorKey();
-                const block = content.getBlockForKey(blockKey);
-                nextState = DraftUtils.updateBlockEntity(editorState, block, entityData);
-            } else {
-                // Add new entity if there is none selected
-                const contentWithEntity = content.createEntity(entityType.type, mutability, entityData);
-                const newEntityKey = contentWithEntity.getLastCreatedEntityKey();
-                nextState = AtomicBlockUtils.insertAtomicBlock(editorState, newEntityKey, ' ');
-            }
-        } else {
-            const contentWithEntity = content.createEntity(entityType.type, mutability, entityData);
-            const newEntityKey = contentWithEntity.getLastCreatedEntityKey();
 
-            // Replace text if the chooser demands it, or if there is no selected text in the first place.
-            const shouldReplaceText = data.prefer_this_title_as_link_text || selection.isCollapsed();
-            if (shouldReplaceText) {
-                // If there is a title attribute, use it. Otherwise we inject the URL.
-                const newText = data.title || data.url;
-                const newContent = Modifier.replaceText(content, selection, newText, null, newEntityKey);
-                nextState = EditorState.push(editorState, newContent, 'insert-characters');
-            } else {
-                nextState = RichUtils.toggleLink(editorState, selection, newEntityKey);
-            }
+
+
+
         }
 
         // IE11 crashes when rendering the new entity in contenteditable if the modal is still open.
         // Other browsers do not mind. This is probably a focus management problem.
         // From the user's perspective, this is all happening too fast to notice either way.
-        this.workflow.close();
 
-        onComplete(nextState);
          */
     }
 
@@ -235,12 +331,9 @@ BibliographicReferenceSource.defaultProps = {
 const BibliographicReference = (props) => {
     const {entityKey, contentState} = props;
     const data = contentState.getEntity(entityKey).getData();
-
-    return React.createElement('a', {
-        role: 'button',
-        onMouseUp: () => {
-            //window.open(`https://finance.yahoo.com/quote/`);
-        },
+    console.log(data);
+    return React.createElement('span', {
+        'data-reference_id': data.reference_id,
     }, props.children);
 };
 

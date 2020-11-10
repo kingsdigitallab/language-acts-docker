@@ -25,7 +25,8 @@ def register_bibliographic_reference(features):
 
     features.register_converter_rule('contentstate', feature_name, {
         'from_database_format': {
-            'a[data-ref]': BibliographicReferenceEntityElementHandler(type_)},
+            'span[data-reference_id]':
+                BibliographicReferenceEntityElementHandler(type_)},
         'to_database_format': {
             'entity_decorators': {type_: bibliographic_reference_decorator}},
     })
@@ -34,25 +35,28 @@ def register_bibliographic_reference(features):
 
 
 class BibliographicReferenceEntityElementHandler(InlineEntityElementHandler):
+    """
+        Database HTML to Draft.js ContentState.
+        Converts the span tag into a REF entity, with the right data.
+    """
     mutability = 'MUTABLE'
 
     def get_attribute_data(self, attrs):
         """
-        Get the reference id (and page?)
+        Get the reference id
         """
         return {
-            'bibliography_entry_id': attrs['data-bibliography_entry_id'],
-            'bibliography_entry_reference': attrs[
-                'data-bibliography_entry_reference']
+            'reference_id': attrs['data-reference_id'],
         }
 
 
 def bibliographic_reference_decorator(props):
+    """
+        Draft.js ContentState to database HTML.
+    """
     return DOM.create_element('span', {
-        'data-bibliography_entry_id': props['bibliography_entry_id'],
-        'data-bibliography_entry_reference': props[
-            'bibliography_entry_reference']
-    })
+        'data-reference_id': props['reference_id'],
+    }, props['children'])
 
 
 """

@@ -77,17 +77,27 @@ class GlossaryTerm(models.Model):
 
 
 @register_snippet
-class BibliographyEntry(models.Model):
-    author = models.CharField(max_length=256)
+class BibliographyEntry(index.Indexed, Orderable, models.Model):
+    author_surname = models.CharField(max_length=256)
+    author_firstname = models.CharField(max_length=256, blank=True)
     title = models.CharField(max_length=256)
     publisher = models.CharField(max_length=256)
+    publication_year = models.IntegerField(default=0)
     reference = models.CharField(max_length=256, blank=True)
 
     panels = [
-        FieldPanel('author'),
+        FieldPanel('author_surname'),
+        FieldPanel('author_firstname'),
         FieldPanel('title'),
         FieldPanel('publisher'),
         FieldPanel('reference'),
+    ]
+
+    search_fields = [
+        index.SearchField('title', partial_match=True),
+        index.SearchField('author_surname', partial_match=True),
+        index.SearchField('publisher', partial_match=True),
+        index.SearchField('publication_year'),
     ]
 
     class Meta:
@@ -95,10 +105,13 @@ class BibliographyEntry(models.Model):
         verbose_name_plural = "Bibliography entries"
 
     def __str__(self):
-        return "{}. {}".format(self.author, self.title)
+        return "{}, {}. {} ({})".format(
+            self.author_surname, self.author_firstname,
+            self.title, self.publication_year
+        )
 
 
-class GlossaryTermItem(Orderable, models.Model):
+class GlossaryTermItem(index.Indexed, Orderable, models.Model):
     page = ParentalKey('cms.GlossaryPage', on_delete=models.CASCADE,
                        related_name='glossary_terms')
     glossary_term = models.ForeignKey(
