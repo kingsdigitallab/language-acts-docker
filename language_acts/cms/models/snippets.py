@@ -91,6 +91,7 @@ class BibliographyEntry(index.Indexed, Orderable, models.Model):
         FieldPanel('title'),
         FieldPanel('publisher'),
         FieldPanel('reference'),
+        FieldPanel('publication_year'),
     ]
 
     search_fields = [
@@ -98,6 +99,7 @@ class BibliographyEntry(index.Indexed, Orderable, models.Model):
         index.SearchField('author_surname', partial_match=True),
         index.SearchField('publisher', partial_match=True),
         index.SearchField('publication_year'),
+        index.FilterField('publication_year'),
     ]
 
     class Meta:

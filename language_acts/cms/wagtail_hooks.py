@@ -39,7 +39,7 @@ class BibliographicReferenceEntityElementHandler(InlineEntityElementHandler):
         Database HTML to Draft.js ContentState.
         Converts the span tag into a REF entity, with the right data.
     """
-    mutability = 'MUTABLE'
+    mutability = 'IMMUTABLE'
 
     def get_attribute_data(self, attrs):
         """
@@ -57,36 +57,3 @@ def bibliographic_reference_decorator(props):
     return DOM.create_element('span', {
         'data-reference_id': props['reference_id'],
     }, props['children'])
-
-
-"""
-
-features.register_editor_plugin(
-        'draftail', 'link', draftail_features.EntityFeature({
-            'type': 'LINK',
-            'icon': 'link',
-            'description': gettext('Link'),
-            # We want to enforce constraints on which links can be pasted
-            into rich text.
-            # Keep only the attributes Wagtail needs.
-            'attributes': ['url', 'id', 'parentId'],
-            'whitelist': {
-                # Keep pasted links with http/https protocol, and not-pasted
-                links (href = undefined).
-                'href': "^(http:|https:|undefined$)",
-            }
-        }, js=[
-            'wagtailadmin/js/page-chooser-modal.js',
-        ])
-    )
-    features.register_converter_rule('contentstate', 'link', {
-        'from_database_format': {
-            'a[href]': ExternalLinkElementHandler('LINK'),
-            'a[linktype="page"]': PageLinkElementHandler('LINK'),
-        },
-        'to_database_format': {
-            'entity_decorators': {'LINK': link_entity}
-        }
-    })
-
-"""

@@ -148,10 +148,16 @@ const getChooserConfig = (entityType, entity, selectedText) => {
     let url;
     let urlParams;
 
+
     if (entityType.type === 'REF') {
+        let urlParams = {};
+        if (selectedText.length > 0){
+            // Add the text selection as a default search
+            urlParams.q = selectedText;
+        }
         return {
             url: referenceURL,
-            urlParams: {},
+            urlParams: urlParams,
             onload: REF_MODEL_CHOOSER_MODAL_ONLOAD_HANDLERS,
         };
     } else {
@@ -170,7 +176,7 @@ const getChooserConfig = (entityType, entity, selectedText) => {
  * See https://github.com/jpuri/draftjs-utils/blob/e81c0ae19c3b0fdef7e0c1b70d924398956be126/js/block.js#L19.
  */
 
-/*
+
 const getSelectedBlocksList = (editorState) => {
     const selectionState = editorState.getSelection();
     const content = editorState.getCurrentContent();
@@ -184,14 +190,14 @@ const getSelectedBlocksList = (editorState) => {
         .concat([[endKey, blockMap.get(endKey)]]);
     return blocks.toList();
 };
-*/
+
 /**
  * Returns the currently selected text in the editor.
  * See https://github.com/jpuri/draftjs-utils/blob/e81c0ae19c3b0fdef7e0c1b70d924398956be126/js/block.js#L106.
  */
 
-/*
-export const getSelectionText = (editorState) => {
+
+const getSelectionText = (editorState) => {
     const selection = editorState.getSelection();
     let start = selection.getAnchorOffset();
     let end = selection.getFocusOffset();
@@ -212,7 +218,7 @@ export const getSelectionText = (editorState) => {
 
     return selectedText;
 };
-*/
+
 
 /**
  * Cloned and modified from ModalWorkflowSource
@@ -229,13 +235,12 @@ class BibliographicReferenceSource extends React.Component {
 
     componentDidMount() {
         const {onClose, entityType, entity, editorState} = this.props;
-        // const selectedText = getSelectionText(editorState);
-        const selectedText = '';
+        const selectedText = getSelectionText(editorState);
         const {url, urlParams, onload} = getChooserConfig(entityType, entity, selectedText);
 
         $(document.body).on('hidden.bs.modal', this.onClose);
 
-
+        // let full_url = url+'?q=first';
         // eslint-disable-next-line new-cap
         this.workflow = global.ModalWorkflow({
             url,
@@ -264,41 +269,22 @@ class BibliographicReferenceSource extends React.Component {
         const content = editorState.getCurrentContent();
         const selection = editorState.getSelection();
         const entityData = filterEntityData(entityType, data);
-        const mutability = 'MUTABLE';
+        const mutability = 'IMMUTABLE';
 
         let nextState;
-        console.log(entityData);
 
         const contentWithEntity = content.createEntity(entityType.type, mutability, entityData);
         const newEntityKey = contentWithEntity.getLastCreatedEntityKey();
 
-        // Replace text if the chooser demands it, or if there is no selected text in the first place.
-        const shouldReplaceText = selection.isCollapsed();
-        if (shouldReplaceText) {
-            // If there is a title attribute, use it. Otherwise we inject the URL.
-            const newText = 'ref_'+data.reference_id; //data.title || data.url;
-            const newContent = Modifier.replaceText(content, selection, newText, null, newEntityKey);
-            nextState = EditorState.push(editorState, newContent, 'insert-characters');
-        } else {
-            nextState = RichUtils.toggleLink(editorState, selection, newEntityKey);
-        }
+        const newText = '[ref_' + data.reference_id + ']';
+        const newContent = Modifier.replaceText(content, selection, newText, null, newEntityKey);
+        nextState = EditorState.push(editorState, newContent, 'insert-characters');
 
         this.workflow.close();
 
         onComplete(nextState);
 
-        /*
 
-
-
-
-        }
-
-        // IE11 crashes when rendering the new entity in contenteditable if the modal is still open.
-        // Other browsers do not mind. This is probably a focus management problem.
-        // From the user's perspective, this is all happening too fast to notice either way.
-
-         */
     }
 
     onClose(e) {
@@ -313,25 +299,10 @@ class BibliographicReferenceSource extends React.Component {
     }
 }
 
-/*
-BibliographicReferenceSource.propTypes = {
-    editorState: PropTypes.object.isRequired,
-    entityType: PropTypes.object.isRequired,
-    entity: PropTypes.object,
-    entityKey: PropTypes.string,
-    onComplete: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired,
-};
-
-BibliographicReferenceSource.defaultProps = {
-    entity: null,
-};*/
-
 
 const BibliographicReference = (props) => {
     const {entityKey, contentState} = props;
     const data = contentState.getEntity(entityKey).getData();
-    console.log(data);
     return React.createElement('span', {
         'data-reference_id': data.reference_id,
     }, props.children);
