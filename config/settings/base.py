@@ -344,7 +344,7 @@ WAGTAILADMIN_RICH_TEXT_EDITORS = {
     'carousel': {
         'WIDGET': 'wagtail.admin.rich_text.DraftailRichTextArea',
         'OPTIONS': {
-            'features': ['bold', 'italic', 'underline']
+            'features': ['bold', 'italic', 'colour', 'reference']
         }
     }
 }
@@ -388,3 +388,12 @@ except ImportError:
 # Run data migrations
 # False by default so that clean builds and tests won't fail
 RUN_DATA_MIGRATIONS = False
+
+# -----------------------------------------------------------------------------
+# Bibliographic References
+# -----------------------------------------------------------------------------
+
+# Add with the key "app, model" for each reference model snippet
+# The value is the bibliography page model: "app, model"
+# the page link will be derived from the page linked to the selected snippet
+REFERENCE_MODEL = {"cms, BibliographyEntry": "cms, BibliographyPage"}
