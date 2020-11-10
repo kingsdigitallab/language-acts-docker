@@ -16,7 +16,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from cms.views.ref_chooser import get_page_model
 
 from wagtail.core.rich_text import RichText
-from html.parser import HTMLParser
+
 
 register = template.Library()
 
@@ -246,49 +246,6 @@ def add_glossary_terms(value: str) -> str:
                 )
             )
     return value
-
-
-class ReferenceTagParser(HTMLParser):
-    """ Parser to find reference tags in html
-    and replace them with reference links """
-    page_model = get_page_model()
-    tags = {}
-    ref = None
-    page = None
-
-    def handle_starttag(self, tag, attrs):
-        import pdb
-        pdb.set_trace()
-        if tag == 'span':
-            ref_id = 0
-            for attr in attrs:
-                # if the ref_id is in attrs
-                # this is the span we're looking for
-                if attr[0] == 'data-reference_id' and len(attr[1]) > 0:
-                    ref_id = int(attr[1])
-            if ref_id > 0:
-                try:
-                    self.ref = BibliographyEntry.objects.get(pk=ref_id)
-                    for usage in self.ref.get_usage():
-                        # make sure we've got the right
-                        # linked object
-                        if type(usage.specific) == self.page_model:
-                            self.page = usage
-
-                except ObjectDoesNotExist:
-                    print(' ref not found ')
-
-        print("Encountered a start tag:", tag)
-
-    def handle_endtag(self, tag):
-
-        print("Encountered an end tag :", tag)
-
-    def handle_data(self, data):
-        print("Encountered some data  :", data)
-
-    def get_tags(self):
-        return self.tags
 
 
 def create_ref_link(ref, page) -> str:
