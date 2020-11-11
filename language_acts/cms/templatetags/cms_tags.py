@@ -253,8 +253,12 @@ def create_ref_link(ref, page) -> str:
     Create a link to the bibliography page that jumps to our ref
     """
     bibliography_url = page.url + '#reference-{}'.format(page.pk)
-    ref_link = "<a href=\"{}\">{}</a>".format(
-        bibliography_url, ref.author_surname)
+    ref_link = "<a href=\"{}\" aria-describedby=\"ref_{}-desc\">{}</a>".format(
+        bibliography_url, ref.pk, ref.author_surname)
+    ref_link = ref_link + \
+        "<div role=\"tooltip\" id=\"ref_{}-desc\">{}</div>".format(
+                    ref.pk, str(ref)
+        )
     return ref_link
 
 
