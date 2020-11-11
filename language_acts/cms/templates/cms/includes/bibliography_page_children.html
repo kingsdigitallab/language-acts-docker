@@ -1,18 +1,13 @@
 {% load cms_tags wagtailcore_tags %}
+<ul>
 {% for entry in page.bibliography_entries.all %}
-  <div class="row events-block small-up-1 medium-up-2"
-    data-equalizer="eventheight"
-    data-equalize-by-row="true" data-equalize-on="medium">
-    <div class="column column-block">
-      <div class="card event" data-equalizer-watch="eventheight">
-            <div class="card-section">
-                <h3 class="title">{{ entry.bibliography_entry.title }}</h3>
-            </div>
-          <p>{{ entry.bibliography_entry.author }}</p>
-        <p>{{ entry.bibliography_entry.publisher }}</p>
-      </div>
-    </div>
-</div>
-
+  <li id="reference-{{ entry.bibliography_entry.pk }}">
+  {% with entry.bibliography_entry as current_entry %}
+  <p>
+    {{ current_entry.author_surname }}, {{ current_entry.author_firstname }}. <em>{{ current_entry.title}}</em>. {{ current_entry.publisher}}, {{ current_entry.publication_year}}
+  </p>
+    {% endwith %}
+  </li>
 {%  endfor %}
+</ul>
 
