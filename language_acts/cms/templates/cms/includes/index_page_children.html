@@ -40,7 +40,7 @@
                 </a>
             </li>
             {% endif %}
-            {% if events or past_events %}
+            {% if upcoming_events or past_events %}
             <li>
                 <a href="{% pageurl strand %}?content=events" {% if request.GET.content == 'events' %}class="active"{% endif %}>
                     {{ strand.title }} Events
