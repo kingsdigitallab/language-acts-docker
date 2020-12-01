@@ -819,11 +819,9 @@ class Event(Page, WithStreamField, WithFeedImage):
     def get_by_strand(self, strand_name=None):
         if strand_name:
             try:
-                today = date.today()
                 strand = StrandPage.objects.get(title=strand_name)
                 return self.objects.filter(strands=strand).filter(
-                    Q(date_from__gte=today) | (
-                        Q(date_to__isnull=False) & Q(date_to__gte=today))
+                        Q(date_from__isnull=False)
                 ).order_by('date_from')
             except ObjectDoesNotExist:
                 return self.objects.none()
