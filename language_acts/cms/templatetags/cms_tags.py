@@ -156,6 +156,10 @@ def main_menu(context, root, current_page=None):
     pages that have the show_in_menus setting on are returned."""
     if root is None:
         root = current_page
+    if 'request' in context:
+        request = context['request']
+    else:
+        request = None
     # Added for wagtail 2.11
     # if 'request' in context:
     #     root = Site.find_for_request(context['request']).root_page
@@ -169,8 +173,9 @@ def main_menu(context, root, current_page=None):
                            if current_page else False)
     except AttributeError:
         print('Error in root: {}:{}'.format(root, current_page))
+        menu_pages = []
 
-    return {'request': context['request'], 'root': root,
+    return {'request': request, 'root': root,
             'current_page': current_page, 'menu_pages': menu_pages}
 
 
