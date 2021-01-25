@@ -154,12 +154,12 @@ def show_children_in_menu(page):
 def main_menu(context, root, current_page=None):
     """Returns the main menu items, the children of the root page. Only live
     pages that have the show_in_menus setting on are returned."""
-    # root = None
+    if root is None:
+        root = current_page
     # Added for wagtail 2.11
     # if 'request' in context:
     #     root = Site.find_for_request(context['request']).root_page
     # if not root or root == '':
-    #     root = current_page
     menu_pages = root.get_children().live().in_menu()
     root.active = (current_page.url == root.url
                    if current_page else False)
