@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 import logging
 import typing
+
+from elasticsearch.exceptions import NotFoundError
 from datetime import date
 from cms.search import RecordPageSearch
 # from django.contrib.auth.models import User
@@ -163,13 +165,16 @@ class RecordIndexPage(Page):
 
         # Init a search query set
         # Apply currently selected facets
-        search = RecordPageSearch(None, facet_search)
-        response = search.execute()
-
-        context['facets'] = response.facets
+        try:
+            search = RecordPageSearch(None, facet_search)
+            response = search.execute()
+            context['facets'] = response.facets
+            context['search_result'] = response
+        except NotFoundError as e:
+            print("ERROR: Index not Ready!")
+        context['facets'] = []
+        context['search_result'] = []
         context['selected_facets'] = selected_facets_ui
-        context['search_result'] = response
-
         return context
 
 
