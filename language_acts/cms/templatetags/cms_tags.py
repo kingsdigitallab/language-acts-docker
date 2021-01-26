@@ -1,5 +1,5 @@
 import re
-
+import wagtail.core.blocks as wagtail_blocks
 from datetime import date
 
 from cms.models.pages import (
@@ -158,6 +158,8 @@ def main_menu(context, root, current_page=None):
         root = current_page
     if 'request' in context:
         request = context['request']
+        if root is None:
+            root = Site.find_for_request(context['request']).root_page
     else:
         request = None
     # Added for wagtail 2.11
@@ -308,11 +310,16 @@ def add_bibliography_references(value: str) -> str:
 
 
 @register.filter
-def add_references(value):
+def add_references(block):
     """ Add links from glossary terms and bibliography
     May be split to only add one type later if necessary"""
-    value_str = value.source
-    value_str = add_glossary_terms(value_str)
+    # if type(block) ==
+    value_str = ''
+    if type(block) == wagtail_blocks.stream_block.StreamValue.StreamChild:
+        if 'html' in block.value:
+            value_str = block.value['html']
+    elif type(block) == RichText:
+        value_str = add_glossary_terms(value_str)
     # bibliography refs
     value_str = add_bibliography_references(value_str)
     return RichText(value_str)
