@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('cms', '0063_rich_text_headings'),
     ]
@@ -13,7 +12,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BibliographyEntry',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True, serialize=False, verbose_name='ID')),
                 ('author', models.CharField(max_length=256)),
                 ('title', models.CharField(max_length=256)),
                 ('publisher', models.CharField(max_length=256)),
@@ -26,7 +27,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GlossaryTerm',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True, serialize=False,
+                    verbose_name='ID')),
                 ('term', models.CharField(max_length=256)),
                 ('description', models.TextField()),
             ],

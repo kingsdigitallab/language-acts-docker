@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import migrations, models
 from django.contrib.contenttypes.models import ContentType
-from cms.models import HomePage, TagResults
+from language_acts.cms.models import HomePage, TagResults
 import modelcluster
 import django.db.models.deletion
 

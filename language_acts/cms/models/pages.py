@@ -5,7 +5,7 @@ import typing
 
 from elasticsearch.exceptions import NotFoundError
 from datetime import date
-from cms.search import RecordPageSearch
+from language_acts.cms.search import RecordPageSearch
 # from django.contrib.auth.models import User
 from django import forms
 from django.conf import settings
@@ -172,8 +172,8 @@ class RecordIndexPage(Page):
             context['search_result'] = response
         except NotFoundError as e:
             print("ERROR: Index not Ready!")
-        context['facets'] = []
-        context['search_result'] = []
+            context['facets'] = []
+            context['search_result'] = []
         context['selected_facets'] = selected_facets_ui
         return context
 

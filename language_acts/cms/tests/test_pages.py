@@ -4,14 +4,14 @@ from datetime import date
 from typing import Union, Optional
 from unittest.mock import MagicMock, create_autospec, patch
 import factory
-from cms.models.pages import (
+from language_acts.cms.models.pages import (
     BlogIndexPage, EventIndexPage, HomePage, IndexPage, NewsIndexPage,
     PastEventIndexPage, RichTextPage, StrandPage, _paginate, TagResults,
     BlogAuthor, BlogPost, NewsPost, Event, SlideBlock,
     BlogSlideBlock, EventSlideBlock, NewsSlideBlock, UpcomingEventSlideBlock,
     LatestBlogSlideBlock, LatestNewsSlideBlock
 )
-from cms.tests.factories import (
+from language_acts.cms.tests.factories import (
     BlogIndexPageFactory, BlogPostFactory, BlogAuthorFactory,
     NewsIndexPageFactory, NewsPostFactory, StrandPageFactory,
     EventIndexPageFactory, PastEventIndexPageFactory,
@@ -19,7 +19,7 @@ from cms.tests.factories import (
     RecordIndexPageFactory, RecordPageFactory,
     RecordEntryFactory, IndexPageFactory, RichTextPageFactory
 )
-from cms.views.search import SearchView
+from language_acts.cms.views.search import SearchView
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
 from django.test import RequestFactory, TestCase
@@ -32,7 +32,7 @@ from django.core.files import File
 from wagtail.images.models import Image
 from django.core.files.storage import default_storage
 from wagtail.tests.utils.form_data import streamfield, nested_form_data
-from cms.models.snippets import (BibliographyPage, GlossaryPage)
+from language_acts.cms.models.snippets import (BibliographyPage, GlossaryPage)
 
 
 """ Helper functions to make trees of wagtail objects for tests  """
@@ -893,7 +893,7 @@ class TestRecordIndexPage(TestCase):
         request = RequestFactory().get(
             '/test?selected_facets=first_letter:E')
         with patch(
-                'cms.models.pages.RecordPageSearch.execute'
+                'language_acts.cms.models.pages.RecordPageSearch.execute'
                 ) as mock_response:
             # todo simplified this for now, as I was just testing my own mock
             mock_response.facets = {'first_letter': {'E': 1}}

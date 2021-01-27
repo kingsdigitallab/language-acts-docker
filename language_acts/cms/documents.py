@@ -1,4 +1,4 @@
-from cms.models.pages import (
+from language_acts.cms.models.pages import (
     RecordEntry
 )
 from django_elasticsearch_dsl import Document, fields
@@ -21,7 +21,7 @@ class RecordEntryDocument(Document):
         ]
 
     language = fields.KeywordField(type="keyword")
-    first_letter = fields.KeywordField(type="keyword")
+    first_letter = fields.KeywordField()
     page_url = fields.TextField()
 
     def prepare_page_url(self, instance):

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('cms', '0066_bibliographyentryitem_bibliographypage'),
     ]
@@ -12,7 +11,8 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='bibliographyentry',
-            options={'verbose_name': 'Bibliography entry', 'verbose_name_plural': 'Bibliography entries'},
+            options={'verbose_name': 'Bibliography entry',
+                     'verbose_name_plural': 'Bibliography entries'},
         ),
         migrations.AddField(
             model_name='bibliographyentry',

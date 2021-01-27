@@ -1,18 +1,20 @@
-from cms.models.pages import (
+from datetime import date
+
+from language_acts.cms.models.pages import (
     IndexPage, HomePage
 )
-from cms.templatetags import cms_tags
-from cms.tests.factories import (
+from language_acts.cms.templatetags import cms_tags
+from language_acts.cms.tests.factories import (
     IndexPageFactory, BlogIndexPageFactory, BlogPostFactory,
     BlogAuthorFactory, HomePageFactory, EventFactory, EventIndexPageFactory,
     NewsIndexPageFactory, NewsPostFactory
 )
-from cms.models.snippets import (
+from language_acts.cms.models.snippets import (
     GlossaryTerm
 )
 from django.test import RequestFactory, TestCase
 from wagtail.core.models import Page
-from datetime import date
+from wagtail.core.rich_text import RichText
 
 
 class CMSTagsTestCase(TestCase):
@@ -269,11 +271,11 @@ class AddReferencesTestCase(TestCase):
         )
         term.save()
         # nothing should be found
-        value = cms_tags.add_references("not here")
-        self.assertTrue(value, "not here")
+        test_text = RichText("not here")
+        value = cms_tags.add_references(test_text)
+        self.assertTrue(value.source, test_text.source)
         # term should be found here
-        value = cms_tags.add_references("term here")
-        self.assertTrue(value,
+        test_text = RichText("term here")
+        value = cms_tags.add_references(test_text)
+        self.assertTrue(value.source,
                         '<a title="term description" href="#">term</a> here')
-
-        # todo add bib test when ready

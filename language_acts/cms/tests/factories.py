@@ -1,6 +1,6 @@
 # EventIndexPage, HomePage, IndexPage, NewsIndexPage,
 import factory
-from cms.models.pages import (
+from language_acts.cms.models.pages import (
     BlogIndexPage, BlogPost, BlogAuthor, RichTextPage,
     NewsIndexPage, NewsPost, StrandPage, IndexPage,
     PastEventIndexPage, EventIndexPage, Event, HomePage,

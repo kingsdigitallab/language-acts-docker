@@ -2,7 +2,7 @@
 
 from django.db import migrations
 import modelcluster.fields
-from cms.models import RecordEntry, RecordPage
+from language_acts.cms.models import RecordEntry, RecordPage
 from django.conf import settings
 
 

@@ -2,18 +2,18 @@ import re
 import wagtail.core.blocks as wagtail_blocks
 from datetime import date
 
-from cms.models.pages import (
+from language_acts.cms.models.pages import (
     BlogPost, Event, NewsPost, HomePage, BlogIndexPage,
     NewsIndexPage, EventIndexPage
 )
-from cms.models.snippets import (
+from language_acts.cms.models.snippets import (
     GlossaryTerm, BibliographyEntry
 )
 from django import template
 from django.conf import settings
 from wagtail.core.models import Page, Site
 from django.core.exceptions import ObjectDoesNotExist
-from cms.views.ref_chooser import get_page_model
+from language_acts.cms.views.ref_chooser import get_page_model
 
 from wagtail.core.rich_text import RichText
 
@@ -154,18 +154,16 @@ def show_children_in_menu(page):
 def main_menu(context, root, current_page=None):
     """Returns the main menu items, the children of the root page. Only live
     pages that have the show_in_menus setting on are returned."""
-    if root is None:
-        root = current_page
+    # Added for wagtail 2.11
     if 'request' in context:
         request = context['request']
-        if root is None:
-            root = Site.find_for_request(context['request']).root_page
     else:
         request = None
-    # Added for wagtail 2.11
-    # if 'request' in context:
-    #     root = Site.find_for_request(context['request']).root_page
-    # if not root or root == '':
+    if request is not None and root is None:
+        root = Site.find_for_request(context['request']).root_page
+    if root is None:
+        root = current_page
+
     try:
         menu_pages = root.get_children().live().in_menu()
         root.active = (current_page.url == root.url
@@ -319,7 +317,7 @@ def add_references(block):
         if 'html' in block.value:
             value_str = block.value['html']
     elif type(block) == RichText:
-        value_str = add_glossary_terms(value_str)
+        value_str = block.source
     # bibliography refs
     value_str = add_bibliography_references(value_str)
     return RichText(value_str)

@@ -3,7 +3,7 @@ from django.conf import settings
 
 from django.db import migrations, models
 from django.contrib.contenttypes.models import ContentType
-from cms.models import HomePage, IndexPage, StrandPage
+from language_acts.cms.models import HomePage, IndexPage, StrandPage
 import modelcluster
 import django.db.models.deletion
 
