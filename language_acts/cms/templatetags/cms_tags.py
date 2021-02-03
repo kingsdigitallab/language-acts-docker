@@ -263,10 +263,10 @@ def create_ref_link(ref, page) -> str:
     """
     bibliography_url = page.url + '#reference-{}'.format(page.pk)
     ref_link = "<a href=\"{}\" aria-describedby=\"ref_{}-desc\">{}</a>".format(
-        bibliography_url, ref.pk, ref.author_surname)
+        bibliography_url, ref.pk, ref.reference)
     ref_link = ref_link + \
         "<div role=\"tooltip\" id=\"ref_{}-desc\">{}</div>".format(
-                    ref.pk, str(ref)
+                    ref.pk, ref.full_citation
         )
     return ref_link
 

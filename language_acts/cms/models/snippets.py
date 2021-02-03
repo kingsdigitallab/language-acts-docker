@@ -78,28 +78,16 @@ class GlossaryTerm(models.Model):
 
 @register_snippet
 class BibliographyEntry(index.Indexed, Orderable, models.Model):
-    author_surname = models.CharField(max_length=256)
-    author_firstname = models.CharField(max_length=256, blank=True)
-    title = models.CharField(max_length=256)
-    publisher = models.CharField(max_length=256)
-    publication_year = models.IntegerField(default=0)
+    full_citation = models.TextField(blank=True, null=True)
     reference = models.CharField(max_length=256, blank=True)
 
     panels = [
-        FieldPanel('author_surname'),
-        FieldPanel('author_firstname'),
-        FieldPanel('title'),
-        FieldPanel('publisher'),
         FieldPanel('reference'),
-        FieldPanel('publication_year'),
+        FieldPanel('full_citation'),
     ]
 
     search_fields = [
-        index.SearchField('title', partial_match=True),
-        index.SearchField('author_surname', partial_match=True),
-        index.SearchField('publisher', partial_match=True),
-        index.SearchField('publication_year'),
-        index.FilterField('publication_year'),
+        index.SearchField('full_citation', partial_match=True),
     ]
 
     class Meta:
@@ -107,9 +95,9 @@ class BibliographyEntry(index.Indexed, Orderable, models.Model):
         verbose_name_plural = "Bibliography entries"
 
     def __str__(self):
-        return "{}, {}. {} ({})".format(
-            self.author_surname, self.author_firstname,
-            self.title, self.publication_year
+        return "{}: {}".format(
+            self.reference,
+            self.full_citation
         )
 
 
