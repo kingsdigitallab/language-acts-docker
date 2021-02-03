@@ -15,7 +15,7 @@
             {{ page.title }}
         </a>
         {% page_in_submenu self page as in_submenu %}
-        {% if page.get_children.live.exists %}
+        {% if page.get_children.live.in_menu.exists %}
         <span class="button secondary toggler {% if in_submenu %}open{% else %}close{% endif %} added">
             <span class="show-for-sr">Expand/Collapse submenu</span>
         </span>
