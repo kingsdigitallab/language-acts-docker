@@ -119,7 +119,7 @@ button i,
 [data-equalizer="imgblockheight"] {
     h1, h2, h3,
     h4, h5, h6 {
-        clear: none;
+        clear: none !important;
     }
 }
 
