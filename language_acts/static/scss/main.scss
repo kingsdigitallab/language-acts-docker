@@ -117,10 +117,16 @@ button i,
 }
 
 [data-equalizer="imgblockheight"] {
+    margin: 2rem 0;
+}
+
+[data-equalizer-watch="imgblockheight"] {
     h1, h2, h3,
     h4, h5, h6 {
         clear: none !important;
     }
+
+    padding-bottom: 1rem;
 }
 
 h1 small,
