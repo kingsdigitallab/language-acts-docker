@@ -4,5 +4,9 @@
         <h3 class="text-center">{{ block.value.title }}</h3>
         {{ block.value.description|safe }}
     </div>
-    <a href="{% if block.value.url %}{{ block.value.url }}{% else %}{% pageurl block.value.page %}{% endif %}" class="button expanded">Explore {{ block.value.title }}</a>
+{% if block.value.url %}
+    <a href="{{ block.value.url }}" class="button expanded">Explore {{ block.value.title }}</a>
+  {% elif block.value.page %}
+  <a href="{% pageurl block.value.page %}" class="button expanded">Explore {{ block.value.title }}</a>
+{% endif %}
 </li>
