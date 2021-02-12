@@ -67,7 +67,7 @@ services:
 
 
   elasticsearch:
-    image: elasticsearch:7.5.1
+    image: elasticsearch:7.10.1
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     env_file:
