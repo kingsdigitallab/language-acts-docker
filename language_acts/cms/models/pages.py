@@ -171,7 +171,7 @@ class RecordIndexPage(Page):
             context['facets'] = response.facets
             context['search_result'] = response
         except NotFoundError as e:
-            print("ERROR: Index not Ready!")
+            print("ERROR: Index not Ready! {}".format(e))
             context['facets'] = []
             context['search_result'] = []
         context['selected_facets'] = selected_facets_ui
