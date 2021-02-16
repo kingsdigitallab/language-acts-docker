@@ -39,7 +39,7 @@ services:
     restart: unless-stopped
 
   elasticsearch:
-    image: elasticsearch:7.9.2
+    image: elasticsearch:7.5.1
     volumes:
       - local_elasticsearch_data:/usr/share/elasticsearch/data
     env_file:
