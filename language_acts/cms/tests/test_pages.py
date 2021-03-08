@@ -33,9 +33,34 @@ from wagtail.images.models import Image
 from django.core.files.storage import default_storage
 from wagtail.tests.utils.form_data import streamfield, nested_form_data
 from language_acts.cms.models.snippets import (BibliographyPage, GlossaryPage)
-
+# from elasticsearch import Elasticsearch
+# from elasticsearch_dsl import Search
 
 """ Helper functions to make trees of wagtail objects for tests  """
+
+
+class ElasticSafeTestCase(TestCase):
+    """ Test case with a class setup to check elastic
+    is ready"""
+
+    @classmethod
+    def testElasticConnection(cls):
+        """ Does a quick query on the elastic server
+        to ensure it is actually ready, to prevent a race condition
+        when container is started but not yet ready"""
+        # TODO add this to test elastic connection if not in dockerfile
+        # client = Elasticsearch()
+        # s = Search(
+        #     using=client,
+        #     index=self.index,
+        # )
+
+        pass
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.testElasticConnection()
 
 
 def create_site_root() -> Page:
