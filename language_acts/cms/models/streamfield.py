@@ -145,3 +145,16 @@ class CMSStreamBlock(StreamBlock):
 class RecordEntryStreamBlock(StreamBlock):
     text = RichTextBlock(icon='pilcrow')
     html = AlignedHTMLBlock(icon='code', label='Raw HTML', required=False)
+    h2 = CharBlock(icon='title', classname='title')
+    h3 = CharBlock(icon='title', classname='title')
+    h4 = CharBlock(icon='title', classname='title')
+    h5 = CharBlock(icon='title', classname='title')
+
+    intro = RichTextBlock(icon='pilcrow')
+    paragraph = RichTextBlock(icon='pilcrow')
+    pullquote = PullQuoteBlock(icon='openquote')
+
+    image = ImageBlock(label='Aligned image + text', icon='image')
+    document = DocumentChooserBlock(icon='doc-full-inverse')
+    link = LinkBlock(icon='link')
+    embed = EmbedBlock(icon='media')
