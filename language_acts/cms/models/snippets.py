@@ -2,6 +2,7 @@ from django.db import models
 from modelcluster.fields import ParentalKey
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel
 from wagtail.core.models import Orderable, Page
+from wagtail.core.fields import RichTextField
 from wagtail.search import index
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.snippets.models import register_snippet
@@ -78,8 +79,10 @@ class GlossaryTerm(models.Model):
 
 @register_snippet
 class BibliographyEntry(index.Indexed, Orderable, models.Model):
-    full_citation = models.TextField(blank=True, null=True)
-    reference = models.CharField(max_length=256, blank=True)
+    full_citation = RichTextField(
+        null=True, blank=True, editor='bibliography')
+    reference = RichTextField(
+        blank=True, editor='bibliography')
 
     panels = [
         FieldPanel('reference'),
