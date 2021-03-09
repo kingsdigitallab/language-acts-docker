@@ -61,103 +61,64 @@ def bibliographic_reference_decorator(props):
     }, props['children'])
 
 
-@hooks.register('register_rich_text_features')
-def text_colour_feature_1(features):
+class TextColourDraftail:
     """
-    Text colour selection function
+        Register Text colour inline html function, one for each colour class
     """
     feature_name = 'entry-text-colour-1'
-    type_ = 'text-colour'
     text_class = 'entry-colour-1'
-
-    control = {
-        'type': type_,
-        'label': 'C1',
-        'description': 'Text colour',
-        'element': 'span',
-    }
-
-    features.register_editor_plugin(
-        'draftail', feature_name,
-        draftail_features.BlockFeature(control)
-    )
-
-    features.register_converter_rule('contentstate', feature_name, {
-        'from_database_format': {
-            'span[class={}]'.format(text_class): BlockElementHandler(type_)},
-        'to_database_format': {'block_map': {
-            type_: {'element': 'span', 'props': {
-                'class': '{}'.format(text_class)}}
-        }
-        },
-    })
-
-    features.default_features.append('entry-text-colour-1')
-
-
-@hooks.register('register_rich_text_features')
-def text_colour_feature_2(features):
-    """
-    Text colour selection function
-    """
-    feature_name = 'entry-text-colour-2'
     type_ = 'text-colour'
-    text_class = 'entry-colour-2'
+    label = ''
 
-    control = {
-        'type': type_,
-        'label': 'C2',
-        'description': 'Text colour',
-        'element': 'span',
-    }
+    def __init__(self, feature_name, text_class, label, type='text-colour'):
+        self.feature_name = feature_name
+        self.text_class = text_class
+        self.label = label
+        self.type_ = type
 
-    features.register_editor_plugin(
-        'draftail', feature_name,
-        draftail_features.BlockFeature(control)
-    )
+    def register_text_colour_feature(self, features):
 
-    features.register_converter_rule('contentstate', feature_name, {
-        'from_database_format': {
-            'span[class={}]'.format(text_class): BlockElementHandler(type_)},
-        'to_database_format': {'block_map': {
-            type_: {'element': 'span', 'props': {
-                'class': '{}'.format(text_class)}}
+        control = {
+            'type': self.type_,
+            'label': self.label,
+            'description': 'Text colour',
+            'element': 'span',
         }
-        },
-    })
 
-    features.default_features.append('entry-text-colour-2')
+        features.register_editor_plugin(
+            'draftail', self.feature_name,
+            draftail_features.BlockFeature(control)
+        )
+
+        features.register_converter_rule('contentstate', self.feature_name, {
+            'from_database_format': {
+                'span[class={}]'.format(self.text_class): BlockElementHandler(
+                    self.type_)},
+            'to_database_format': {'block_map': {
+                self.type_: {'element': 'span', 'props': {
+                    'class': '{}'.format(self.text_class)}}
+            }
+            },
+        })
+
+        features.default_features.append(self.feature_name)
 
 
-@hooks.register('register_rich_text_features')
-def text_colour_feature_3(features):
-    """
-    Text colour selection function
-    """
-    feature_name = 'entry-text-colour-3'
-    type_ = 'text-colour'
-    text_class = 'entry-colour-3'
+text_colour_hooks = [
+    TextColourDraftail(
+        'entry-text-colour-1', 'entry-colour-1', 'C1', 'text-colour-1'),
+    TextColourDraftail(
+        'entry-text-colour-2', 'entry-colour-2', 'C2', 'text-colour-2'),
+    TextColourDraftail(
+        'entry-text-colour-3', 'entry-colour-3', 'C3', 'text-colour-3'),
+    TextColourDraftail(
+        'entry-text-colour-4', 'entry-colour-4', 'C4', 'text-colour-4'),
+    TextColourDraftail(
+        'entry-text-colour-5', 'entry-colour-5', 'C5', 'text-colour-5'),
+]
 
-    control = {
-        'type': type_,
-        'label': 'C3',
-        'description': 'Text colour',
-        'element': 'span',
-    }
-
-    features.register_editor_plugin(
-        'draftail', feature_name,
-        draftail_features.BlockFeature(control)
+for hook in text_colour_hooks:
+    hooks.register(
+        'register_rich_text_features',
+        hook.register_text_colour_feature
     )
-
-    features.register_converter_rule('contentstate', feature_name, {
-        'from_database_format': {
-            'span[class={}]'.format(text_class): BlockElementHandler(type_)},
-        'to_database_format': {'block_map': {
-            type_: {'element': 'span', 'props': {
-                'class': '{}'.format(text_class)}}
-        }
-        },
-    })
-
-    features.default_features.append('entry-text-colour-3')
