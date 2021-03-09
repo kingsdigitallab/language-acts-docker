@@ -350,7 +350,7 @@ WAGTAILADMIN_RICH_TEXT_EDITORS = {
     'bibliography': {
         'WIDGET': 'wagtail.admin.rich_text.DraftailRichTextArea',
         'OPTIONS': {
-            'features': ['bold', 'italic', 'colour', 'underline']
+            'features': ['bold', 'italic', 'colour', 'link']
         }
     }
 }
