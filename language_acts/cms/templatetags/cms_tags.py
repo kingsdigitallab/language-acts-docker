@@ -319,5 +319,5 @@ def add_references(block):
     elif type(block) == RichText:
         value_str = block.source
     # bibliography refs
-    value_str = add_bibliography_references(value_str)
+    value_str = 'ER: '+add_bibliography_references(value_str)
     return RichText(value_str)
