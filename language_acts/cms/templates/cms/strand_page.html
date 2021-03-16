@@ -32,7 +32,7 @@
             </header>
 
             {% if page.blogs_contextual_information %}
-            <p>{{ page.blogs_contextual_information|safe }}</p>
+            <p>{{ page.blogs_contextual_information|add_references|safe }}</p>
             {% endif %}
 
             {% if blog_posts %}
@@ -70,7 +70,7 @@
         </header>
 
         {% if page.events_contextual_information %}
-        <p>{{ page.events_contextual_information|safe }}</p>
+        <p>{{ page.events_contextual_information|add_references|safe }}</p>
         {% endif %}
 
         {% if past_events or upcoming_events %}
@@ -85,7 +85,7 @@
         </header>
 
         {% if page.news_contextual_information %}
-        <p>{{ page.news_contextual_information|safe }}</p>
+        <p>{{ page.news_contextual_information|add_references|safe }}</p>
         {% endif %}
 
         {% if news_posts %}

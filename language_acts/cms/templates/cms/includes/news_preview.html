@@ -24,7 +24,7 @@
                      | <span class="disqus-comment-count" data-disqus-identifier="{{ page.id }}">Comments</span>
                     {% endif %}
                 </p>
-                <p>{{ page.search_description }}</p>
+                <p>{{ page.search_description|add_references|safe }}</p>
             </div>
         </div>
         {% if self.slug != 'home' %}

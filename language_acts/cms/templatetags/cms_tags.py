@@ -320,6 +320,8 @@ def add_references(block):
             value_str = block.value['html']
     elif type(block) == RichText:
         value_str = block.source
+    elif type(block) == str:
+        value_str = block
     # bibliography refs
     value_str = add_bibliography_references(value_str)
     return RichText(value_str)
