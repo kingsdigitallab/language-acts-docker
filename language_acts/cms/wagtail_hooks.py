@@ -1,8 +1,11 @@
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
+from wagtail.admin.rich_text.converters.html_to_contentstate import (
+    InlineStyleElementHandler
+)
 from draftjs_exporter.dom import DOM
 from wagtail.admin.rich_text.converters.html_to_contentstate import (
     InlineEntityElementHandler,
-    BlockElementHandler
+
 )
 from wagtail.core import hooks
 
@@ -69,6 +72,7 @@ class TextColourDraftail:
     text_class = 'entry-colour-1'
     type_ = 'text-colour'
     label = ''
+    tag = 'span'
 
     def __init__(self, feature_name, text_class, label, type='text-colour'):
         self.feature_name = feature_name
@@ -82,24 +86,32 @@ class TextColourDraftail:
             'type': self.type_,
             'label': self.label,
             'description': 'Text colour',
-            'element': 'span',
+            'style': {'color': '$bright-blue;'},
         }
 
         features.register_editor_plugin(
             'draftail', self.feature_name,
-            draftail_features.BlockFeature(control)
+            draftail_features.InlineStyleFeature(control)
         )
 
-        features.register_converter_rule('contentstate', self.feature_name, {
-            'from_database_format': {
-                'span[class={}]'.format(self.text_class): BlockElementHandler(
-                    self.type_)},
-            'to_database_format': {'block_map': {
-                self.type_: {'element': 'span', 'props': {
-                    'class': '{}'.format(self.text_class)}}
-            }
-            },
-        })
+        db_conversion = {
+            'from_database_format': {self.tag: InlineStyleElementHandler(self.type_)},
+            'to_database_format': {'style_map': {self.type_: self.tag}},
+        }
+
+        features.register_converter_rule('contentstate', self.feature_name,
+                                         db_conversion)
+
+        # features.register_converter_rule('contentstate', self.feature_name, {
+        #     'from_database_format': {
+        #         'span[class={}]'.format(self.text_class): BlockElementHandler(
+        #             self.type_)},
+        #     'to_database_format': {'block_map': {
+        #         self.type_: {'element': 'span', 'props': {
+        #             'class': '{}'.format(self.text_class)}}
+        #     }
+        #     },
+        # })
 
         features.default_features.append(self.feature_name)
 
