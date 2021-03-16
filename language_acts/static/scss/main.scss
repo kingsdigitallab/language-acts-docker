@@ -824,6 +824,46 @@ article {
     }
 }
 
+// Text colours
+
+.entry-colour-1,
+.text-colour-1 {
+    color: $bright-blue;
+}
+
+.entry-colour-2,
+.text-colour-2 {
+    color: $dark-orange;
+}
+
+.entry-colour-3,
+.text-colour-3 {
+    color: $dark-blue;
+}
+
+.entry-colour-4,
+.text-colour-4 {
+    color: $success-color;
+}
+
+.entry-colour-5,
+.text-colour-5 {
+    color: $alert-color;
+}
+
+// Display colour in Wagtail
+.text-colour-1,
+.text-colour-1,
+.text-colour-1,
+.text-colour-1,
+.text-colour-1 {
+    &::before {
+        content: '\2022';
+        font-size: 72px;
+        line-height: 8px;
+    }
+}
+
 /** Search **/
 
 // Search box
@@ -1379,11 +1419,8 @@ Animating the logo's diactrics
     }
 }
 
-
-.hist_freq_chart
-{
-    svg
-    {
+.hist_freq_chart {
+    svg {
         width: 100%;
         height: auto;
     }
