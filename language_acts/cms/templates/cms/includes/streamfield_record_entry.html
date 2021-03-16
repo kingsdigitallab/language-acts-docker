@@ -3,7 +3,7 @@
 <div class="page-content">
   {% for block in blocks %}
   {% if block.block_type == 'text' %}
-  {{ block.value|richtext }}
+  {{ block.value|richtext|add_references }}
   {% elif block.block_type == 'html' %}
   {{ block |add_references }}
   {% endif %}

@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 {% if event.search_description %}
-                <p>{{ event.search_description|safe }}</p>
+                <p>{{ event.search_description|add_references|safe }}</p>
                 {% endif %}
             </div>
         {% if self.slug != 'home' %}

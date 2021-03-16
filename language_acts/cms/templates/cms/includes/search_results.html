@@ -1,10 +1,11 @@
+{% load cms_tags %}
 {% if results.paginator.count %}
 
     <ol class="search-results">
         {% for result in results_qs %}
             <li><h4><a href="{{ result.url }}">{{ result }}</a></h4>
                 {% if result.specific.search_description %}
-                    <p>{{ result.specific.search_description|safe }}</p>
+                    <p>{{ result.specific.search_description|add_references|safe }}</p>
                 {% endif %}
 
 
