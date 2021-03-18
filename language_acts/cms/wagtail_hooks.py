@@ -1,11 +1,11 @@
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
-from wagtail.admin.rich_text.converters.html_to_contentstate import (
-    InlineStyleElementHandler
-)
 from draftjs_exporter.dom import DOM
 from wagtail.admin.rich_text.converters.html_to_contentstate import (
     InlineEntityElementHandler,
 
+)
+from wagtail.admin.rich_text.converters.html_to_contentstate import (
+    InlineStyleElementHandler
 )
 from wagtail.core import hooks
 
@@ -70,18 +70,17 @@ class TextColourDraftail:
     """
     feature_name = 'entry-text-colour-1'
     text_class = 'entry-colour-1'
-    type_ = 'text-colour'
+    type_ = 'TEXTCOLOUR'
     label = ''
-    tag = 'span'
+    tag = 'textcolour'
 
-    def __init__(self, feature_name, text_class, label, type='text-colour'):
+    def __init__(self, feature_name, text_class, label):
         self.feature_name = feature_name
         self.text_class = text_class
         self.label = label
-        self.type_ = type
+        # self.type_ = type
 
     def register_text_colour_feature(self, features):
-
         control = {
             'type': self.type_,
             'label': self.label,
@@ -95,38 +94,43 @@ class TextColourDraftail:
         )
 
         db_conversion = {
-            'from_database_format': {self.tag: InlineStyleElementHandler(self.type_)},
-            'to_database_format': {'style_map': {self.type_: self.tag}},
+            'from_database_format': {
+                'span[data-custom-style]': InlineStyleElementHandler(self.type_)},
+            'to_database_format': {'style_map': {
+                self.type_: {
+                    'element': 'span',
+                    'props': {
+                        'class': self.text_class,
+                        'data-custom-style': self.feature_name
+                    }
+                }
+            }
+            },
         }
 
         features.register_converter_rule('contentstate', self.feature_name,
                                          db_conversion)
 
-        # features.register_converter_rule('contentstate', self.feature_name, {
-        #     'from_database_format': {
-        #         'span[class={}]'.format(self.text_class): BlockElementHandler(
-        #             self.type_)},
-        #     'to_database_format': {'block_map': {
-        #         self.type_: {'element': 'span', 'props': {
-        #             'class': '{}'.format(self.text_class)}}
-        #     }
-        #     },
-        # })
-
         features.default_features.append(self.feature_name)
 
 
 text_colour_hooks = [
+
     TextColourDraftail(
-        'entry-text-colour-1', 'entry-colour-1', 'C1', 'text-colour-1'),
-    TextColourDraftail(
-        'entry-text-colour-2', 'entry-colour-2', 'C2', 'text-colour-2'),
-    TextColourDraftail(
-        'entry-text-colour-3', 'entry-colour-3', 'C3', 'text-colour-3'),
-    TextColourDraftail(
-        'entry-text-colour-4', 'entry-colour-4', 'C4', 'text-colour-4'),
-    TextColourDraftail(
-        'entry-text-colour-5', 'entry-colour-5', 'C5', 'text-colour-5'),
+        'entry-text-colour-1', 'entry-colour-1', 'C1',
+    ),
+    # TextColourDraftail(
+    #     'entry-text-colour-2', 'entry-colour-2', 'C2',
+    #     'text-colour-2'),
+    # TextColourDraftail(
+    #     'entry-text-colour-3', 'entry-colour-3', 'C3',
+    #     'text-colour-3'),
+    # TextColourDraftail(
+    #     'entry-text-colour-4', 'entry-colour-4', 'C4',
+    #     'text-colour-4'),
+    # TextColourDraftail(
+    #     'entry-text-colour-5', 'entry-colour-5', 'C5',
+    #     'text-colour-5'),
 ]
 
 for hook in text_colour_hooks:
