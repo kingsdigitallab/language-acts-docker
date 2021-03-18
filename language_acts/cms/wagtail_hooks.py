@@ -66,52 +66,6 @@ def bibliographic_reference_decorator(props):
     }, props['children'])
 
 
-class TextColourStyleElementHandler(InlineStyleElementHandler):
-    pass
-
-
-#     def handle_starttag(self, name, attrs, state, contentstate):
-#         # super().handle_starttag(name, attrs, state, contentstate)
-#         if state.current_block is None:
-#             # Inline style element encountered at the top level -
-#             # start a new paragraph block to contain it
-#             add_paragraph_block(state, contentstate)
-#
-#         if state.leading_whitespace == FORCE_WHITESPACE:
-#             # any pending whitespace should be output before handling this
-#             tag,
-#             # and subsequent whitespace should be collapsed into it (=
-#             stripped)
-#             state.current_block.text += ' '
-#             state.leading_whitespace = STRIP_WHITESPACE
-#
-#         inline_style_range = InlineStyleRange(self.style)
-#         inline_style_range.offset = len(state.current_block.text)
-#         state.current_block.inline_style_ranges.append(inline_style_range)
-#         state.current_inline_styles.append(inline_style_range)
-
-class TextColourStyleEntityElementHandler(InlineEntityElementHandler):
-    """
-        Database HTML to Draft.js ContentState.
-        Converts the span tag into a REF entity, with the right data.
-    """
-    mutability = 'IMMUTABLE'
-
-    def __init__(self, entity_type, text_class):
-        self.entity_type = entity_type
-        self.text_class = text_class
-
-    def get_attribute_data(self, attrs):
-        """
-        Get the reference id
-        """
-        attrs = {
-            'text_class': self.text_class
-        }
-
-        return attrs
-
-
 class TextColourDraftail:
     """
         Register Text colour inline html function, one for each colour class
@@ -145,7 +99,7 @@ class TextColourDraftail:
 
         db_conversion = {
             'from_database_format': {
-                'span[data-custom-style]': TextColourStyleElementHandler(
+                'span[data-custom-style]': InlineStyleElementHandler(
                     self.type_)},
             'to_database_format': {'style_map': {
                 self.type_: {
