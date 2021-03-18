@@ -388,7 +388,7 @@ h4, h5, h6 {
     }
 
     .menu > li > a {
-        padding: rem-calc(24 16 20);
+        padding: rem-calc(20 16);
 
         &:hover {
             background: scale-color($primary-color, $lightness: 70%);
@@ -1197,12 +1197,13 @@ Animating the logo's diactrics
     }
 
     .top-bar {
-        margin-top: rem-calc(-16);
+        align-items: stretch;
+        // margin-top: rem-calc(-16);
     }
 
     .top-bar-right {
         form {
-            padding-top: rem-calc(32);
+            padding-top: rem-calc(16);
         }
     }
 
@@ -1291,6 +1292,10 @@ Animating the logo's diactrics
         &.float-right {
             float: none !important;
         }
+    }
+
+    .is-dropdown-submenu {
+        position: relative;
     }
 
     .section-header {
