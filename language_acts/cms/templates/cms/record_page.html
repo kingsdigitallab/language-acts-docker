@@ -50,7 +50,7 @@ creating a single record page
 
     {% for page in self.get_languages %}
         {% get_toggler_status page=page as is_open%}
-    <h2 class="toggler {% if is_open %}open{% else %}close{% endif %}">
+    <h2 class="toggler toggle-section {% if is_open %}open{% else %}close{% endif %}">
       <a id="page-{{page.id}}">
         <i class="fa fa-link"></i> {{ page.specific.period}}
         {{page.specific.language}}</a>

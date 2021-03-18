@@ -114,6 +114,12 @@ button i,
             content: "\f0da";
         }
     }
+
+    &.toggle-section {
+        &::after {
+            color: $primary-color;
+        }
+    }
 }
 
 [data-equalizer="imgblockheight"] {
