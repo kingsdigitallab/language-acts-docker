@@ -859,10 +859,10 @@ article {
 
 // Display colour in Wagtail
 .text-colour-1,
-.text-colour-1,
-.text-colour-1,
-.text-colour-1,
-.text-colour-1 {
+.text-colour-2,
+.text-colour-3,
+.text-colour-4,
+.text-colour-5 {
     &::before {
         content: '\2022';
         font-size: 72px;
