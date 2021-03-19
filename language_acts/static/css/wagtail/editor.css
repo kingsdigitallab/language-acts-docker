@@ -25,3 +25,14 @@
 .text-colour-5 {
     color: #EC5840;
 }
+
+// Display colour in Wagtail
+.text-colour-1::before,
+.text-colour-2::before,
+.text-colour-3::before,
+.text-colour-4::before,
+.text-colour-5::before {
+    content: '\2022';
+    font-size: 72px;
+    line-height: 8px;
+}
