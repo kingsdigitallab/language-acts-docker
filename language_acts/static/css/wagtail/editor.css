@@ -26,7 +26,7 @@
     color: #EC5840;
 }
 
-// Display colour in Wagtail
+/* Display colour in Wagtail */
 .text-colour-1::before,
 .text-colour-2::before,
 .text-colour-3::before,
