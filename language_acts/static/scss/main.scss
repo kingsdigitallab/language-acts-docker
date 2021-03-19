@@ -1,6 +1,6 @@
 @import 'settings';
 @import 'font-awesome';
-@import '../vendor/foundation-sites/scss/foundation';
+@import '../foundation-sites/scss/foundation';
 @import '../vendor/motion-ui/motion-ui';
 
 @import 'strand-1-tc',
@@ -364,7 +364,7 @@ header.top-header {
         .st0{
             fill: #fff;
         }
-        
+
         .st1{
             fill: #009ee2;
         }
@@ -512,21 +512,21 @@ h4, h5, h6 {
 }
 
 .blog-section {
-    &::before {        
+    &::before {
         color: $light-gray;
         content: "\f02b";
     }
 }
 
 .events-section {
-    &::before {        
+    &::before {
         color: $light-gray;
         content: "\f073";
     }
 }
 
 .news-section {
-    &::before {        
+    &::before {
         color: $light-gray;
         content: "\f1ea";
     }
@@ -657,7 +657,7 @@ article {
         .title {
             font-size: 2rem;
         }
-        
+
         &:before {
             background: $white;
             border-radius: 0 0 0 50%;
@@ -879,7 +879,7 @@ article {
         border: none;
         -moz-box-shadow: inset rem-calc(0 0 2) $primary-color;
         -webkit-box-shadow: inset rem-calc(0 0 2) $primary-color;
-        box-shadow: inset rem-calc(0 0 2) $primary-color; 
+        box-shadow: inset rem-calc(0 0 2) $primary-color;
         height: rem-calc(44);
         max-width: 100% !important;
         width: 100% !important;
@@ -1290,7 +1290,7 @@ Animating the logo's diactrics
     .img-wrapper {
         display: block !important;
         padding-bottom: 10px;
-        
+
         &.float-left {
             float: none !important;
         }
