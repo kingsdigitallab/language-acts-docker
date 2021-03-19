@@ -36,3 +36,28 @@
     font-size: 72px;
     line-height: 8px;
 }
+
+button[name="TEXTCOLOUR-C1"] {
+  content: '\2022';
+    color: rgb(20, 177, 231);
+}
+
+button[name="TEXTCOLOUR-C2"] {
+  content: '\2022';
+    color: rgb(186, 75, 22);
+}
+
+button[name="TEXTCOLOUR-C3"] {
+  content: '\2022';
+    color: rgb(0, 45, 59);
+}
+
+button[name="TEXTCOLOUR-C4"] {
+  content: '\2022';
+   color: #3ADB76;
+}
+
+button[name="TEXTCOLOUR-C5"] {
+  content: '\2022';
+     color: #EC5840;
+}
