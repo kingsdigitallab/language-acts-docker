@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "foundation-sites": "^6.6.3"
+    "foundation-sites": "^6.6.3",
+    "jquery": ">=2.2.0",
+    "what-input": ">=4.1.0"
   }
 }
