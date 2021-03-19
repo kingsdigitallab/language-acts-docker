@@ -2,5 +2,6 @@
 # ------------------------------------------------------------------------------
 USE_DOCKER=yes
 IPYTHONDIR=/app/.ipython
+DEFAULT_ELASTICSEARCH_CONNECTION=http://elasticsearch:9200
 
 

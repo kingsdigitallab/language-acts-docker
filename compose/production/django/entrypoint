@@ -39,4 +39,32 @@ until postgres_ready; do
 done
 >&2 echo 'PostgreSQL is available'
 
+if [ -z "${DEFAULT_ELASTICSEARCH_CONNECTION}" ]; then
+    export DEFAULT_ELASTICSEARCH_CONNECTION="http://elasticsearch:9200"
+fi
+
+elastic_ready() {
+python << END
+import sys
+
+from elasticsearch_dsl import Search
+from elasticsearch_dsl import connections
+from elasticsearch import Elasticsearch
+
+try:
+    es = Elasticsearch(['http://localhost:9200/'], verify_certs=True)
+    es.ping()
+except elasticsearch.exceptions.ConnectionError:
+    sys.exit(-1)
+sys.exit(0)
+
+END
+}
+until elastic_ready; do
+  >&2 echo 'Waiting for Elasticsearch to become available...'
+  sleep 1
+done
+>&2 echo 'Elasticsearch is available'
+
+
 exec "$@"
