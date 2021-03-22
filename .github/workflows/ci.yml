@@ -41,11 +41,11 @@ jobs:
 
       - name: Build the Stack
         run: docker-compose -f local.yml up -d --build
-        
-      - name: Sleep for 60 seconds
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '60s'
+
+#      - name: Sleep for 60 seconds
+#        uses: jakejarvis/wait-action@master
+#        with:
+#          time: '60s'
 
       - name: Run Django Tests
         run: docker-compose -f local.yml run django coverage run -m pytest -s
