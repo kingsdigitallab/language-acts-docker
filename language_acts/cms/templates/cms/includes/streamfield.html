@@ -13,7 +13,8 @@
     {% elif block.block_type == 'intro' %}
     <div class="intro">{{ block }}</div>
     {% elif block.block_type == 'paragraph' %}
-    {{ block.value|richtext|add_references }}
+    {{ block.value|richtext|add_references|safe}}
+
     {% elif block.block_type == 'html' %}
     {{ block.value.bound_blocks.html.render }}
     {% elif block.block_type == 'grid' %}
@@ -28,4 +29,7 @@
     {% include_block block %}
     {% endif %}
     {% endfor %}
+      <br/>
+      <br/>
+
 </div>

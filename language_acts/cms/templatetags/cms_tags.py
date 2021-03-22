@@ -1,22 +1,24 @@
 import re
-import wagtail.core.blocks as wagtail_blocks
 from datetime import date
 
-from language_acts.cms.models.pages import (
-    BlogPost, Event, NewsPost, HomePage, BlogIndexPage,
-    NewsIndexPage, EventIndexPage
-)
-from language_acts.cms.models.snippets import (
-    GlossaryTerm, BibliographyEntry
-)
+import wagtail.core.blocks as wagtail_blocks
 from django import template
 from django.conf import settings
-from wagtail.core.models import Page, Site
 from django.core.exceptions import ObjectDoesNotExist
-from language_acts.cms.views.ref_chooser import get_page_model
-
+from wagtail.core.models import Page, Site
 from wagtail.core.rich_text import RichText
 
+from language_acts.cms.models.pages import (
+    BlogPost,
+    Event,
+    NewsPost,
+    HomePage,
+    BlogIndexPage,
+    NewsIndexPage,
+    EventIndexPage,
+)
+from language_acts.cms.models.snippets import GlossaryTerm, BibliographyEntry
+from language_acts.cms.views.ref_chooser import get_page_model
 
 register = template.Library()
 
@@ -24,8 +26,11 @@ register = template.Library()
 @register.filter
 def get_section(current_page):
     homepage = HomePage.objects.first()
-    current_section = Page.objects.ancestor_of(current_page, inclusive=True) \
-        .child_of(homepage).first()
+    current_section = (
+        Page.objects.ancestor_of(current_page, inclusive=True)
+        .child_of(homepage)
+        .first()
+    )
     return current_section
 
 
@@ -37,26 +42,30 @@ def order_by(queryset, field):
 @register.simple_tag
 def are_comments_allowed():
     """Returns True if commenting on the site is allowed, False otherwise."""
-    return getattr(settings, 'ALLOW_COMMENTS', False)
+    return getattr(settings, "ALLOW_COMMENTS", False)
 
 
-@register.inclusion_tag('cms/tags/breadcrumbs.html', takes_context=True)
+@register.inclusion_tag("cms/tags/breadcrumbs.html", takes_context=True)
 def breadcrumbs(context, root, current_page):
     """Returns the pages that are part of the breadcrumb trail of the current
     page, up to the root page."""
-    pages = current_page.get_ancestors(
-        inclusive=True).descendant_of(root).filter(live=True)
+    pages = (
+        current_page.get_ancestors(inclusive=True).descendant_of(root).filter(live=True)
+    )
 
-    return {'request': context['request'], 'root': root,
-            'current_page': current_page, 'pages': pages}
+    return {
+        "request": context["request"],
+        "root": root,
+        "current_page": current_page,
+        "pages": pages,
+    }
 
 
 @register.simple_tag
 def get_homepage_events():
     """Returns 3 latest news posts"""
     today = date.today()
-    events = Event.objects.live().filter(
-        date_from__gte=today).order_by('date_from')
+    events = Event.objects.live().filter(date_from__gte=today).order_by("date_from")
     if events.count() < 4:
         return events
     else:
@@ -65,10 +74,10 @@ def get_homepage_events():
 
 @register.filter
 def lines(val):
-    if '\r\n' in val:
-        return val.split('\r\n')
+    if "\r\n" in val:
+        return val.split("\r\n")
     else:
-        return val.split('\n')
+        return val.split("\n")
 
 
 @register.filter
@@ -80,7 +89,7 @@ def related_words(page):
 def get_news_preview():
     """Returns 3 latest news posts"""
     today = date.today()
-    pages = NewsPost.objects.live().filter(date__lte=today).order_by('-date')
+    pages = NewsPost.objects.live().filter(date__lte=today).order_by("-date")
     if pages.count() < 3:
         return pages
     else:
@@ -91,7 +100,7 @@ def get_news_preview():
 def get_blog_posts_preview():
     """Returns 3 latest blog posts"""
     today = date.today()
-    pages = BlogPost.objects.live().filter(date__lte=today).order_by('-date')
+    pages = BlogPost.objects.live().filter(date__lte=today).order_by("-date")
     if pages.count() < 4:
         return pages
     else:
@@ -105,25 +114,25 @@ def get_site_root(context):
 
     :rtype: `wagtail.core.models.Page`
     """
-    if 'request' in context and hasattr(context['request'], 'site'):
-        return Site.find_for_request(context['request']).root_page
+    if "request" in context and hasattr(context["request"], "site"):
+        return Site.find_for_request(context["request"]).root_page
     else:
         return None
 
 
 @register.simple_tag(takes_context=False)
 def get_twitter_name():
-    return getattr(settings, 'TWITTER_NAME')
+    return getattr(settings, "TWITTER_NAME")
 
 
 @register.simple_tag(takes_context=False)
 def get_twitter_url():
-    return getattr(settings, 'TWITTER_URL')
+    return getattr(settings, "TWITTER_URL")
 
 
 @register.simple_tag(takes_context=False)
 def get_twitter_widget_id():
-    return getattr(settings, 'TWITTER_WIDGET_ID')
+    return getattr(settings, "TWITTER_WIDGET_ID")
 
 
 @register.simple_tag
@@ -133,87 +142,92 @@ def has_view_restrictions(page):
     return page.view_restrictions.count() > 0
 
 
-@register.inclusion_tag(
-    'cms/tags/show_children_in_menu.html', takes_context=False)
+@register.inclusion_tag("cms/tags/show_children_in_menu.html", takes_context=False)
 def show_children_in_menu(page):
     """ Force certain page types to never show children in menu"""
     show_children = True
     children = None
-    if (type(page.specific) == BlogIndexPage
-            or type(page.specific) == NewsIndexPage
-            or type(page.specific) == EventIndexPage):
+    if (
+        type(page.specific) == BlogIndexPage
+        or type(page.specific) == NewsIndexPage
+        or type(page.specific) == EventIndexPage
+    ):
         show_children = False
     if show_children:
         children = page.get_children().live().in_menu().specific()
-    return {
-        'page': page, 'show_children': show_children, 'children': children
-    }
+    return {"page": page, "show_children": show_children, "children": children}
 
 
-@register.inclusion_tag('cms/tags/main_menu.html', takes_context=True)
+@register.inclusion_tag("cms/tags/main_menu.html", takes_context=True)
 def main_menu(context, root, current_page=None):
     """Returns the main menu items, the children of the root page. Only live
     pages that have the show_in_menus setting on are returned."""
     # Added for wagtail 2.11
-    if 'request' in context:
-        request = context['request']
+    if "request" in context:
+        request = context["request"]
     else:
         request = None
     if request is not None and root is None:
-        root = Site.find_for_request(context['request']).root_page
+        root = Site.find_for_request(context["request"]).root_page
     if root is None:
         root = current_page
 
     try:
         menu_pages = root.get_children().live().in_menu()
-        root.active = (current_page.url == root.url
-                       if current_page else False)
+        root.active = current_page.url == root.url if current_page else False
         for page in menu_pages:
-            page.active = (current_page.url.startswith(page.url)
-                           if current_page else False)
+            page.active = (
+                current_page.url.startswith(page.url) if current_page else False
+            )
     except AttributeError:
-        print('Error in root: {}:{}'.format(root, current_page))
+        print("Error in root: {}:{}".format(root, current_page))
         menu_pages = []
 
-    return {'request': request, 'root': root,
-            'current_page': current_page, 'menu_pages': menu_pages}
+    return {
+        "request": request,
+        "root": root,
+        "current_page": current_page,
+        "menu_pages": menu_pages,
+    }
 
 
-@register.inclusion_tag('cms/tags/footer_menu.html', takes_context=True)
+@register.inclusion_tag("cms/tags/footer_menu.html", takes_context=True)
 def footer_menu(context, root, current_page=None):
     """Returns the main menu items, the children of the root page. Only live
     pages that have the show_in_menus setting on are returned."""
     menu_pages = root.get_children().live().in_menu()
 
-    root.active = (current_page.url == root.url
-                   if current_page else False)
+    root.active = current_page.url == root.url if current_page else False
 
     for page in menu_pages:
-        page.active = (current_page.url.startswith(page.url)
-                       if current_page else False)
+        page.active = current_page.url.startswith(page.url) if current_page else False
 
-    return {'request': context['request'], 'root': root,
-            'current_page': current_page, 'menu_pages': menu_pages}
+    return {
+        "request": context["request"],
+        "root": root,
+        "current_page": current_page,
+        "menu_pages": menu_pages,
+    }
 
 
 @register.filter
 def querify(req):
-    if '?q=' in req:
+    if "?q=" in req:
         return req
     else:
-        return '{}?q='.format(req)
+        return "{}?q=".format(req)
 
 
 @register.simple_tag(takes_context=True)
 def get_request_parameters(context, exclude=None):
     """Returns a string with all the request parameters except the exclude
     parameter."""
-    params = ''
-    request = context['request']
+    params = ""
+    request = context["request"]
 
     for key, value in request.GET.items():
         if key != exclude:
-            params += '&{key}={value}'.format(key=key, value=value)
+            params += "&{key}={value}".format(key=key, value=value)
 
     return params
 
@@ -221,7 +235,7 @@ def get_request_parameters(context, exclude=None):
 @register.simple_tag
 def page_in_submenu(page: Page = None, parent: Page = None) -> bool:
     """Return true if page parent is in page's children
-    (for sidebar menus) """
+    (for sidebar menus)"""
     if page and parent:
         for sub in parent.get_children().live().in_menu():
             if sub.pk == page.pk:
@@ -232,11 +246,11 @@ def page_in_submenu(page: Page = None, parent: Page = None) -> bool:
 @register.simple_tag(takes_context=True)
 def get_toggler_status(context, page):
     """Return open if menu in href, closed otherwise """
-    request = context['request']
-    if request and 'toggler_open' in request.GET:
+    request = context["request"]
+    if request and "toggler_open" in request.GET:
         try:
             # Assumes only one open at a time
-            page_id = int(request.GET['toggler_open'])
+            page_id = int(request.GET["toggler_open"])
             if page.pk == page_id:
                 return True
         except TypeError:
@@ -250,24 +264,27 @@ def add_glossary_terms(value: str) -> str:
         if term.term in str(value):
             value = value.replace(
                 term.term,
-                "<a title=\"{}\" href=\"{}\">{}</a>".format(
-                    term.description, '#', term.term
-                )
+                '<a title="{}" href="{}">{}</a>'.format(
+                    term.description, "#", term.term
+                ),
             )
     return value
 
 
 def create_ref_link(ref, page) -> str:
     """
-    Create a link to the bibliography page that jumps to our ref
+    Create a foundation dropdown that contains the full reference
+    and a link to the bibliography page
     """
-    bibliography_url = page.url + '#reference-{}'.format(page.pk)
-    ref_link = "<a href=\"{}\" aria-describedby=\"ref_{}-desc\">{}</a>".format(
-        bibliography_url, ref.pk, ref.reference)
-    ref_link = ref_link + \
-        "<div role=\"tooltip\" id=\"ref_{}-desc\">{}</div>".format(
-                    ref.pk, ref.full_citation
-        )
+
+    bibliography_url = page.url + "#reference-{}".format(page.pk)
+    menu_id = "reference-dropdown-{}".format(page.pk)
+    dropdown_text = '<a href="{}">{}</a>'.format(bibliography_url, ref.full_citation)
+    ref_link = (
+        '<span class="ref_toggle" data-toggle="{}">{}</span>'
+        '<div class="dropdown-pane top" id="{}" data-dropdown>'
+        "{}</div>".format(menu_id, ref.reference, menu_id, dropdown_text)
+    )
     return ref_link
 
 
@@ -290,19 +307,15 @@ def add_bibliography_references(value: str) -> str:
                         # create a link to the bibliography page
                         # that jumps to our ref
                         value = value.replace(
-                            result.group(0),
-                            create_ref_link(ref, page)
+                            result.group(0), create_ref_link(ref, page)
                         )
                     else:
-                        print('WARNING: Ref called without page {}'.format(
-                            ref_id
-                        ))
+                        print("WARNING: Ref called without page {}".format(ref_id))
                         if ref:
-                            value = value.replace(
-                                result.group(0), ref.reference)
+                            value = value.replace(result.group(0), ref.reference)
 
                 except ObjectDoesNotExist:
-                    print(' ref not found ')
+                    print(" ref not found ")
         else:
             break
 
@@ -311,13 +324,13 @@ def add_bibliography_references(value: str) -> str:
 
 @register.filter
 def add_references(block):
-    """ Add links from glossary terms and bibliography
+    """Add links from glossary terms and bibliography
     May be split to only add one type later if necessary"""
     # if type(block) ==
-    value_str = ''
+    value_str = ""
     if type(block) == wagtail_blocks.stream_block.StreamValue.StreamChild:
-        if 'html' in block.value:
-            value_str = block.value['html']
+        if "html" in block.value:
+            value_str = block.value["html"]
     elif type(block) == RichText:
         value_str = block.source
     elif type(block) == str:
