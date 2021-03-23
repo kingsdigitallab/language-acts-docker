@@ -1,4 +1,6 @@
 {
+  "name": "language_acts",
+  "version": "1.5.3",
   "dependencies": {
     "foundation-sites": "^6.6.3",
     "jquery": ">=2.2.0",
