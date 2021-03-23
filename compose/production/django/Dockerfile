@@ -21,16 +21,16 @@ RUN apt-get update \
 RUN addgroup --system django \
   && adduser --system --ingroup django django
 
-# node / npm install
-
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
-RUN apt-get install -y nodejs
-
-WORKDIR /app
-COPY ./package.json /app
-RUN npm install && npm cache clean --force
-COPY . /app
-RUN npm run build
+## node / npm install
+#
+#RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
+#RUN apt-get install -y nodejs
+#
+#WORKDIR /app
+#COPY ./package.json /app
+#RUN npm install && npm cache clean --force
+#COPY . /app
+#RUN npm run build
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
