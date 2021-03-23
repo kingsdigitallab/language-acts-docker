@@ -1,9 +1,10 @@
 # BlogPost,
 import PIL
+import factory
 from datetime import date
 from typing import Union, Optional
 from unittest.mock import MagicMock, create_autospec, patch
-import factory
+
 from language_acts.cms.models.pages import (
     BlogIndexPage, EventIndexPage, HomePage, IndexPage, NewsIndexPage,
     PastEventIndexPage, RichTextPage, StrandPage, _paginate, TagResults,
@@ -37,30 +38,6 @@ from language_acts.cms.models.snippets import (BibliographyPage, GlossaryPage)
 # from elasticsearch_dsl import Search
 
 """ Helper functions to make trees of wagtail objects for tests  """
-
-
-class ElasticSafeTestCase(TestCase):
-    """ Test case with a class setup to check elastic
-    is ready"""
-
-    @classmethod
-    def testElasticConnection(cls):
-        """ Does a quick query on the elastic server
-        to ensure it is actually ready, to prevent a race condition
-        when container is started but not yet ready"""
-        # TODO add this to test elastic connection if not in dockerfile
-        # client = Elasticsearch()
-        # s = Search(
-        #     using=client,
-        #     index=self.index,
-        # )
-
-        pass
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.testElasticConnection()
 
 
 def create_site_root() -> Page:
@@ -411,13 +388,14 @@ class TestBlogIndexPage(TestCase):
         self.home_page, created = Page.objects.get_or_create(id=2)
         self.home_page.add_child(
             instance=BlogIndexPageFactory.build(
-                title='Blog Index Test'
+                title='Blog Index Test',
             )
         )
         self.author_1 = BlogAuthorFactory()
         self.author_2 = BlogAuthorFactory()
         self.blog_index_page = BlogIndexPage.objects.get(
-            title='Blog Index Test')
+            title='Blog Index Test',
+        )
         self.blog_index_page.add_child(
             instance=BlogPostFactory.build(
                 author=self.author_1,

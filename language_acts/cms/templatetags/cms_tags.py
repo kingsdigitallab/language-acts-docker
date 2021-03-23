@@ -171,7 +171,6 @@ def main_menu(context, root, current_page=None):
         root = Site.find_for_request(context["request"]).root_page
     if root is None:
         root = current_page
-
     try:
         menu_pages = root.get_children().live().in_menu()
         root.active = current_page.url == root.url if current_page else False
