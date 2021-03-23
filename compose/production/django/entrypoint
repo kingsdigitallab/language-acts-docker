@@ -51,7 +51,7 @@ from elasticsearch_dsl import connections
 from elasticsearch.exceptions import ConnectionError
 
 try:
-    c = connections.create_connection(hosts=["${ELASTICSEARCH_HOST}"], timeout=10)
+    c = connections.create_connection(hosts=["${ELASTICSEARCH_HOST}"], timeout=15)
     c.info()
 except (ConnectionError, ConnectionRefusedError) as e:
     sys.exit(-1)
