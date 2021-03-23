@@ -22,8 +22,8 @@ RUN apt-get install -y nodejs
 
 WORKDIR /app
 COPY ./package.json /app
-RUN npm install && npm cache clean --force
-# COPY . /app
+RUN npm install
+COPY ./node_modules /app
 # RUN npm run build
 
 # Requirements are installed here to ensure they will be cached.
