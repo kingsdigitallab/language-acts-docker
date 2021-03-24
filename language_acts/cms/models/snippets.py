@@ -1,8 +1,9 @@
 from django.db import models
 from modelcluster.fields import ParentalKey
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel
-from wagtail.core.models import Orderable, Page
 from wagtail.core.fields import RichTextField
+from wagtail.core.models import Orderable, Page
+from wagtail.core.rich_text import RichText
 from wagtail.search import index
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.snippets.models import register_snippet
@@ -98,10 +99,7 @@ class BibliographyEntry(index.Indexed, Orderable, models.Model):
         verbose_name_plural = "Bibliography entries"
 
     def __str__(self):
-        return "{}: {}".format(
-            self.reference,
-            self.full_citation
-        )
+        return str(RichText(self.reference))
 
 
 class GlossaryTermItem(index.Indexed, Orderable, models.Model):
