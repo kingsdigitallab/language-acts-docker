@@ -1,36 +1,48 @@
 # EventIndexPage, HomePage, IndexPage, NewsIndexPage,
 import factory
 from language_acts.cms.models.pages import (
-    BlogIndexPage, BlogPost, BlogAuthor, RichTextPage,
-    NewsIndexPage, NewsPost, StrandPage, IndexPage,
-    PastEventIndexPage, EventIndexPage, Event, HomePage,
-    RecordIndexPage, RecordPage, RecordEntry, TagResults
+    BlogIndexPage,
+    BlogPost,
+    BlogAuthor,
+    RichTextPage,
+    NewsIndexPage,
+    NewsPost,
+    StrandPage,
+    IndexPage,
+    PastEventIndexPage,
+    EventIndexPage,
+    Event,
+    HomePage,
+    RecordIndexPage,
+    RecordPage,
+    RecordEntry,
+    TagResults,
 )
 
 
 class BlogAuthorFactory(factory.DjangoModelFactory):
-    author_name = factory.Faker('name')
+    author_name = factory.Faker("name")
 
     class Meta:
         model = BlogAuthor
 
 
 class TagResultsFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
 
     class Meta:
         model = TagResults
 
 
 class StrandPageFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
 
     class Meta:
         model = StrandPage
 
 
 class HomePageFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
     body = "[]"
     live = True
     show_in_menus = True
@@ -42,7 +54,7 @@ class HomePageFactory(factory.DjangoModelFactory):
 
 
 class IndexPageFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
     live = False
 
     class Meta:
@@ -50,7 +62,7 @@ class IndexPageFactory(factory.DjangoModelFactory):
 
 
 class EventIndexPageFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
     path = "00010009"
     depth = 2
 
@@ -59,7 +71,7 @@ class EventIndexPageFactory(factory.DjangoModelFactory):
 
 
 class PastEventIndexPageFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
     path = "00010009"
     depth = 2
 
@@ -68,12 +80,12 @@ class PastEventIndexPageFactory(factory.DjangoModelFactory):
 
 
 class EventFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
     path = factory.Sequence(lambda n: "00010009%04d" % n)
     # By default we make events in the past
-    date_from = factory.Faker('past_date')
-    time = factory.Faker('time')
-    location = factory.Faker('city')
+    date_from = factory.Faker("past_date")
+    time = factory.Faker("time")
+    location = factory.Faker("city")
     live = True
     depth = 3
 
@@ -83,7 +95,7 @@ class EventFactory(factory.DjangoModelFactory):
 
 
 class RichTextPageFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
     path = "00010009"
     depth = 3
 
@@ -92,9 +104,10 @@ class RichTextPageFactory(factory.DjangoModelFactory):
 
 
 class BlogIndexPageFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
     path = "00010009"
     depth = 2
+    show_in_menus = True
 
     class Meta:
         model = BlogIndexPage
@@ -102,10 +115,10 @@ class BlogIndexPageFactory(factory.DjangoModelFactory):
 
 
 class BlogPostFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
     path = factory.Sequence(lambda n: "00010009%04d" % n)
     author = factory.SubFactory(BlogAuthorFactory)
-    date = factory.Faker('past_date')
+    date = factory.Faker("past_date")
     live = True
     depth = 3
 
@@ -115,7 +128,7 @@ class BlogPostFactory(factory.DjangoModelFactory):
 
 
 class NewsIndexPageFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
 
     path = "00010009"
     depth = 2
@@ -126,9 +139,9 @@ class NewsIndexPageFactory(factory.DjangoModelFactory):
 
 
 class NewsPostFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
     path = factory.Sequence(lambda n: "00010009%04d" % n)
-    date = factory.Faker('past_date')
+    date = factory.Faker("past_date")
     live = True
     depth = 3
 
@@ -138,15 +151,15 @@ class NewsPostFactory(factory.DjangoModelFactory):
 
 
 class UserFactory(factory.django.DjangoModelFactory):
-    username = factory.Faker('name')
+    username = factory.Faker("name")
 
     class Meta:
-        model = 'auth.User'
-        django_get_or_create = ('username',)
+        model = "auth.User"
+        django_get_or_create = ("username",)
 
 
 class RecordIndexPageFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
     path = "00010009"
     depth = 2
 
@@ -156,7 +169,7 @@ class RecordIndexPageFactory(factory.DjangoModelFactory):
 
 
 class RecordPageFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
     path = factory.Sequence(lambda n: "00010009%04d" % n)
     live = True
     depth = 3
@@ -167,7 +180,7 @@ class RecordPageFactory(factory.DjangoModelFactory):
 
 
 class RecordEntryFactory(factory.DjangoModelFactory):
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Faker("sentence", nb_words=4)
     path = factory.Sequence(lambda n: "000100090008%04d" % n)
     live = True
     depth = 4
