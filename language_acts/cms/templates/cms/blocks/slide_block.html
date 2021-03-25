@@ -19,7 +19,7 @@
         </span>
         {% endif %}
 
-        <h2>{{ title }}</h2>
+        <div class="title">{{ title }}</div>
 
         {% if page.date %}
         <p class="meta">
@@ -33,7 +33,7 @@
         {% if page.date_from %}
         <p class="meta">
             <i class="fa fa-clock-o"></i>
-            <time datetime="{{ page.date }}">
+            <time datetime="{{ page.date_from|date:'Y-m-d' }}">
                 {{ page.date_from|date:'j M Y' }}
                 {% if page.date_to %} - {{ page.date_to|date:'j M Y' }}{% endif %} /
                 {{ page.time|date:'H:i' }}
@@ -49,7 +49,7 @@
         {% endif %}
 
         {% if description %}
-        <p>{{ description|truncatewords:40 }}</p>
+        {{ description|truncatewords:40 }}
         {% endif %}
         {% if url %}
         <a href="{{ url }}" class="button secondary expanded">Read more</a>

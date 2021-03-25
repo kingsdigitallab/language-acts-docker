@@ -6,12 +6,15 @@ Twitter: @kingsdigitallab
 GitHub: https://github.com/kingsdigitallab
 Location: London WC2B 5LE, United Kingdom
 
-Role: Name
-Site: https://www.kdl.kcl.ac.uk/who-we-are/
+Research Software Analyst: Paul Caton
+Site: https://kdl.kcl.ac.uk/who-we-are/dr-paul-caton/
 
-Role: Name
-Site: https://www.kdl.kcl.ac.uk/who-we-are/
+Research Software UI/UX Designer: Ginestra Ferraro
+Site: https://www.kdl.kcl.ac.uk/who-we-are/ginestra-ferraro/
+
+Research Software Engineer: Elliott Hall
+Site: https://kdl.kcl.ac.uk/who-we-are/elliott-hall/
 
 /* SITE */
-GitHub: https://github.com/kingsdigitallab/language_acts/
-ReadtheDocs: https://language_acts.readthedocs.io/
+GitHub: https://github.com/kingsdigitallab/language-acts-docker
+Web: https://languageacts.org/
