@@ -1,10 +1,10 @@
 {% load wagtailcore_tags cms_tags %}
 
-
-
+{% block d3_style %}
 <style type="text/css">
 {{ value.css|safe }}
 </style>
+{% endblock %}
 
 {{ value.html|safe }}
 

@@ -33,7 +33,7 @@
         {% if page.date_from %}
         <p class="meta">
             <i class="fa fa-clock-o"></i>
-            <time datetime="{{ page.date_from|date:'Y-m-j' }}">
+            <time datetime="{{ page.date_from|date:'Y-m-d' }}">
                 {{ page.date_from|date:'j M Y' }}
                 {% if page.date_to %} - {{ page.date_to|date:'j M Y' }}{% endif %} /
                 {{ page.time|date:'H:i' }}

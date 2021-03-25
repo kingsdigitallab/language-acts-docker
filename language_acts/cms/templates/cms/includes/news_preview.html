@@ -16,7 +16,7 @@
             <div class="card-section">
                 <div role="heading" aria-level="1" class="title"><a href="{% pageurl page %}">{{ page.title }}</a></div>
                 <p class="byline newspost">
-                    <time datetime="{{ page.specific.date }}">
+                    <time datetime="{{ page.specific.date|date:'Y-m-d' }}">
                     {{ page.specific.date|date:'j b Y' }}</time>
 
                     {% are_comments_allowed as allow_comments %}

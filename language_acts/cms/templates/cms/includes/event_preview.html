@@ -13,7 +13,7 @@
                         <i class="fa fa-clock-o"></i>
                     </div>
                     <div class="small-11 columns">
-                        <time datetime="{{ page.specific.date }}">
+                        <time datetime="{{ event.date_from|date:'Y-m-d' }}">
                         {{ event.date_from|date:'j M Y' }}
                         {% if event.date_to %} - {{ event.date_to|date:'j M Y' }}{% endif %}<br>
                         {{ event.time|date:'H:i' }}
@@ -58,7 +58,7 @@
                         <i class="fa fa-clock-o"></i>
                     </div>
                     <div class="small-11 columns">
-                        <time datetime="{{ page.specific.date }}">
+                        <time datetime="{{ event.date_from|date:'Y-m-d' }}">
                         {{ event.date_from|date:'j M Y' }}
                         {% if event.date_to %} - {{ event.date_to|date:'j M Y' }}{% endif %}<br>
                         {{ event.time|date:'H:i' }}

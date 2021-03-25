@@ -17,6 +17,13 @@
   <link rel="stylesheet" type="text/x-scss" href="{% static 'scss/main.scss' %}">
   {% endcompress %}
 
+  {% comment %}
+  CSS Styles for D3 Visualisations / D3 Block
+  {% endcomment %}
+
+  {% block d3_style %}
+  {% endblock %}
+
   {% block header_scripts %}
   {% endblock %}
 </head>
