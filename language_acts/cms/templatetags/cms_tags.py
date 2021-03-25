@@ -112,6 +112,11 @@ def get_site_root(context):
 
 
 @register.simple_tag(takes_context=False)
+def get_ga_id():
+    return getattr(settings, 'GA_ID')
+
+
+@register.simple_tag(takes_context=False)
 def get_twitter_name():
     return getattr(settings, 'TWITTER_NAME')
 
