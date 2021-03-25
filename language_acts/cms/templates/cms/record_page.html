@@ -18,7 +18,7 @@ creating a single record page
         <p><strong>Latin Lemma</strong></p>
       </div>
       <div class="small-6 medium-8 columns">
-        <p>{{ page.specific.latin_lemma|add_references|safe  }}</p>
+        {{ page.specific.latin_lemma|add_references|safe }}
       </div>
     </div>
 
@@ -42,7 +42,7 @@ creating a single record page
         <p><strong>Latin Meaning</strong></p>
       </div>
       <div class="small-6 medium-8 columns">
-        <p>{{ page.specific.latin_meaning|add_references|safe }}</p>
+        {{ page.specific.latin_meaning|add_references|safe }}
       </div>
     </div>
 
@@ -57,7 +57,7 @@ creating a single record page
     </h2>
 
     <div class="content {% if is_open %}show{% else %}hide{% endif %}">
-      {% include "cms/includes/record_entry.html"  with record=page %}
+      {% include "cms/includes/record_entry.html" with record=page %}
     </div>
 
     {% endfor %}
