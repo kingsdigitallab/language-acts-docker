@@ -173,6 +173,7 @@ STATIC_URL = "/static/"
 # os.path.join(ROOT_DIR, 'node_modules')
 STATICFILES_DIRS = [
     str(APPS_DIR.path("static")),
+    os.path.join(ROOT_DIR, 'node_modules', 'foundation-sites')
 ]
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles
 # -finders
