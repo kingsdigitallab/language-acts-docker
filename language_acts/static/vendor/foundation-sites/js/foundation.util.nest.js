@@ -5,8 +5,9 @@ import $ from 'jquery';
 const Nest = {
   Feather(menu, type = 'zf') {
     menu.attr('role', 'menubar');
+    menu.find('a').attr({'role': 'menuitem'});
 
-    var items = menu.find('li').attr({'role': 'menuitem'}),
+    var items = menu.find('li').attr({'role': 'none'}),
         subMenuClass = `is-${type}-submenu`,
         subItemClass = `${subMenuClass}-item`,
         hasSubClass = `is-${type}-submenu-parent`,
@@ -18,7 +19,6 @@ const Nest = {
 
       if ($sub.length) {
         $item.addClass(hasSubClass);
-        $sub.addClass(`submenu ${subMenuClass}`).attr({'data-submenu': ''});
         if(applyAria) {
           $item.attr({
             'aria-haspopup': true,

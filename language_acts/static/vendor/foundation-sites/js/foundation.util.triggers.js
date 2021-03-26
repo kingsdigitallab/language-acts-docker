@@ -50,8 +50,10 @@ Triggers.Listeners.Basic  = {
     }
   },
   closeableListener: function(e) {
-    e.stopPropagation();
     let animation = $(this).data('closable');
+
+    // Only close the first closable element. See https://git.io/zf-7833
+    e.stopPropagation();
 
     if(animation !== ''){
       Motion.animateOut($(this), animation, function() {
@@ -140,7 +142,7 @@ Triggers.Initializers.addClosemeListener = function(pluginName) {
     if(typeof pluginName === 'string'){
       plugNames.push(pluginName);
     }else if(typeof pluginName === 'object' && typeof pluginName[0] === 'string'){
-      plugNames.concat(pluginName);
+      plugNames = plugNames.concat(pluginName);
     }else{
       console.error('Plugin names must be strings');
     }

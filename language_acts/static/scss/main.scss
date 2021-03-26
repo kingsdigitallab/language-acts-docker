@@ -494,9 +494,12 @@ h4, h5, h6 {
 
 .orbit-slide-content {
     padding: .5rem 1rem;
-
-    h2 {
+    
+    .title,
+    .title p {
         font-size: rem-calc(32);
+        font-weight: 700;
+        line-height: 1.125;
     }
 }
 
@@ -1213,7 +1216,6 @@ Animating the logo's diactrics
 
     .top-bar {
         align-items: stretch;
-        // margin-top: rem-calc(-16);
     }
 
     .top-bar-right {
