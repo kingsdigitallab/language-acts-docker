@@ -8,7 +8,7 @@ RUN apt-get update \
   # dependencies for building Python packages
   && apt-get install -y build-essential \
   # curl for node
-  && apt-get install curl \
+  && apt-get install -y curl \
   # psycopg2 dependencies
   && apt-get install -y libpq-dev \
   # Translations dependencies
