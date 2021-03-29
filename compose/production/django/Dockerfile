@@ -27,7 +27,7 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
 RUN apt-get install -y nodejs
 
 # WORKDIR /app
-#COPY ./package.json /app
+# COPY ./package.json /npm
 # RUN npm install
 
 # Requirements are installed here to ensure they will be cached.
