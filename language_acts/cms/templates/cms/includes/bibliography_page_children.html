@@ -4,7 +4,7 @@
   <li id="reference-{{ entry.bibliography_entry.pk }}">
   {% with entry.bibliography_entry as current_entry %}
   <p>
-    {{ current_entry.author_surname }}, {{ current_entry.author_firstname }}. <em>{{ current_entry.title}}</em>. {{ current_entry.publisher}}, {{ current_entry.publication_year}}
+    {{ current_entry.reference|remove_paragraph}}, {{ current_entry.full_citation|remove_paragraph }}
   </p>
     {% endwith %}
   </li>
