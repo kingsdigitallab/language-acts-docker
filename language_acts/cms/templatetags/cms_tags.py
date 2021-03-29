@@ -287,8 +287,9 @@ def create_ref_link(ref, page) -> str:
     clean_citation = ref.reference.replace('</p>', '').replace('<p>', '')
     dropdown_text = '<a href="{}">{}</a>'.format(bibliography_url, ref.full_citation)
     ref_link = (
-        '<span class="ref_toggle" data-toggle="{}">{}</span>'
-        '<div class="dropdown-pane top" id="{}" data-dropdown>'
+        '<a class="ref_toggle" data-toggle="{}">{}</a>'
+        '<div class="dropdown-pane" id="{}" data-dropdown '
+        'data-hover="true" data-hover-pane="true">'
         "{}</div>".format(menu_id, clean_citation, menu_id, dropdown_text)
     )
     return ref_link
