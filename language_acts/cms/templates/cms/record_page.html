@@ -19,6 +19,7 @@ creating a single record page
       </div>
       <div class="small-6 medium-8 columns">
         {{ page.specific.latin_lemma|add_references|safe }}
+        {{ page.specific.latin_lemma|add_reference_dropdowns|safe }}
       </div>
     </div>
 
@@ -43,6 +44,7 @@ creating a single record page
       </div>
       <div class="small-6 medium-8 columns">
         {{ page.specific.latin_meaning|add_references|safe }}
+        {{ page.specific.latin_meaning|add_reference_dropdowns|safe }}
       </div>
     </div>
 

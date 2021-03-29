@@ -4,8 +4,10 @@
   {% for block in blocks %}
   {% if block.block_type == 'text' %}
   {{ block.value|richtext|add_references }}
+    {{ block.value|add_reference_dropdowns|safe }}
   {% elif block.block_type == 'html' %}
   {{ block |add_references }}
+    {{ block|add_reference_dropdowns|safe }}
   {% endif %}
   {% endfor %}
 </div>

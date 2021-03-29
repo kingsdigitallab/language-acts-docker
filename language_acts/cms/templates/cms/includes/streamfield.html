@@ -14,7 +14,7 @@
     <div class="intro">{{ block }}</div>
     {% elif block.block_type == 'paragraph' %}
     {{ block.value|richtext|add_references|safe}}
-
+  {{  block.value|richtext|add_reference_dropdowns|safe }}
     {% elif block.block_type == 'html' %}
     {{ block.value.bound_blocks.html.render }}
     {% elif block.block_type == 'grid' %}

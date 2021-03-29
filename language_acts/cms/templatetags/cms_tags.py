@@ -291,23 +291,32 @@ def create_ref_link(ref, page) -> str:
     and a link to the bibliography page
     """
 
-    bibliography_url = page.url + "#reference-{}".format(page.pk)
     menu_id = "reference-dropdown-{}".format(page.pk)
     # strip out pointless paragraph tags
     clean_citation = remove_paragraph(ref.reference)
-    dropdown_text = '<a href="{}">{}</a>'.format(bibliography_url,
-                                                 ref.full_citation)
     ref_link = (
-        '<span class="ref_toggle" data-toggle="{}">{}</span>'
-        '<div class="dropdown-pane top" id="{}" data-dropdown>'
-        "{}</div>".format(menu_id, clean_citation, menu_id, dropdown_text)
+        '<span class="ref_toggle" data-toggle="{}">{}</span>'.format(
+            menu_id, clean_citation
+        )
     )
     return ref_link
 
 
-def add_bibliography_references(value: str) -> str:
+def add_dropdowns(ref, page) -> str:
+    bibliography_url = page.url + "#reference-{}".format(page.pk)
+    menu_id = "reference-dropdown-{}".format(page.pk)
+    dropdown_text = '<a href="{}">{}</a>'.format(bibliography_url,
+                                                 ref.full_citation)
+    return '<div class="dropdown-pane top" id="{}" data-dropdown>{}</div>'.format(
+        menu_id, dropdown_text
+    )
+
+
+def add_bibliography_references(value: str, dropdown=False) -> str:
     ref_path = re.compile(r'<span data-reference_id="(\d+)">([^<]*)</span>')
     while True:
+        if type(value) == RichText:
+            value = value.source
         result = ref_path.search(value)
         if result:
             ref_id = int(result.group(1))
@@ -323,9 +332,12 @@ def add_bibliography_references(value: str) -> str:
                     if ref and page:
                         # create a link to the bibliography page
                         # that jumps to our ref
-                        value = value.replace(
-                            result.group(0), create_ref_link(ref, page)
-                        )
+                        if not dropdown:
+                            value = value.replace(
+                                result.group(0), create_ref_link(ref, page)
+                            )
+                        elif dropdown:
+                            value = add_dropdowns(ref, page)
                     else:
                         print("WARNING: Ref called without page {}".format(
                             ref_id))
@@ -356,4 +368,11 @@ def add_references(block):
         value_str = block
     # bibliography refs
     value_str = add_bibliography_references(value_str)
+    return RichText(value_str)
+
+
+@register.filter
+def add_reference_dropdowns(block):
+    # bibliography refs
+    value_str = add_bibliography_references(block, True)
     return RichText(value_str)
