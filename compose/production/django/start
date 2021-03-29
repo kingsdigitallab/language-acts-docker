@@ -4,6 +4,8 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+npm install
+
 python /app/manage.py migrate
 python /app/manage.py collectstatic --noinput
 #if [[ "${COMPRESS_OFFLINE}" == "True" ]]; then
