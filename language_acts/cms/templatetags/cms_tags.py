@@ -308,7 +308,8 @@ def add_dropdowns(ref, page) -> str:
     dropdown_text = '<a href="{}">{}</a>'.format(bibliography_url,
                                                  ref.full_citation)
     return '<div class="dropdown-pane" id="{}" \
-    data-dropdown data-hover="true" data-hover-pane="true">{}</div>'.format(
+        data-position="top" data-alignment="center" data-dropdown \
+        data-hover="true" data-hover-pane="true">{}</div>'.format(
         menu_id, dropdown_text
     )
 

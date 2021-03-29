@@ -150,7 +150,8 @@ time {
     font-weight: 700;
 }
 
-.biblio {
+.biblio,
+.ref_toggle {
     &::before {
         content: "\f02d";
         font-family: "FontAwesome";
