@@ -295,7 +295,7 @@ def create_ref_link(ref, page) -> str:
     # strip out pointless paragraph tags
     clean_citation = remove_paragraph(ref.reference)
     ref_link = (
-        '<span class="ref_toggle" data-toggle="{}">{}</span>'.format(
+        '<a class="ref_toggle" data-toggle="{}">{}</a>'.format(
             menu_id, clean_citation
         )
     )
@@ -307,7 +307,8 @@ def add_dropdowns(ref, page) -> str:
     menu_id = "reference-dropdown-{}".format(page.pk)
     dropdown_text = '<a href="{}">{}</a>'.format(bibliography_url,
                                                  ref.full_citation)
-    return '<div class="dropdown-pane top" id="{}" data-dropdown>{}</div>'.format(
+    return '<div class="dropdown-pane" id="{}" \
+    data-dropdown data-hover="true" data-hover-pane="true">{}</div>'.format(
         menu_id, dropdown_text
     )
 
