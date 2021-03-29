@@ -28,8 +28,8 @@ def get_section(current_page):
     homepage = HomePage.objects.first()
     current_section = (
         Page.objects.ancestor_of(current_page, inclusive=True)
-        .child_of(homepage)
-        .first()
+            .child_of(homepage)
+            .first()
     )
     return current_section
 
@@ -50,7 +50,8 @@ def breadcrumbs(context, root, current_page):
     """Returns the pages that are part of the breadcrumb trail of the current
     page, up to the root page."""
     pages = (
-        current_page.get_ancestors(inclusive=True).descendant_of(root).filter(live=True)
+        current_page.get_ancestors(inclusive=True).descendant_of(root).filter(
+            live=True)
     )
 
     return {
@@ -65,7 +66,8 @@ def breadcrumbs(context, root, current_page):
 def get_homepage_events():
     """Returns 3 latest news posts"""
     today = date.today()
-    events = Event.objects.live().filter(date_from__gte=today).order_by("date_from")
+    events = Event.objects.live().filter(date_from__gte=today).order_by(
+        "date_from")
     if events.count() < 4:
         return events
     else:
@@ -147,7 +149,8 @@ def has_view_restrictions(page):
     return page.view_restrictions.count() > 0
 
 
-@register.inclusion_tag("cms/tags/show_children_in_menu.html", takes_context=False)
+@register.inclusion_tag("cms/tags/show_children_in_menu.html",
+                        takes_context=False)
 def show_children_in_menu(page):
     """ Force certain page types to never show children in menu"""
     show_children = True
@@ -181,7 +184,8 @@ def main_menu(context, root, current_page=None):
         root.active = current_page.url == root.url if current_page else False
         for page in menu_pages:
             page.active = (
-                current_page.url.startswith(page.url) if current_page else False
+                current_page.url.startswith(
+                    page.url) if current_page else False
             )
     except AttributeError:
         print("Error in root: {}:{}".format(root, current_page))
@@ -204,7 +208,8 @@ def footer_menu(context, root, current_page=None):
     root.active = current_page.url == root.url if current_page else False
 
     for page in menu_pages:
-        page.active = current_page.url.startswith(page.url) if current_page else False
+        page.active = current_page.url.startswith(
+            page.url) if current_page else False
 
     return {
         "request": context["request"],
@@ -275,6 +280,11 @@ def add_glossary_terms(value: str) -> str:
     return value
 
 
+@register.filter
+def remove_paragraph(text: str) -> str:
+    return text.replace('</p>', '').replace('<p>', '')
+
+
 def create_ref_link(ref, page) -> str:
     """
     Create a foundation dropdown that contains the full reference
@@ -284,8 +294,9 @@ def create_ref_link(ref, page) -> str:
     bibliography_url = page.url + "#reference-{}".format(page.pk)
     menu_id = "reference-dropdown-{}".format(page.pk)
     # strip out pointless paragraph tags
-    clean_citation = ref.reference.replace('</p>', '').replace('<p>', '')
-    dropdown_text = '<a href="{}">{}</a>'.format(bibliography_url, ref.full_citation)
+    clean_citation = remove_paragraph(ref.reference)
+    dropdown_text = '<a href="{}">{}</a>'.format(bibliography_url,
+                                                 ref.full_citation)
     ref_link = (
         '<a class="ref_toggle" data-toggle="{}">{}</a>'
         '<div class="dropdown-pane" id="{}" data-dropdown '
@@ -317,9 +328,11 @@ def add_bibliography_references(value: str) -> str:
                             result.group(0), create_ref_link(ref, page)
                         )
                     else:
-                        print("WARNING: Ref called without page {}".format(ref_id))
+                        print("WARNING: Ref called without page {}".format(
+                            ref_id))
                         if ref:
-                            value = value.replace(result.group(0), ref.reference)
+                            value = value.replace(result.group(0),
+                                                  ref.reference)
 
                 except ObjectDoesNotExist:
                     print(" ref not found ")

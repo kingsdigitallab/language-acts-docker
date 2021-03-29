@@ -1,3 +1,12 @@
+# npm packages install
+# from https://github.com/kingsdigitallab/radical_translations/blob/develop/compose/production/django/Dockerfile
+FROM node:10-stretch-slim as client-builder
+
+WORKDIR /app
+COPY ./package.json /app
+RUN npm install && npm cache clean --force
+COPY . /app
+
 
 FROM python:3.7-slim-buster
 
@@ -25,10 +34,6 @@ RUN addgroup --system django \
 #
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
 RUN apt-get install -y nodejs
-#
-#WORKDIR /app
-COPY ./package.json /app
-RUN cd /app/ && npm install
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
