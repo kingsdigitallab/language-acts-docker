@@ -35,10 +35,6 @@ RUN addgroup --system django \
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
 RUN apt-get install -y nodejs
 
-# WORKDIR /app
-COPY ./package.json /npm
-RUN cd /nom && npm install
-
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
 RUN pip install -U pip
