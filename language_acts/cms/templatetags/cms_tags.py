@@ -306,7 +306,7 @@ def add_dropdowns(ref, page) -> str:
     bibliography_url = page.url + "#reference-{}".format(page.pk)
     menu_id = "reference-dropdown-{}".format(page.pk)
     dropdown_text = '{}\
-                    <a href="{}">Read the full citation</a>'.format(
+                    <a href="{}">Go to Bibliography.</a>'.format(
                     ref.full_citation, bibliography_url
     )
     return '<div class="dropdown-pane" id="{}" \
