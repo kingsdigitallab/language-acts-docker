@@ -305,8 +305,10 @@ def create_ref_link(ref, page) -> str:
 def add_dropdowns(ref, page) -> str:
     bibliography_url = page.url + "#reference-{}".format(page.pk)
     menu_id = "reference-dropdown-{}".format(page.pk)
-    dropdown_text = '<a href="{}">{}</a>'.format(bibliography_url,
-                                                 ref.full_citation)
+    dropdown_text = '{}\
+                    <a href="{}">Read the full citation</a>'.format(
+                    ref.full_citation, bibliography_url
+    )
     return '<div class="dropdown-pane" id="{}" \
         data-position="top" data-alignment="center" data-dropdown \
         data-hover="true" data-hover-pane="true">{}</div>'.format(
