@@ -285,13 +285,13 @@ def remove_paragraph(text: str) -> str:
     return text.replace('</p>', '').replace('<p>', '')
 
 
-def create_ref_link(ref, page) -> str:
+def create_ref_link(ref) -> str:
     """
     Create a foundation dropdown that contains the full reference
     and a link to the bibliography page
     """
 
-    menu_id = "reference-dropdown-{}".format(page.pk)
+    menu_id = "reference-dropdown-{}".format(ref.pk)
     # strip out pointless paragraph tags
     clean_citation = remove_paragraph(ref.reference)
     ref_link = (
@@ -303,12 +303,13 @@ def create_ref_link(ref, page) -> str:
 
 
 def add_dropdowns(ref, page) -> str:
-    bibliography_url = page.url + "#reference-{}".format(page.pk)
-    menu_id = "reference-dropdown-{}".format(page.pk)
-    dropdown_text = '{}\
-                    <a href="{}">Go to Bibliography.</a>'.format(
-                    ref.full_citation, bibliography_url
-    )
+    dropdown_text = '{}'.format(ref.full_citation)
+    menu_id = "reference-dropdown-{}".format(ref.pk)
+    if page:
+        bibliography_url = page.url + "#reference-{}".format(ref.pk)
+        dropdown_text += ' <a href="{}">Go to Bibliography.</a>'.format(
+            bibliography_url
+        )
     return '<div class="dropdown-pane" id="{}" \
         data-position="top" data-alignment="center" data-dropdown \
         data-hover="true" data-hover-pane="true">{}</div>'.format(
@@ -316,12 +317,65 @@ def add_dropdowns(ref, page) -> str:
     )
 
 
-def add_bibliography_references(value: str, dropdown=False) -> str:
+def add_bibliography_references(value: str) -> str:
+    ref_path = re.compile(r'<span data-reference_id="(\d+)">([^<]*)</span>')
+    if type(value) == RichText:
+        value = value.source
+    while True:
+        result = ref_path.search(value)
+        if result:
+            ref_id = int(result.group(1))
+            if ref_id > 0:
+                try:
+                    ref = BibliographyEntry.objects.get(pk=ref_id)
+                    if ref:
+                        # create a link to the bibliography page
+                        # that jumps to our ref
+                        value = value.replace(
+                                result.group(0), create_ref_link(ref)
+                            )
+                    else:
+                        print("WARNING: No Ref found: {}".format(
+                            ref_id))
+
+                except ObjectDoesNotExist:
+                    print(" ref not found ")
+        else:
+            break
+
+    return value
+
+
+def get_value_string(block):
+    value_str = ""
+    if type(block) == wagtail_blocks.stream_block.StreamValue.StreamChild:
+        if "html" in block.value:
+            value_str = block.value["html"]
+    elif type(block) == RichText:
+        value_str = block.source
+    elif type(block) == str:
+        value_str = block
+    return value_str
+
+
+@register.filter
+def add_references(block):
+    """Add short form dropdown hover links (e.g. citation)
+    """
+    # if type(block) ==
+    value_str = get_value_string(block)
+    value_str = add_bibliography_references(value_str)
+    return RichText(value_str)
+
+
+@register.filter
+def add_reference_dropdowns(block):
+    # bibliography refs
+    value_str = get_value_string(block)
+    dropdown_text = ''
     ref_path = re.compile(r'<span data-reference_id="(\d+)">([^<]*)</span>')
     while True:
-        if type(value) == RichText:
-            value = value.source
-        result = ref_path.search(value)
+        result = ref_path.search(value_str)
         if result:
             ref_id = int(result.group(1))
             if ref_id > 0:
@@ -333,50 +387,16 @@ def add_bibliography_references(value: str, dropdown=False) -> str:
                         # linked object
                         if type(usage.specific) == get_page_model():
                             page = usage
-                    if ref and page:
+                    if ref:
                         # create a link to the bibliography page
-                        # that jumps to our ref
-                        if not dropdown:
-                            value = value.replace(
-                                result.group(0), create_ref_link(ref, page)
-                            )
-                        elif dropdown:
-                            value = add_dropdowns(ref, page)
-                    else:
-                        print("WARNING: Ref called without page {}".format(
-                            ref_id))
-                        if ref:
-                            value = value.replace(result.group(0),
-                                                  ref.reference)
+                        # that jumps to our ref if present
+                        value_str = value_str.replace(
+                            result.group(0), create_ref_link(ref)
+                        )
+                        dropdown_text = dropdown_text + add_dropdowns(ref, page)
 
                 except ObjectDoesNotExist:
                     print(" ref not found ")
         else:
             break
-
-    return value
-
-
-@register.filter
-def add_references(block):
-    """Add links from glossary terms and bibliography
-    May be split to only add one type later if necessary"""
-    # if type(block) ==
-    value_str = ""
-    if type(block) == wagtail_blocks.stream_block.StreamValue.StreamChild:
-        if "html" in block.value:
-            value_str = block.value["html"]
-    elif type(block) == RichText:
-        value_str = block.source
-    elif type(block) == str:
-        value_str = block
-    # bibliography refs
-    value_str = add_bibliography_references(value_str)
-    return RichText(value_str)
-
-
-@register.filter
-def add_reference_dropdowns(block):
-    # bibliography refs
-    value_str = add_bibliography_references(block, True)
-    return RichText(value_str)
+    return RichText(dropdown_text)

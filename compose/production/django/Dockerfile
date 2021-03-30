@@ -30,10 +30,6 @@ RUN apt-get update \
 RUN addgroup --system django \
   && adduser --system --ingroup django django
 
-## node / npm install
-#
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
-RUN apt-get install -y nodejs
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
