@@ -705,36 +705,36 @@ class TestEventIndexPage(TestCase):
         self.assertEqual(len(past_events), 0)
         self.assertEqual(len(upcoming_events), 2)
 
-    def test_all_events(self):
-        response = self.client.get(
-            self.event_index.url
-            + self.event_index.reverse_subpage(
-                'all_events')
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_tag(self):
-        test_tag_label = 'test_tag'
-        self.event_2.tags.add(test_tag_label)
-        self.event_2.save()
-        # Bad tag, we should get nothing
-        self.event_index.tag(RequestFactory().get('/test'))
-        response = self.client.get(
-            self.event_index.url
-            + self.event_index.reverse_subpage(
-                'tag',
-                kwargs={'tag': 'test_taeg'}
-            )
-        )
-        self.assertEqual(response.status_code, 200)
-        response = self.client.get(
-            self.event_index.url
-            + self.event_index.reverse_subpage(
-                'tag',
-                kwargs={'tag': test_tag_label}
-            )
-        )
-        self.assertEqual(response.status_code, 200)
+    # def test_all_events(self):
+    #     response = self.client.get(
+    #         self.event_index.url
+    #         + self.event_index.reverse_subpage(
+    #             'all_events')
+    #     )
+    #     self.assertEqual(response.status_code, 200)
+    #
+    # def test_tag(self):
+    #     test_tag_label = 'test_tag'
+    #     self.event_2.tags.add(test_tag_label)
+    #     self.event_2.save()
+    #     # Bad tag, we should get nothing
+    #     self.event_index.tag(RequestFactory().get('/test'))
+    #     response = self.client.get(
+    #         self.event_index.url
+    #         + self.event_index.reverse_subpage(
+    #             'tag',
+    #             kwargs={'tag': 'test_taeg'}
+    #         )
+    #     )
+    #     self.assertEqual(response.status_code, 200)
+    #     response = self.client.get(
+    #         self.event_index.url
+    #         + self.event_index.reverse_subpage(
+    #             'tag',
+    #             kwargs={'tag': test_tag_label}
+    #         )
+    #     )
+    #     self.assertEqual(response.status_code, 200)
 
 
 class TestPastEventIndexPage(TestCase):
@@ -764,35 +764,35 @@ class TestPastEventIndexPage(TestCase):
         events = self.event_index.events
         self.assertEqual(events.count(), 1)
 
-    def test_all_events(self):
-        response = self.client.get(
-            self.event_index.url
-            + self.event_index.reverse_subpage(
-                'all_events')
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_tag(self):
-        test_tag_label = 'test_tag'
-        self.event_2.tags.add(test_tag_label)
-        self.event_2.save()
-        # Bad tag, we should get nothing
-        response = self.client.get(
-            self.event_index.url
-            + self.event_index.reverse_subpage(
-                'tag',
-                kwargs={'tag': 'test_taeg'}
-            )
-        )
-        self.assertEqual(response.status_code, 200)
-        response = self.client.get(
-            self.event_index.url
-            + self.event_index.reverse_subpage(
-                'tag',
-                kwargs={'tag': test_tag_label}
-            )
-        )
-        self.assertEqual(response.status_code, 200)
+    # def test_all_events(self):
+    #     response = self.client.get(
+    #         self.event_index.url
+    #         + self.event_index.reverse_subpage(
+    #             'all_events')
+    #     )
+    #     self.assertEqual(response.status_code, 200)
+    #
+    # def test_tag(self):
+    #     test_tag_label = 'test_tag'
+    #     self.event_2.tags.add(test_tag_label)
+    #     self.event_2.save()
+    #     # Bad tag, we should get nothing
+    #     response = self.client.get(
+    #         self.event_index.url
+    #         + self.event_index.reverse_subpage(
+    #             'tag',
+    #             kwargs={'tag': 'test_taeg'}
+    #         )
+    #     )
+    #     self.assertEqual(response.status_code, 200)
+    #     response = self.client.get(
+    #         self.event_index.url
+    #         + self.event_index.reverse_subpage(
+    #             'tag',
+    #             kwargs={'tag': test_tag_label}
+    #         )
+    #     )
+    #     self.assertEqual(response.status_code, 200)
 
 
 class TestEventTag(TestCase):
