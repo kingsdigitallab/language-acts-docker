@@ -55,6 +55,6 @@ EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
 # Your stuff...
 # ------------------------------------------------------------------------------
-# STATICFILES_STORAGE = 'language_acts.storage.WhiteNoiseStaticFilesStorage'
+STATICFILES_STORAGE = 'language_acts.storage.WhiteNoiseStaticFilesStorage'
 RUN_DATA_MIGRATIONS = False
 DEBUG = TEMPLATE_DEBUG = True
