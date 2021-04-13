@@ -82,11 +82,11 @@ class TextColourDraftail:
         self.text_class = text_class
         self.label = label
         self.text_colour_style = text_colour_style
-        self.type_ = self.type_prefix + '-{}'.format(self.label)
+        self.type = self.type_prefix + '-{}'.format(self.label)
 
     def register_text_colour_feature(self, features):
         control = {
-            'type': self.type_,
+            'type': self.type,
             'label': self.label,
             'description': 'Text colour',
             'style': {'color': self.text_colour_style},
@@ -99,10 +99,12 @@ class TextColourDraftail:
 
         db_conversion = {
             'from_database_format': {
-                'span[data-custom-style]': InlineStyleElementHandler(
-                    self.type_)},
+                'span[data-custom-style="{}"]'.format(
+                    self.feature_name
+                ): InlineStyleElementHandler(
+                    self.type)},
             'to_database_format': {'style_map': {
-                self.type_: {
+                self.type: {
                     'element': 'span',
                     'props': {
                         'class': self.text_class,
@@ -139,6 +141,7 @@ text_colour_hooks = [
         'entry-text-colour-5', 'entry-colour-5', 'C5',
         '#EC5840'),
 ]
+
 
 for hook in text_colour_hooks:
     hooks.register(

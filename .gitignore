@@ -337,3 +337,4 @@ config/settings/local_protected.py
 # postgres backups
 backups/
 backups/*
+package-lock.json
