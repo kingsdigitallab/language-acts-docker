@@ -1,3 +1,12 @@
+# npm packages install
+# from https://github.com/kingsdigitallab/radical_translations/blob/develop/compose/production/django/Dockerfile
+FROM node:10-stretch-slim as client-builder
+
+WORKDIR /app
+COPY ./package.json /app
+RUN npm install && npm cache clean --force
+COPY . /app
+
 FROM python:3.7-slim-buster
 
 ENV PYTHONUNBUFFERED 1
