@@ -1,13 +1,14 @@
 {% load cms_tags wagtailcore_tags %}
-<ul>
+<ol>
 {% for entry in page.bibliography_entries.all %}
   <li id="reference-{{ entry.bibliography_entry.pk }}">
   {% with entry.bibliography_entry as current_entry %}
   <p>
-    {{ current_entry.reference|remove_paragraph|richtext }}. {{ current_entry.full_citation|remove_paragraph|richtext }}
+    <strong>({{ current_entry.reference|remove_paragraph|richtext }})</strong><br>
+    {{ current_entry.full_citation|remove_paragraph|richtext }}
   </p>
     {% endwith %}
   </li>
 {%  endfor %}
-</ul>
+</ol>
 
