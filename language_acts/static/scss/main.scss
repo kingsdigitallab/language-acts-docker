@@ -1,6 +1,6 @@
 @import 'settings';
 @import 'font-awesome';
-@import '../foundation-sites/scss/foundation';
+@import '../../node_modules/foundation-sites/scss/foundation';
 @import '../vendor/motion-ui/motion-ui';
 
 @import 'strand-1-tc',
@@ -14,9 +14,8 @@
 
 /** Globals **/
 
-a.exsource
-{
-    &:before {
+a.exsource {
+    &::before {
         content: "\f14c";
         font-family: "FontAwesome";
         padding-right: 0.25rem;
@@ -156,6 +155,12 @@ time {
         content: "\f02d";
         font-family: "FontAwesome";
         padding-right: rem-calc(4);
+    }
+}
+
+.ref_toggle {
+    &::before {
+        padding-left: 4px;
     }
 }
 
