@@ -73,6 +73,7 @@ class GlossaryTerm(models.Model):
     class Meta:
         verbose_name = "Glossary term"
         verbose_name_plural = "Glossary terms"
+        ordering = ['term', ]
 
     def __str__(self):
         return self.term
@@ -97,6 +98,7 @@ class BibliographyEntry(index.Indexed, Orderable, models.Model):
     class Meta:
         verbose_name = "Bibliography entry"
         verbose_name_plural = "Bibliography entries"
+        ordering = ['full_citation', ]
 
     def __str__(self):
         return str(RichText(self.reference))
@@ -120,7 +122,7 @@ class GlossaryTermItem(index.Indexed, Orderable, models.Model):
         return self.page.title + " -> " + self.glossary_term.term
 
 
-class BibliographyEntryItem(Orderable, models.Model):
+class BibliographyEntryItem(models.Model):
     page = ParentalKey('cms.BibliographyPage', on_delete=models.CASCADE,
                        related_name='bibliography_entries')
     bibliography_entry = models.ForeignKey(
@@ -130,6 +132,7 @@ class BibliographyEntryItem(Orderable, models.Model):
     class Meta:
         verbose_name = 'Bibliography item'
         verbose_name_plural = 'Bibliography items'
+        ordering = ['bibliography_entry']
 
     panels = [
         SnippetChooserPanel('bibliography_entry')
