@@ -104,7 +104,7 @@ class BibliographyEntry(index.Indexed, Orderable, models.Model):
         return str(RichText(self.reference))
 
 
-class GlossaryTermItem(index.Indexed, Orderable, models.Model):
+class GlossaryTermItem(index.Indexed, models.Model):
     page = ParentalKey('cms.GlossaryPage', on_delete=models.CASCADE,
                        related_name='glossary_terms')
     glossary_term = models.ForeignKey(
@@ -113,6 +113,7 @@ class GlossaryTermItem(index.Indexed, Orderable, models.Model):
     class Meta:
         verbose_name = "Glossary item"
         verbose_name_plural = "Glossary items"
+        ordering = ['glossary_term', ]
 
     panels = [
         SnippetChooserPanel('glossary_term'),

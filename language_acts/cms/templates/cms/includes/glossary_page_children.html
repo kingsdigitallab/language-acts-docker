@@ -1,15 +1,11 @@
 {% load cms_tags wagtailcore_tags %}
+<ol>
 {% for item in page.glossary_terms.all %}
-<div class="row events-block small-up-1 medium-up-2"
-    data-equalizer="eventheight"
-    data-equalize-by-row="true" data-equalize-on="medium">
-    <div class="column column-block">
-      <div class="card news" data-equalizer-watch="eventheight">
-            <div class="card-section">
-                <h3 class="title">{{ item.glossary_term.term }}</h3>
-                <p>{{ item.glossary_term.description }}</p>
-            </div>
-      </div>
-    </div>
-</div>
+  <li id="reference-{{ item.pk }}">
+  <p>
+    <strong>{{ item.glossary_term.description }}</strong><br>
+    {{ item.glossary_term.description }}
+  </p>
+  </li>
 {%  endfor %}
+</ol>
