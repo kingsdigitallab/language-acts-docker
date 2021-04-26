@@ -1,3 +1,14 @@
+# npm packages install
+# from https://github.com/kingsdigitallab/radical_translations/blob/develop/compose/production/django/Dockerfile
+FROM node:10-stretch-slim as client-builder
+
+WORKDIR /app
+COPY ./package.json /app
+RUN npm install && npm cache clean --force
+COPY . /app
+
+
+
 FROM python:3.7-slim-buster
 
 ENV PYTHONUNBUFFERED 1
@@ -33,6 +44,8 @@ RUN chmod +x /entrypoint
 COPY ./compose/local/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
+
+COPY --from=client-builder --chown=django:django /app /app
 
 WORKDIR /app
 
