@@ -1,25 +1,57 @@
 {% load wagtailcore_tags wagtailimages_tags %}
 
-<div data-equalizer="imgblockheight" data-equalize-on="medium">
-    <div class="img-wrapper float-{{ value.alignment }}" data-equalizer-watch="imgblockheight">
-        {% if value.alignment == "left" or value.alignment == "right" %}
-        {% image value.image width-300 as theimage %}
-        <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}">
-        {% else %}
-        {% image value.image width-1024 as theimage %}
-        <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}">
-        {% endif %}
-
+{% if value.alignment == "left" %}
+<div class="media-object stack-for-small">
+    <div class="media-object-section">
+        <div class="thumbnail">
+            {% image value.image width-300 as theimage %}
+            <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}">
+        </div>
         {% if value.caption %}
         <div class="caption">
             {{ value.caption|richtext }}
         </div>
         {% endif %}
     </div>
-
-    {% if value.text %}
-    <div data-equalizer-watch="imgblockheight">
+    <div class="media-object-section">
+        {% if value.text %}
         {{ value.text|richtext }}
+        {% endif %}
+    </div>
+</div>
+{% elif value.alignment == "right" %}
+<div class="media-object stack-for-small">
+    <div class="media-object-section">
+        {% if value.text %}
+        {{ value.text|richtext }}
+        {% endif %}
+    </div>
+    <div class="media-object-section">
+        <div class="thumbnail">
+            {% image value.image width-300 as theimage %}
+            <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}">
+        </div>
+        {% if value.caption %}
+        <div class="caption">
+            {{ value.caption|richtext }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+
+<div class="full-width">
+    {% image value.image width-1024 as theimage %}
+    <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}">
+    {% if value.caption %}
+    <div class="caption">
+        {{ value.caption|richtext }}
     </div>
     {% endif %}
 </div>
+<div class="full-width">
+    {% if value.text %}
+    {{ value.text|richtext }}
+    {% endif %}
+</div>
+{% endif %}
