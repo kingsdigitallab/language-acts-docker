@@ -624,6 +624,15 @@ section.main {
                 fill: $secondary-color;
             }
         }
+
+        &.button {
+            color: $white;
+
+            &:hover {
+                background: $secondary-color;
+                color: $primary-color;
+            }
+        }
     }
 
     h1 {
