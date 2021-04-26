@@ -202,6 +202,7 @@ time {
 }
 
 .full-width {
+    display: block;
     width: 100%;
 }
 
@@ -257,6 +258,10 @@ time {
     clear: left;
     float: right;
     padding-left: rem-calc(24);
+}
+
+.thumbnail {
+    margin-bottom: 0;
 }
 
 /***/
