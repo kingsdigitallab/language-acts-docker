@@ -1,33 +1,5 @@
 {% load wagtailcore_tags wagtailimages_tags %}
 
-{% comment %}
-
-<div data-equalizer="imgblockheight" data-equalize-on="medium">
-    <div class="img-wrapper float-{{ value.alignment }}" data-equalizer-watch="imgblockheight">
-        {% if value.alignment == "left" or value.alignment == "right" %}
-        {% image value.image width-300 as theimage %}
-        <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}">
-        {% else %}
-        {% image value.image width-1024 as theimage %}
-        <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}">
-        {% endif %}
-
-        {% if value.caption %}
-        <div class="caption">
-            {{ value.caption|richtext }}
-        </div>
-        {% endif %}
-    </div>
-
-    {% if value.text %}
-    <div data-equalizer-watch="imgblockheight">
-        {{ value.text|richtext }}
-    </div>
-    {% endif %}
-</div>
-
-{% endcomment %}
-
 {% if value.alignment == "left" %}
 <div class="media-object stack-for-small">
     <div class="media-object-section">
