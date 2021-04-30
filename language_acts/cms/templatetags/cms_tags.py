@@ -285,7 +285,8 @@ def remove_paragraph(text: str) -> str:
     return text.replace('</p>', '').replace('<p>', '')
 
 
-def create_ref_link(ref) -> str:
+def create_ref_link(ref, content_prefix: str = '',
+                    content_suffix: str = '') -> str:
     """
     Create a foundation dropdown that contains the full reference
     and a link to the bibliography page
@@ -296,7 +297,7 @@ def create_ref_link(ref) -> str:
     clean_citation = remove_paragraph(ref.reference)
     ref_link = (
         '<a class="ref_toggle" data-toggle="{}">{}</a>'.format(
-            menu_id, clean_citation
+            menu_id, content_prefix + clean_citation + content_suffix
         )
     )
     return ref_link
@@ -318,7 +319,10 @@ def add_dropdowns(ref, page) -> str:
 
 
 def add_bibliography_references(value: str) -> str:
-    ref_path = re.compile(r'<span data-reference_id="(\d+)">([^<]*)</span>')
+    ref_path = re.compile(
+        r'<span data-reference_id="(\d+)">(.*?)(\[ref_\d+\])(.*?)</span>('
+        r'</span>)*'
+    )
     if type(value) == RichText:
         value = value.source
     while True:
@@ -331,9 +335,30 @@ def add_bibliography_references(value: str) -> str:
                     if ref:
                         # create a link to the bibliography page
                         # that jumps to our ref
+
+                        if len(result.groups()) >= 2 and len(
+                            result.group(2)
+                        ) > 0:
+                            # content before [ref_1]
+                            prefix = result.group(2) + ' '
+                        else:
+                            prefix = ''
+                        suffix = ''
+                        if len(result.groups()) >= 3 and len(
+                            result.group(4)
+                        ) > 0:
+                            # content after [ref_1]
+                            suffix = ' ' + result.group(4)
+                        if (
+                            len(result.groups()) >= 4
+                            and result.group(5) and len(result.group(5)) > 0
+                        ):
+                            # edge case when there are two </span> tags
+                            suffix = suffix + result.group(5)
                         value = value.replace(
-                                result.group(0), create_ref_link(ref)
-                            )
+                            result.group(0),
+                            create_ref_link(ref, prefix, suffix)
+                        )
                     else:
                         print("WARNING: No Ref found: {}".format(
                             ref_id))
@@ -365,6 +390,7 @@ def add_references(block):
     # if type(block) ==
     value_str = get_value_string(block)
     value_str = add_bibliography_references(value_str)
+    value_str = add_glossary_terms(value_str)
     return RichText(value_str)
 
 
@@ -393,7 +419,8 @@ def add_reference_dropdowns(block):
                         value_str = value_str.replace(
                             result.group(0), create_ref_link(ref)
                         )
-                        dropdown_text = dropdown_text + add_dropdowns(ref, page)
+                        dropdown_text = dropdown_text + add_dropdowns(ref,
+                                                                      page)
 
                 except ObjectDoesNotExist:
                     print(" ref not found ")
