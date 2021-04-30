@@ -632,6 +632,10 @@ section.main {
                 background: $secondary-color;
                 color: $primary-color;
             }
+
+            &.secondary {
+                color: $primary-color;
+            }
         }
     }
 
