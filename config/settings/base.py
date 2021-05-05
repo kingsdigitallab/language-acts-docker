@@ -408,4 +408,7 @@ RUN_DATA_MIGRATIONS = False
 # Add with the key "app, model" for each reference model snippet
 # The value is the bibliography page model: "app, model"
 # the page link will be derived from the page linked to the selected snippet
-REFERENCE_MODEL = {"cms, BibliographyEntry": "cms.BibliographyPage"}
+REFERENCE_MODEL = {
+    "cms, BibliographyEntry": "cms.BibliographyPage",
+    "cms, GlossaryTerm": "cms.GlossaryPage"
+}

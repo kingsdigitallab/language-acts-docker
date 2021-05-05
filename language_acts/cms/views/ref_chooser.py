@@ -37,15 +37,18 @@ def get_reference_model() -> List[Union[str, str, Model]]:
         ]
 
 
-def get_page_model() -> Model:
+def get_page_model(ref: Model) -> Model:
     if settings.REFERENCE_MODEL:
         ref_models = settings.REFERENCE_MODEL
         for ref_model in ref_models.keys():
             # NOTE: Assumes a single entry in reference
             # will need to change to allow multiples reference objects
             app_name, model_name = ref_models[ref_model].split(".")
-
-        return apps.get_model(app_name, model_name)
+            if (
+                ',' in ref_model
+                and ref_model.split(',')[1].strip() == ref.__class__.__name__
+            ):
+                return apps.get_model(app_name, model_name)
     return None
 
 

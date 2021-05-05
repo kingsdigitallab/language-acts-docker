@@ -287,6 +287,8 @@ def create_ref_link(ref, content_prefix: str = '',
             clean_citation = remove_paragraph(selection_text)
         else:
             clean_citation = remove_paragraph(ref.term)
+    else:
+        clean_citation = ''
     ref_link = (
         '<a class="ref_toggle" data-toggle="{}">{}</a>'.format(
             menu_id, content_prefix + clean_citation + content_suffix
@@ -296,12 +298,24 @@ def create_ref_link(ref, content_prefix: str = '',
 
 
 def add_dropdowns(ref, page) -> str:
-    dropdown_text = '{}'.format(ref.full_citation)
+    url = ''
+    link_text = 'Go to Bibliography'
+    if ref.__class__.__name__ == 'BibliographyEntry':
+        # strip out pointless paragraph tags
+        dropdown_text = '{}'.format(ref.full_citation)
+        if page:
+            url = page.url + "#reference-{}".format(ref.pk)
+    elif ref.__class__.__name__ == 'GlossaryTerm':
+        dropdown_text = '{}'.format(ref.description)
+        if page:
+            url = page.url + "#term-{}".format(ref.pk)
+            link_text = 'Go to Glossary'
+    else:
+        dropdown_text = ''
     menu_id = "reference-dropdown-{}".format(ref.pk)
     if page:
-        bibliography_url = page.url + "#reference-{}".format(ref.pk)
-        dropdown_text += ' <a href="{}">Go to Bibliography.</a>'.format(
-            bibliography_url
+        dropdown_text += ' <a href="{}">{}</a>'.format(
+            url, link_text
         )
     return '<div class="dropdown-pane" id="{}" \
         data-position="top" data-alignment="center" data-dropdown \
@@ -368,6 +382,8 @@ def add_glossary_terms(value: str) -> str:
 
                 except ObjectDoesNotExist:
                     print(" ref not found ")
+        else:
+            break
     return value
 
 
@@ -431,25 +447,36 @@ def add_references(block):
 
 @register.filter
 def add_reference_dropdowns(block):
-    # bibliography refs
+    """ Create the dropdown content for both bibliography references
+    and glossary terms
+    could be refactored to be a bit more nimble
+    """
     value_str = get_value_string(block)
     dropdown_text = ''
-    ref_path = re.compile(r'<span data-reference_id="(\d+)">([^<]*)</span>')
+    ref_path = re.compile(r'<span data-(.*?)="(\d+)">([^<]*)</span>')
     while True:
         result = ref_path.search(value_str)
         if result:
-            ref_id = int(result.group(1))
+            ref_id = int(result.group(2))
+            reference_key = result.group(1)
             if ref_id > 0:
                 try:
-                    ref = BibliographyEntry.objects.get(pk=ref_id)
-                    page = None
-                    for usage in ref.get_usage():
-                        # make sure we've got the right
-                        # linked object
-                        if type(usage.specific) == get_page_model():
-                            page = usage
+
+                    if reference_key == 'reference_id':
+                        ref = BibliographyEntry.objects.get(pk=ref_id)
+                    elif reference_key == 'term_id':
+                        ref = GlossaryTerm.objects.get(pk=ref_id)
+                    else:
+                        ref = None
+
                     if ref:
-                        # create a link to the bibliography page
+                        page = None
+                        for usage in ref.get_usage():
+                            # make sure we've got the right
+                            # linked object
+                            if type(usage.specific) == get_page_model(ref):
+                                page = usage
+                        # create a link to the page
                         # that jumps to our ref if present
                         value_str = value_str.replace(
                             result.group(0), create_ref_link(ref)
