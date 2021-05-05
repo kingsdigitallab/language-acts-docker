@@ -49,10 +49,11 @@ def get_page_model() -> Model:
     return None
 
 
-def choose(request: HttpRequest):
+def choose(request: HttpRequest, app_label: str = None, model_name: str = None):
     """ Use the default snippet chooser function
     but pass through the app and model from the settings"""
-    app_label, model_name, model = get_reference_model()
+    if app_label is None or model_name is None:
+        app_label, model_name, model = get_reference_model()
     return snippet_chooser.choose(request, app_label, model_name)
 
 
