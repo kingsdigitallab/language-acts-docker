@@ -81,7 +81,7 @@ def register_glossary_term(features):
     features.register_editor_plugin(
         'draftail', feature_name, draftail_features.EntityFeature(
             control,
-            js=['js/glossary_term.js'],
+            js=['js/bibliographic_reference.js'],
         )
     )
 

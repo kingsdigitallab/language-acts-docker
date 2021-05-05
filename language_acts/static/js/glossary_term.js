@@ -52,7 +52,7 @@ const filterEntityData = (entityType, data) => {
 
 };
 
-REF_MODEL_CHOOSER_MODAL_ONLOAD_HANDLERS = {
+TERM_MODEL_CHOOSER_MODAL_ONLOAD_HANDLERS = {
     'choose': function (modal, jsonData) {
         function ajaxifyLinks(context) {
             $('a.snippet-choice', modal.body).on('click', function (event) {
@@ -147,7 +147,7 @@ const getChooserConfig = (entityType, entity, selectedText) => {
         return {
             url: termURL,
             urlParams: urlParams,
-            onload: REF_MODEL_CHOOSER_MODAL_ONLOAD_HANDLERS,
+            onload: TERM_MODEL_CHOOSER_MODAL_ONLOAD_HANDLERS,
         };
     } else {
         return {
@@ -209,97 +209,3 @@ const getSelectionText = (editorState) => {
 };
 
 
-/**
- * Cloned and modified from ModalWorkflowSource
- * https://github.com/wagtail/wagtail/blob/d97f940e58d042ae160be463a14937c1b0ee7718/client/src/components/Draftail/sources/ModalWorkflowSource.js
- */
-class GlossaryTermSource extends React.Component {
-
-    constructor(props) {
-        super(props);
-
-        this.onChosen = this.onChosen.bind(this);
-        this.onClose = this.onClose.bind(this);
-    }
-
-    componentDidMount() {
-        const {onClose, entityType, entity, editorState} = this.props;
-        const selectedText = getSelectionText(editorState);
-        const {url, urlParams, onload} = getChooserConfig(entityType, entity, selectedText);
-
-        $(document.body).on('hidden.bs.modal', this.onClose);
-
-        // let full_url = url+'?q=first';
-        // eslint-disable-next-line new-cap
-        this.workflow = global.ModalWorkflow({
-            url,
-            urlParams,
-            onload,
-            responses: {
-                refChosen: this.onChosen,
-            },
-            onError: () => {
-                // eslint-disable-next-line no-alert
-                window.alert(STRINGS.SERVER_ERROR);
-                onClose();
-            },
-        });
-    }
-
-    componentWillUnmount() {
-        this.workflow = null;
-
-        $(document.body).off('hidden.bs.modal', this.onClose);
-    }
-
-    onChosen(data) {
-
-        const {editorState, entity, entityKey, entityType, onComplete} = this.props;
-        const content = editorState.getCurrentContent();
-        const selection = editorState.getSelection();
-        const entityData = filterEntityData(entityType, data);
-        const mutability = 'IMMUTABLE';
-
-        let nextState;
-
-        const contentWithEntity = content.createEntity(entityType.type, mutability, entityData);
-        const newEntityKey = contentWithEntity.getLastCreatedEntityKey();
-
-        const newText = '[ref_' + data.term_id + ']';
-        const newContent = Modifier.replaceText(content, selection, newText, null, newEntityKey);
-        nextState = EditorState.push(editorState, newContent, 'insert-characters');
-
-        this.workflow.close();
-
-        onComplete(nextState);
-
-
-    }
-
-    onClose(e) {
-        const {onClose} = this.props;
-        e.preventDefault();
-
-        onClose();
-    }
-
-    render() {
-        return null;
-    }
-}
-
-
-const GlossaryTerm = (props) => {
-    const {entityKey, contentState} = props;
-    const data = contentState.getEntity(entityKey).getData();
-    return React.createElement('span', {
-        'data-term_id': data.term_id,
-    }, props.children);
-};
-
-
-window.draftail.registerPlugin({
-    type: 'TERM',
-    source: GlossaryTermSource,
-    decorator: GlossaryTerm,
-});
