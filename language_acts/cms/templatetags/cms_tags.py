@@ -351,7 +351,7 @@ def get_prefix_suffix(result):
 def add_glossary_terms(value: str) -> str:
     # <span data-term_id="1">[term_1_second-sentence]</span>
     ref_path = re.compile(
-        r'<span data-term_id="(\d+)">(.*?)\[term_\d+_(.*?)\](.*?)</span>('
+        r'<span data-term_id="(\d+)">(.*?)\[term_\d+_*(.*?)\](.*?)</span>('
         r'</span>)*'
     )
     if type(value) == RichText:
