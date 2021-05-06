@@ -62,8 +62,10 @@ Glossary Terms and Bibliography Items
 
 @register_snippet
 class GlossaryTerm(index.Indexed, models.Model):
-    term = models.CharField(max_length=256)
-    description = models.TextField()
+    term = RichTextField(
+        null=True, blank=True, editor='bibliography')
+    description = RichTextField(
+        null=True, blank=True, editor='bibliography')
 
     panels = [
         FieldPanel('term'),
@@ -81,7 +83,7 @@ class GlossaryTerm(index.Indexed, models.Model):
     ]
 
     def __str__(self):
-        return self.term
+        return str(RichText(self.term))
 
 
 @register_snippet
