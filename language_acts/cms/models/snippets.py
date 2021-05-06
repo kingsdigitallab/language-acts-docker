@@ -61,7 +61,7 @@ Glossary Terms and Bibliography Items
 
 
 @register_snippet
-class GlossaryTerm(models.Model):
+class GlossaryTerm(index.Indexed, models.Model):
     term = models.CharField(max_length=256)
     description = models.TextField()
 
@@ -74,6 +74,11 @@ class GlossaryTerm(models.Model):
         verbose_name = "Glossary term"
         verbose_name_plural = "Glossary terms"
         ordering = ['term', ]
+
+    search_fields = [
+        index.SearchField('term', partial_match=True),
+        index.SearchField('description', partial_match=True),
+    ]
 
     def __str__(self):
         return self.term
