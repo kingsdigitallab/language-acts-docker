@@ -186,23 +186,30 @@ time {
 .biblio,
 .ref_toggle {
     &::before {
-        // content: "\f02d";
-        // font-family: "FontAwesome";
-        content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/solid/book.svg");
         display: inline-block;
         filter: invert(0.4);
         padding-right: rem-calc(4);
-        width: 18px;
-    }
-
-    &:hover {
-        text-decoration: underline;
     }
 }
 
 .ref_toggle {
     &::before {
         padding-left: 4px;
+    }
+}
+
+.BibliographyEntry {
+    &::before {
+        content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/solid/book.svg");
+        width: 18px;
+    }
+}
+
+.GlossaryTerm {
+    &::before {
+        content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/brands/readme.svg");
+        vertical-align: -3px;
+        width: 24px;
     }
 }
 
