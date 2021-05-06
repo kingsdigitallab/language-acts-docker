@@ -6,7 +6,7 @@ const RichUtils = window.DraftJS.RichUtils;
 // Since we can't know which page we should use for the snippet
 // They should be specificed here
 // Can be refactored later to be more flexible
-const referenceURL= '/reference/choose/cms/BibliographyReference/';
+const referenceURL= '/reference/choose/cms/BibliographyEntry/reference_id/';
 const termURL= '/reference/choose/cms/GlossaryTerm/term_id/';
 
 //Chooser url: http://127.0.0.1:8000/wagtail/snippets/choose/cms/bibliographyentry/
