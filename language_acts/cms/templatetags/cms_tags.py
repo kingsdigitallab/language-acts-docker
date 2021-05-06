@@ -290,7 +290,8 @@ def create_ref_link(ref, content_prefix: str = '',
     else:
         clean_citation = ''
     ref_link = (
-        '<a class="ref_toggle" data-toggle="{}">{}</a>'.format(
+        '<a class="ref_toggle ' + ref.__class__.__name__ + '\
+        " data-toggle="{}">{}</a>'.format(
             menu_id, content_prefix + clean_citation + content_suffix
         )
     )
