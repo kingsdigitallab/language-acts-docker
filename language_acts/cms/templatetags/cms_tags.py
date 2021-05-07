@@ -273,7 +273,8 @@ def remove_paragraph(text: str) -> str:
 
 
 def create_ref_link(ref, content_prefix: str = '',
-                    content_suffix: str = '', selection_text: str = None) -> str:
+                    content_suffix: str = '',
+                    selection_text: str = None) -> str:
     """
     Create a foundation dropdown that contains the full reference
     and a link to the bibliography page
@@ -290,8 +291,8 @@ def create_ref_link(ref, content_prefix: str = '',
     else:
         clean_citation = ''
     ref_link = (
-        '<a class="ref_toggle ' + ref.__class__.__name__ + '\
-        " data-toggle="{}">{}</a>'.format(
+        '<a class="ref_toggle ' + ref.__class__.__name__
+        + '" data-toggle="{}">{}</a>'.format(
             menu_id, content_prefix + clean_citation + content_suffix
         )
     )
@@ -331,14 +332,14 @@ def get_prefix_suffix(result):
         result.group(2)
     ) > 0:
         # content before [ref_1]
-        prefix = result.group(2) + ' '
+        prefix = ' ' + result.group(2) + ' '
     else:
         prefix = ''
     if len(result.groups()) >= 3 and len(
         result.group(4)
     ) > 0:
         # content after [ref_1]
-        suffix = ' ' + result.group(4)
+        suffix = ' ' + result.group(4) + ' '
     if (
         len(result.groups()) >= 4
         and result.group(5) and len(result.group(5)) > 0
@@ -351,8 +352,7 @@ def get_prefix_suffix(result):
 def add_glossary_terms(value: str) -> str:
     # <span data-term_id="1">[term_1_second-sentence]</span>
     ref_path = re.compile(
-        r'<span data-term_id="(\d+)">(.*?)\[term_\d+_*(.*?)\](.*?)</span>('
-        r'</span>)*'
+        r'\[term_(\d+)_*(.*?)\]'
     )
     if type(value) == RichText:
         value = value.source
@@ -367,14 +367,14 @@ def add_glossary_terms(value: str) -> str:
                         # create a link to the glossary
                         # that jumps to our ref
 
-                        prefix, suffix = get_prefix_suffix(result)
+                        # prefix, suffix = get_prefix_suffix(result)
                         selection_text = ''
-                        if result.group(3):
-                            selection_text = result.group(3).replace('-', ' ')
+                        if result.group(2):
+                            selection_text = result.group(2).replace('-', ' ')
                         value = value.replace(
                             result.group(0),
                             create_ref_link(
-                                ref, prefix, suffix, selection_text
+                                ref, '', '', selection_text
                             )
                         )
                     else:
@@ -389,9 +389,12 @@ def add_glossary_terms(value: str) -> str:
 
 
 def add_bibliography_references(value: str) -> str:
+    # ref_path = re.compile(
+    #     r'<span data-reference_id="(\d+)">(.*?)(\[ref_\d+\])(.*?)</span>('
+    #     r'</span>)*'
+    # )
     ref_path = re.compile(
-        r'<span data-reference_id="(\d+)">(.*?)(\[ref_\d+\])(.*?)</span>('
-        r'</span>)*'
+        r'\[ref_(\d+)\]'
     )
     if type(value) == RichText:
         value = value.source
@@ -405,10 +408,11 @@ def add_bibliography_references(value: str) -> str:
                     if ref:
                         # create a link to the bibliography page
                         # that jumps to our ref
-                        prefix, suffix = get_prefix_suffix(result)
+                        # prefix, suffix = get_prefix_suffix(result)
                         value = value.replace(
                             result.group(0),
-                            create_ref_link(ref, prefix, suffix)
+                            # create_ref_link(ref, prefix, suffix)
+                            create_ref_link(ref, '', '')
                         )
                     else:
                         print("WARNING: No Ref found: {}".format(
@@ -451,10 +455,11 @@ def add_reference_dropdowns(block):
     """ Create the dropdown content for both bibliography references
     and glossary terms
     could be refactored to be a bit more nimble
+    [ref_4] [term_2]
     """
     value_str = get_value_string(block)
     dropdown_text = ''
-    ref_path = re.compile(r'<span data-(.*?)="(\d+)">([^<]*)</span>')
+    ref_path = re.compile(r'\[(\w+)_(\d+)_*(.*?)\]')
     while True:
         result = ref_path.search(value_str)
         if result:
@@ -463,9 +468,9 @@ def add_reference_dropdowns(block):
             if ref_id > 0:
                 try:
 
-                    if reference_key == 'reference_id':
+                    if reference_key == 'ref':
                         ref = BibliographyEntry.objects.get(pk=ref_id)
-                    elif reference_key == 'term_id':
+                    elif reference_key == 'term':
                         ref = GlossaryTerm.objects.get(pk=ref_id)
                     else:
                         ref = None

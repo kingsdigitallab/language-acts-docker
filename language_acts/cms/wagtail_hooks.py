@@ -62,9 +62,10 @@ def bibliographic_reference_decorator(props):
     """
         Draft.js ContentState to database HTML.
     """
-    return DOM.create_element('span', {
-        'data-reference_id': props['reference_id'],
-    }, props['children'])
+    # return DOM.create_element('span', {
+    #     'data-reference_id': props['reference_id'],
+    # }, props['children'])
+    return '[ref_{}]'.format(props['reference_id'])
 
 
 @hooks.register('register_rich_text_features')
