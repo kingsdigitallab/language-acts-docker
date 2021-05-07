@@ -1,7 +1,6 @@
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
 from django.templatetags.static import static
 from django.utils.html import format_html
-from draftjs_exporter.dom import DOM
 from wagtail.admin.rich_text.converters.html_to_contentstate import (
     InlineEntityElementHandler,
 
@@ -101,9 +100,12 @@ def glossary_term_decorator(props):
     """
         Draft.js ContentState to database HTML.
     """
-    return DOM.create_element('span', {
-        'data-term_id': props['term_id'],
-    }, props['children'])
+    # return DOM.create_element('span', {
+    #     'data-term_id': props['term_id'],
+    # }, props['children'])
+    return '{}'.format(
+        props['children']
+    )
 
 
 class GlossaryTermEntityElementHandler(InlineEntityElementHandler):
