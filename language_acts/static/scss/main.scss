@@ -935,28 +935,38 @@ article {
 // Text colours
 
 .entry-colour-1,
-.text-colour-1 {
-    color: $bright-blue;
+.text-colour-1,
+.entry-colour-1 a,
+.text-colour-1 a {
+    color: $bright-blue !important;
 }
 
 .entry-colour-2,
-.text-colour-2 {
-    color: $dark-orange;
+.text-colour-2,
+.entry-colour-2 a,
+.text-colour-2 a {
+    color: $dark-orange !important;
 }
 
 .entry-colour-3,
-.text-colour-3 {
-    color: $dark-blue;
+.text-colour-3,
+.entry-colour-3 a,
+.text-colour-3 a {
+    color: $dark-blue !important;
 }
 
 .entry-colour-4,
-.text-colour-4 {
-    color: $success-color;
+.text-colour-4,
+.entry-colour-4 a,
+.text-colour-4 a {
+    color: $success-color !important;
 }
 
 .entry-colour-5,
-.text-colour-5 {
-    color: $alert-color;
+.text-colour-5,
+.entry-colour-5 a,
+.text-colour-5 a {
+    color: $alert-color !important;
 }
 
 // Display colour in Wagtail
