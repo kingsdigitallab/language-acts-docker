@@ -99,6 +99,7 @@ class BibliographyEntry(index.Indexed, Orderable, models.Model):
     ]
 
     search_fields = [
+        index.SearchField('reference', partial_match=True),
         index.SearchField('full_citation', partial_match=True),
     ]
 
