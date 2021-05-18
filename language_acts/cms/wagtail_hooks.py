@@ -109,20 +109,19 @@ def glossary_term_decorator(props):
 
 
 class GlossaryTermEntityElementHandler(InlineEntityElementHandler):
-        """
-            Database HTML to Draft.js ContentState.
-            Converts the span tag into a REF entity, with the right data.
-        """
-        mutability = 'IMMUTABLE'
-        id_name = 'term_id'
+    """ Database HTML to Draft.js ContentState.
+    Converts the span tag into a REF entity, with the right data.
+    """
+    mutability = 'IMMUTABLE'
+    id_name = 'term_id'
 
-        def get_attribute_data(self, attrs):
-            """
-            Get the reference id
-            """
-            return {
-                self.id_name: attrs['data-' + self.id_name],
-            }
+    def get_attribute_data(self, attrs):
+        """
+        Get the reference id
+        """
+        return {
+            self.id_name: attrs['data-' + self.id_name],
+        }
 
 
 class TextColourDraftail:
