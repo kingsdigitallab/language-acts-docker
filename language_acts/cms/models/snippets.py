@@ -7,6 +7,7 @@ from wagtail.core.rich_text import RichText
 from wagtail.search import index
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.snippets.models import register_snippet
+from django.utils.html import strip_tags
 
 
 @register_snippet
@@ -66,16 +67,25 @@ class GlossaryTerm(index.Indexed, models.Model):
         null=True, blank=True, editor='bibliography')
     description = RichTextField(
         null=True, blank=True, editor='bibliography')
+    term_raw = models.CharField(blank=True, null=True, max_length=256)
 
     panels = [
         FieldPanel('term'),
         FieldPanel('description'),
     ]
 
+    def save(self, *args, **kwargs):
+        # update term raw
+        raw = strip_tags(RichText(self.term))
+        if len(raw) > 250:
+            raw = raw[0:249]
+        self.term_raw = raw
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = "Glossary term"
         verbose_name_plural = "Glossary terms"
-        ordering = ['term', ]
+        ordering = ['term_raw', ]
 
     search_fields = [
         index.SearchField('term', partial_match=True),
@@ -121,7 +131,7 @@ class GlossaryTermItem(index.Indexed, models.Model):
     class Meta:
         verbose_name = "Glossary item"
         verbose_name_plural = "Glossary items"
-        ordering = ['glossary_term', ]
+        ordering = ['glossary_term__term_raw']
 
     panels = [
         SnippetChooserPanel('glossary_term'),
