@@ -767,13 +767,13 @@ class TestPastEventIndexPage(TestCase):
         events = self.event_index.events
         self.assertEqual(events.count(), 1)
 
-    def test_all_events(self):
-        response = self.client.get(
-            self.event_index.url
-            + self.event_index.reverse_subpage(
-                'all_events')
-        )
-        self.assertEqual(response.status_code, 200)
+    # def test_all_events(self):
+    #     response = self.client.get(
+    #         self.event_index.url
+    #         + self.event_index.reverse_subpage(
+    #             'all_events')
+    #     )
+    #     self.assertEqual(response.status_code, 200)
     #
     # def test_tag(self):
     #     test_tag_label = 'test_tag'
