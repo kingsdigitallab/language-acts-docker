@@ -101,7 +101,7 @@ class GlossaryTerm(index.Indexed, models.Model):
     ]
 
     def __str__(self):
-        return str(RichText(self.term))
+        return strip_tags(RichText(self.term))
 
 
 @register_snippet
@@ -133,7 +133,7 @@ class BibliographyEntry(index.Indexed, Orderable, models.Model):
         ordering = ['reference', ]
 
     def __str__(self):
-        return str(RichText(self.reference))
+        return strip_tags(RichText(self.reference))
 
 
 class GlossaryTermItem(index.Indexed, models.Model):
