@@ -421,6 +421,9 @@ def add_bibliography_references(value: str) -> str:
 
                 except ObjectDoesNotExist:
                     print(" ref not found ")
+                    value = value.replace(
+                        result.group(0), ''
+                    )
         else:
             break
 
@@ -492,6 +495,9 @@ def add_reference_dropdowns(block):
 
                 except ObjectDoesNotExist:
                     print(" ref not found ")
+                    value_str = value_str.replace(
+                        result.group(0), ''
+                    )
         else:
             break
     return RichText(dropdown_text)
