@@ -1,7 +1,6 @@
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
 from django.templatetags.static import static
 from django.utils.html import format_html
-from draftjs_exporter.dom import DOM
 from wagtail.admin.rich_text.converters.html_to_contentstate import (
     InlineEntityElementHandler,
 
@@ -47,13 +46,14 @@ class BibliographicReferenceEntityElementHandler(InlineEntityElementHandler):
         Converts the span tag into a REF entity, with the right data.
     """
     mutability = 'IMMUTABLE'
+    id_name = 'reference_id'
 
     def get_attribute_data(self, attrs):
         """
         Get the reference id
         """
         return {
-            'reference_id': attrs['data-reference_id'],
+            self.id_name: attrs['data-'+self.id_name],
         }
 
 
@@ -61,9 +61,67 @@ def bibliographic_reference_decorator(props):
     """
         Draft.js ContentState to database HTML.
     """
-    return DOM.create_element('span', {
-        'data-reference_id': props['reference_id'],
-    }, props['children'])
+    # return DOM.create_element('span', {
+    #     'data-reference_id': props['reference_id'],
+    # }, props['children'])
+    return '[ref_{}]'.format(props['reference_id'])
+
+
+@hooks.register('register_rich_text_features')
+def register_glossary_term(features):
+    feature_name = 'glossary'
+    type_ = 'TERM'
+
+    control = {
+        'type': type_,
+        'label': 'TERM',
+        'description': 'Glossary Term'
+    }
+
+    features.register_editor_plugin(
+        'draftail', feature_name, draftail_features.EntityFeature(
+            control,
+            js=['js/bibliographic_reference.js'],
+        )
+    )
+
+    features.register_converter_rule('contentstate', feature_name, {
+        'from_database_format': {
+            'span[data-term_id]':
+                GlossaryTermEntityElementHandler(type_)},
+        'to_database_format': {
+            'entity_decorators': {type_: glossary_term_decorator}},
+    })
+
+    features.default_features.append(feature_name)
+
+
+def glossary_term_decorator(props):
+    """
+        Draft.js ContentState to database HTML.
+    """
+    # return DOM.create_element('span', {
+    #     'data-term_id': props['term_id'],
+    # }, props['children'])
+    return '{}'.format(
+        props['children']
+    )
+
+
+class GlossaryTermEntityElementHandler(InlineEntityElementHandler):
+    """ Database HTML to Draft.js ContentState.
+    Converts the span tag into a REF entity, with the right data.
+    """
+    mutability = 'IMMUTABLE'
+    id_name = 'term_id'
+
+    def get_attribute_data(self, attrs):
+        """
+        Get the reference id
+        """
+        return {
+            self.id_name: attrs['data-' + self.id_name],
+        }
 
 
 class TextColourDraftail:

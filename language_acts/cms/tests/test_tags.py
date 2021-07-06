@@ -12,7 +12,7 @@ from language_acts.cms.tests.factories import (
 from language_acts.cms.models.snippets import (
     GlossaryTerm
 )
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
 from wagtail.core.models import Page
 from wagtail.core.rich_text import RichText
 
@@ -202,30 +202,30 @@ class TestPageInSubmenu(CMSTagsTestCase):
         self.assertTrue(cms_tags.page_in_submenu(page, self.top_page))
 
 
-class TestGetTogglerStatusPageInSubmenu(CMSTagsTestCase):
-
-    def test_get_toggler_status(self) -> None:
-        page = IndexPage.objects.get(title=self.test_page_title)
-        request = RequestFactory().get('test')
-        self.assertFalse(
-            cms_tags.get_toggler_status({'request': request}, page))
-        request = RequestFactory().get('test?toggler_open={}'.format(page.pk))
-        self.assertTrue(cms_tags.get_toggler_status(
-            {'request': request}, page))
-
-
-class TestGetRequestParameters(TestCase):
-
-    def test_get_request_parameters(self) -> None:
-        factory = RequestFactory()
-        get_string = "page=1&stuff=1"
-        request = factory.get('/test?' + get_string)
-        context = {'request': request}
-        new_get_string = cms_tags.get_request_parameters(context)
-        self.assertTrue('stuff=1' in new_get_string)
-        self.assertTrue('page=1' in new_get_string)
-        self.assertEqual(
-            cms_tags.get_request_parameters(context, 'page'), '&stuff=1')
+# class TestGetTogglerStatusPageInSubmenu(CMSTagsTestCase):
+#
+#     def test_get_toggler_status(self) -> None:
+#         page = IndexPage.objects.get(title=self.test_page_title)
+#         request = RequestFactory().get('test')
+#         self.assertFalse(
+#             cms_tags.get_toggler_status({'request': request}, page))
+#         request = RequestFactory().get('test?toggler_open={}'.format(page.pk))
+#         self.assertTrue(cms_tags.get_toggler_status(
+#             {'request': request}, page))
+#
+#
+# class TestGetRequestParameters(TestCase):
+#
+#     def test_get_request_parameters(self) -> None:
+#         factory = RequestFactory()
+#         get_string = "page=1&stuff=1"
+#         request = factory.get('/test?' + get_string)
+#         context = {'request': request}
+#         new_get_string = cms_tags.get_request_parameters(context)
+#         self.assertTrue('stuff=1' in new_get_string)
+#         self.assertTrue('page=1' in new_get_string)
+#         self.assertEqual(
+#             cms_tags.get_request_parameters(context, 'page'), '&stuff=1')
 
 
 class TestShowChildrenInMenu(CMSTagsTestCase):

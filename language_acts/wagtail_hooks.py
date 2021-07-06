@@ -1,14 +1,14 @@
-from django.conf import settings
-from django.utils.html import format_html_join
-from wagtail.core import hooks
-from wagtail.core.whitelist import attribute_rule, check_url
 # from wagtail.admin.rich_text import HalloPlugin
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
+from django.conf import settings
+from django.utils.html import format_html_join
+from draftjs_exporter.dom import DOM
 from wagtail.admin.rich_text.converters.html_to_contentstate import (
     BlockElementHandler, InlineStyleElementHandler,
     ExternalLinkElementHandler, PageLinkElementHandler,
     InlineEntityElementHandler)
-from draftjs_exporter.dom import DOM
+from wagtail.core import hooks
+from wagtail.core.whitelist import attribute_rule, check_url
 
 
 @hooks.register('construct_whitelister_element_rules')
@@ -262,6 +262,7 @@ def register_rich_text_anchor_identifier_feature(features):
             'entity_decorators': {type_: anchor_identifier_entity_decorator}},
     })
 
+
 # See https://github.com/wagtail/wagtail/issues/4474
 
 
@@ -394,6 +395,6 @@ def insert_editor_js_colour():
     js_includes = js_includes + format_html_join(
         '\n',
         '<link rel="stylesheet" href="{0}{1}"/>',  # NOQA
-        ((settings.STATIC_URL, filename)for filename in css_files)
+        ((settings.STATIC_URL, filename) for filename in css_files)
     )
     return js_includes

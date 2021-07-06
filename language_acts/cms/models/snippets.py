@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.html import strip_tags
 from modelcluster.fields import ParentalKey
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel
 from wagtail.core.fields import RichTextField
@@ -8,6 +9,8 @@ from wagtail.search import index
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.snippets.models import register_snippet
 
+
+# from modelcluster.utils import
 
 @register_snippet
 class LemmaLanguage(index.Indexed, models.Model):
@@ -61,22 +64,44 @@ Glossary Terms and Bibliography Items
 
 
 @register_snippet
-class GlossaryTerm(models.Model):
-    term = models.CharField(max_length=256)
-    description = models.TextField()
+class GlossaryTerm(index.Indexed, models.Model):
+    term = RichTextField(
+        null=True, blank=True, editor='bibliography')
+    description = RichTextField(
+        null=True, blank=True, editor='bibliography')
+    term_raw = models.CharField(blank=True, null=True, max_length=256)
 
     panels = [
         FieldPanel('term'),
         FieldPanel('description'),
     ]
 
+    def __lt__(self, other):
+        """ Case insensitive on raw term"""
+        r1 = self.term_raw.lower()
+        r2 = other.term_raw.lower()
+        return r1.__lt__(r2)
+
+    def save(self, *args, **kwargs):
+        # update term raw
+        raw = strip_tags(RichText(self.term))
+        if len(raw) > 250:
+            raw = raw[0:249]
+        self.term_raw = raw
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = "Glossary term"
         verbose_name_plural = "Glossary terms"
-        ordering = ['term', ]
+        ordering = ['term_raw', ]
+
+    search_fields = [
+        index.SearchField('term', partial_match=True),
+        index.SearchField('description', partial_match=True),
+    ]
 
     def __str__(self):
-        return self.term
+        return str(self.pk)+': '+strip_tags(RichText(self.term))
 
 
 @register_snippet
@@ -92,16 +117,23 @@ class BibliographyEntry(index.Indexed, Orderable, models.Model):
     ]
 
     search_fields = [
+        index.SearchField('reference', partial_match=True),
         index.SearchField('full_citation', partial_match=True),
     ]
+
+    def __lt__(self, other):
+        """ Case insensitive on raw reference"""
+        r1 = strip_tags(RichText(self.reference)).lower()
+        r2 = strip_tags(RichText(other.reference)).lower()
+        return r1.__lt__(r2)
 
     class Meta:
         verbose_name = "Bibliography entry"
         verbose_name_plural = "Bibliography entries"
-        ordering = ['full_citation', ]
+        ordering = ['reference', ]
 
     def __str__(self):
-        return str(RichText(self.reference))
+        return str(self.pk)+': '+strip_tags(RichText(self.reference))
 
 
 class GlossaryTermItem(index.Indexed, models.Model):
@@ -113,7 +145,7 @@ class GlossaryTermItem(index.Indexed, models.Model):
     class Meta:
         verbose_name = "Glossary item"
         verbose_name_plural = "Glossary items"
-        ordering = ['glossary_term', ]
+        ordering = ['glossary_term']
 
     panels = [
         SnippetChooserPanel('glossary_term'),

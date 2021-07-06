@@ -3,8 +3,8 @@
 {% for item in page.glossary_terms.all %}
   <li id="reference-{{ item.pk }}">
   <p>
-    <strong>{{ item.glossary_term.description }}</strong><br>
-    {{ item.glossary_term.description }}
+    <strong>{{ item.glossary_term.term|remove_paragraph|richtext }}</strong><br>
+    {{ item.glossary_term.description|remove_paragraph|richtext }}
   </p>
   </li>
 {%  endfor %}

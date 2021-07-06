@@ -17,7 +17,7 @@ from language_acts.cms.models.pages import (
     NewsIndexPage,
     EventIndexPage,
 )
-from language_acts.cms.models.snippets import GlossaryTerm, BibliographyEntry
+from language_acts.cms.models.snippets import BibliographyEntry, GlossaryTerm
 from language_acts.cms.views.ref_chooser import get_page_model
 
 register = template.Library()
@@ -267,48 +267,57 @@ def get_toggler_status(context, page):
     return False
 
 
-def add_glossary_terms(value: str) -> str:
-    # add glossary links
-    for term in GlossaryTerm.objects.all():
-        if term.term in str(value):
-            value = value.replace(
-                term.term,
-                '<a title="{}" href="{}">{}</a>'.format(
-                    term.description, "#", term.term
-                ),
-            )
-    return value
-
-
 @register.filter
 def remove_paragraph(text: str) -> str:
     return text.replace('</p>', '').replace('<p>', '')
 
 
-def create_ref_link(ref) -> str:
+def create_ref_link(ref, content_prefix: str = '',
+                    content_suffix: str = '',
+                    selection_text: str = None) -> str:
     """
     Create a foundation dropdown that contains the full reference
     and a link to the bibliography page
     """
-
     menu_id = "reference-dropdown-{}".format(ref.pk)
-    # strip out pointless paragraph tags
-    clean_citation = remove_paragraph(ref.reference)
+    if ref.__class__.__name__ == 'BibliographyEntry':
+        # strip out pointless paragraph tags
+        clean_citation = remove_paragraph(ref.reference)
+    elif ref.__class__.__name__ == 'GlossaryTerm':
+        if selection_text:
+            clean_citation = remove_paragraph(selection_text)
+        else:
+            clean_citation = remove_paragraph(ref.term)
+    else:
+        clean_citation = ''
     ref_link = (
-        '<a class="ref_toggle" data-toggle="{}">{}</a>'.format(
-            menu_id, clean_citation
+        '<a class="ref_toggle ' + ref.__class__.__name__
+        + '" data-toggle="{}">{}</a>'.format(
+            menu_id, content_prefix + clean_citation + content_suffix
         )
     )
     return ref_link
 
 
 def add_dropdowns(ref, page) -> str:
-    dropdown_text = '{}'.format(ref.full_citation)
+    url = ''
+    link_text = 'Go to Bibliography'
+    if ref.__class__.__name__ == 'BibliographyEntry':
+        # strip out pointless paragraph tags
+        dropdown_text = '{}'.format(ref.full_citation)
+        if page:
+            url = page.url + "#reference-{}".format(ref.pk)
+    elif ref.__class__.__name__ == 'GlossaryTerm':
+        dropdown_text = '{}'.format(ref.description)
+        if page:
+            url = page.url + "#term-{}".format(ref.pk)
+            link_text = 'Go to Glossary'
+    else:
+        dropdown_text = ''
     menu_id = "reference-dropdown-{}".format(ref.pk)
     if page:
-        bibliography_url = page.url + "#reference-{}".format(ref.pk)
-        dropdown_text += ' <a href="{}">Go to Bibliography.</a>'.format(
-            bibliography_url
+        dropdown_text += ' <a href="{}">{}</a>'.format(
+            url, link_text
         )
     return '<div class="dropdown-pane" id="{}" \
         data-position="top" data-alignment="center" data-dropdown \
@@ -317,8 +326,76 @@ def add_dropdowns(ref, page) -> str:
     )
 
 
+def get_prefix_suffix(result):
+    suffix = ''
+    if len(result.groups()) >= 2 and len(
+        result.group(2)
+    ) > 0:
+        # content before [ref_1]
+        prefix = ' ' + result.group(2) + ' '
+    else:
+        prefix = ''
+    if len(result.groups()) >= 3 and len(
+        result.group(4)
+    ) > 0:
+        # content after [ref_1]
+        suffix = ' ' + result.group(4) + ' '
+    if (
+        len(result.groups()) >= 4
+        and result.group(5) and len(result.group(5)) > 0
+    ):
+        # edge case when there are two </span> tags
+        suffix = suffix + result.group(5)
+    return prefix, suffix
+
+
+def add_glossary_terms(value: str) -> str:
+    # <span data-term_id="1">[term_1_second-sentence]</span>
+    ref_path = re.compile(
+        r'\[term_(\d+)_*(.*?)\]'
+    )
+    if type(value) == RichText:
+        value = value.source
+    while True:
+        result = ref_path.search(value)
+        if result:
+            ref_id = int(result.group(1))
+            if ref_id > 0:
+                try:
+                    ref = GlossaryTerm.objects.get(pk=ref_id)
+                    if ref:
+                        # create a link to the glossary
+                        # that jumps to our ref
+
+                        # prefix, suffix = get_prefix_suffix(result)
+                        selection_text = ''
+                        if result.group(2):
+                            selection_text = result.group(2).replace('-', ' ')
+                        value = value.replace(
+                            result.group(0),
+                            create_ref_link(
+                                ref, '', '', selection_text
+                            )
+                        )
+                    else:
+                        print("WARNING: No Ref found: {}".format(
+                            ref_id))
+
+                except ObjectDoesNotExist:
+                    print(" ref not found ")
+        else:
+            break
+    return value
+
+
 def add_bibliography_references(value: str) -> str:
-    ref_path = re.compile(r'<span data-reference_id="(\d+)">([^<]*)</span>')
+    # ref_path = re.compile(
+    #     r'<span data-reference_id="(\d+)">(.*?)(\[ref_\d+\])(.*?)</span>('
+    #     r'</span>)*'
+    # )
+    ref_path = re.compile(
+        r'\[ref_(\d+)\]'
+    )
     if type(value) == RichText:
         value = value.source
     while True:
@@ -331,15 +408,22 @@ def add_bibliography_references(value: str) -> str:
                     if ref:
                         # create a link to the bibliography page
                         # that jumps to our ref
+                        # prefix, suffix = get_prefix_suffix(result)
                         value = value.replace(
-                                result.group(0), create_ref_link(ref)
-                            )
+                            result.group(0),
+                            # create_ref_link(ref, prefix, suffix)
+                            create_ref_link(ref, '', '')
+                        )
                     else:
                         print("WARNING: No Ref found: {}".format(
                             ref_id))
+                        break
 
                 except ObjectDoesNotExist:
                     print(" ref not found ")
+                    value = value.replace(
+                        result.group(0), ''
+                    )
         else:
             break
 
@@ -365,38 +449,55 @@ def add_references(block):
     # if type(block) ==
     value_str = get_value_string(block)
     value_str = add_bibliography_references(value_str)
+    value_str = add_glossary_terms(value_str)
     return RichText(value_str)
 
 
 @register.filter
 def add_reference_dropdowns(block):
-    # bibliography refs
+    """ Create the dropdown content for both bibliography references
+    and glossary terms
+    could be refactored to be a bit more nimble
+    [ref_4] [term_2]
+    """
     value_str = get_value_string(block)
     dropdown_text = ''
-    ref_path = re.compile(r'<span data-reference_id="(\d+)">([^<]*)</span>')
+    ref_path = re.compile(r'\[(\w+)_(\d+)_*(.*?)\]')
     while True:
         result = ref_path.search(value_str)
         if result:
-            ref_id = int(result.group(1))
+            ref_id = int(result.group(2))
+            reference_key = result.group(1)
             if ref_id > 0:
                 try:
-                    ref = BibliographyEntry.objects.get(pk=ref_id)
-                    page = None
-                    for usage in ref.get_usage():
-                        # make sure we've got the right
-                        # linked object
-                        if type(usage.specific) == get_page_model():
-                            page = usage
+
+                    if reference_key == 'ref':
+                        ref = BibliographyEntry.objects.get(pk=ref_id)
+                    elif reference_key == 'term':
+                        ref = GlossaryTerm.objects.get(pk=ref_id)
+                    else:
+                        ref = None
+
                     if ref:
-                        # create a link to the bibliography page
+                        page = None
+                        for usage in ref.get_usage():
+                            # make sure we've got the right
+                            # linked object
+                            if type(usage.specific) == get_page_model(ref):
+                                page = usage
+                        # create a link to the page
                         # that jumps to our ref if present
                         value_str = value_str.replace(
                             result.group(0), create_ref_link(ref)
                         )
-                        dropdown_text = dropdown_text + add_dropdowns(ref, page)
+                        dropdown_text = dropdown_text + add_dropdowns(ref,
+                                                                      page)
 
                 except ObjectDoesNotExist:
                     print(" ref not found ")
+                    value_str = value_str.replace(
+                        result.group(0), ''
+                    )
         else:
             break
     return RichText(dropdown_text)
