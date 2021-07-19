@@ -279,7 +279,10 @@ def create_ref_link(ref, content_prefix: str = '',
     Create a foundation dropdown that contains the full reference
     and a link to the bibliography page
     """
-    menu_id = "reference-dropdown-{}".format(ref.pk)
+    menu_id = "reference-dropdown-{}-{}".format(
+        str(ref.__class__.__name__).lower(),
+        ref.pk
+    )
     if ref.__class__.__name__ == 'BibliographyEntry':
         # strip out pointless paragraph tags
         clean_citation = remove_paragraph(ref.reference)
@@ -314,7 +317,10 @@ def add_dropdowns(ref, page) -> str:
             link_text = 'Go to Glossary'
     else:
         dropdown_text = ''
-    menu_id = "reference-dropdown-{}".format(ref.pk)
+    menu_id = "reference-dropdown-{}-{}".format(
+        str(ref.__class__.__name__).lower(),
+        ref.pk
+    )
     if page:
         dropdown_text += ' <a href="{}">{}</a>'.format(
             url, link_text
