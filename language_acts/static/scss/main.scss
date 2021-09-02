@@ -129,12 +129,18 @@ button i,
         &::after {
             display: inline-block;
             filter: invert(1);
+            margin-left: 6px;
+        }
+
+        &.dark-toggle {
+            &::after {
+                filter: none;
+            }
         }
     }
 
     &.close {
         &::after {
-            // content: "\f0d7";
             content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/solid/caret-down.svg");
             width: 14px;
         }
@@ -142,7 +148,6 @@ button i,
 
     &.open {
         &::after {
-            // content: "\f0da";
             content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/solid/caret-right.svg");
             width: 8px;
         }
