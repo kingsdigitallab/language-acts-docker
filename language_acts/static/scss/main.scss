@@ -129,12 +129,18 @@ button i,
         &::after {
             display: inline-block;
             filter: invert(1);
+            margin-left: 6px;
+        }
+
+        &.dark-toggle {
+            &::after {
+                filter: none;
+            }
         }
     }
 
     &.close {
         &::after {
-            // content: "\f0d7";
             content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/solid/caret-down.svg");
             width: 14px;
         }
@@ -142,7 +148,6 @@ button i,
 
     &.open {
         &::after {
-            // content: "\f0da";
             content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/solid/caret-right.svg");
             width: 8px;
         }
@@ -448,8 +453,16 @@ header.top-header {
 h1, h2, h3,
 h4, h5, h6 {
     font-weight: 700;
+
+    &.small {
+        font-size: unset;
+    }
 }
 
+.separator {
+    border-bottom: 1px solid $medium-gray;
+    padding-bottom: 4px;
+}
 /** Navigation **/
 
 .top-bar {
@@ -574,8 +587,6 @@ h4, h5, h6 {
 .events-section,
 .news-section {
     &::before {
-        // font-family: "FontAwesome";
-        // font-size: rem-calc(16);
         display: inline-block;
         filter: invert(0.9);
         vertical-align: -2px;
@@ -585,24 +596,18 @@ h4, h5, h6 {
 
 .blog-section {
     &::before {
-        // color: $light-gray;
-        // content: "\f02b";
         content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/solid/pencil.svg")
     }
 }
 
 .events-section {
     &::before {
-        // color: $light-gray;
-        // content: "\f073";
         content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/solid/calendar-alt.svg")
     }
 }
 
 .news-section {
     &::before {
-        // color: $light-gray;
-        // content: "\f1ea";
         content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/solid/newspaper.svg")
     }
 }
@@ -822,10 +827,8 @@ article {
         padding: rem-calc(4 8);
 
         &::after {
-            // content: "\f057";
             content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/solid/times-circle.svg");
             display: inline-block;
-            // font-family: "FontAwesome";
             padding-left: rem-calc(8);
             width: 20px;
         }
@@ -844,16 +847,25 @@ article {
 
     .reset {
         &::after {
-            // content: "\f1f8";
             content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/solid/trash-alt.svg");
             display: inline-block;
-            // font-family: "FontAwesome";
             padding-left: rem-calc(8);
             width: 20px;
         }
         &:hover {
             cursor: pointer;
         }
+    }
+}
+
+.tooltip-icon {
+    border-bottom: none;
+    display: inline-block;
+    width: 16px;
+
+    svg {
+        fill: $dark-gray;
+        width: 16px;
     }
 }
 

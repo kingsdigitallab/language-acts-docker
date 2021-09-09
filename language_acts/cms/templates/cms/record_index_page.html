@@ -5,23 +5,10 @@
 {# Filters #}
 {% with request_full_path=request.get_full_path|querify %}
 <div class="filters">
-  <div class="applied">
-    {% comment %}
-    If filters are applied, display them here
-    {% endcomment %}
-    {% if selected_facets %}
-    <ul class="list-horizontal no-bullet">
-      {% for selected_facet in selected_facets %}
-      <li><a class="filter"
-          href="{{ selected_facet.remove_url }}">{{ selected_facet.value }}</a>
-      </li>
-      {% endfor %}
-      <li class="reset text-right float-right"><a
-          href="{% pageurl self %}?q=">Clear all filters</a></li>
-    </ul>
-    {% endif %}
-  </div>
-  <h3 class="toggler close">Filters</h3>
+  <h3 class="toggler close dark-toggle">
+    <span class="tooltip-icon" data-tooltip tabindex="1" title="Click to see the list of filters available">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Pro 5.15.3 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) --><path d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"/></svg>
+    </span> Filters</h3>
   <div class="content hide" data-equalizer data-equalize-by-row="true">
     <div class="row small-up-1 medium-up-3 large-up-4">
       <div class="column column-block">
@@ -59,6 +46,21 @@
       </div>
     </div>
   </div>
+
+  <div class="applied">
+    {% if selected_facets %}
+    <h4 class="small separator">Applied</h4>
+    <ul class="list-horizontal no-bullet">
+      {% for selected_facet in selected_facets %}
+      <li><a class="filter"
+          href="{{ selected_facet.remove_url }}">{{ selected_facet.value }}</a>
+      </li>
+      {% endfor %}
+      <li class="reset text-right float-right"><a
+          href="{% pageurl self %}?q=">Clear all filters</a></li>
+    </ul>
+    {% endif %}
+  </div>
 </div>
 {% endwith %}
 
@@ -70,8 +72,7 @@
   {% endcomment %}
 
   <li>
-    <a href="{{ result.page_url }}" class="entry">{{ result.lemma }}</a>
-    <a href="{{ result.page_url }}" class="entry">{{ result.lemma }}</a>
+    <a href="{{ result.page_url }}" class="entry">{{ result.lemma }}</a> <i>{{ result.language }}</i>
   </li>
 
   {% endfor %}
