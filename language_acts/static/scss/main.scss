@@ -180,6 +180,15 @@ small {
     color: scale-color($dark-gray, $lightness: -20%);
 }
 
+.label {
+    &.light {
+        background: $light-gray;
+        border: 1px solid $medium-gray;
+        color: $primary-color;
+        padding: 2px 4px;
+    }
+}
+
 time {
     text-transform: capitalize;
 }
