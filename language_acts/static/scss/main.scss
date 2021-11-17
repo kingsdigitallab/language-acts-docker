@@ -282,6 +282,7 @@ time {
     clear: both;
 
     iframe {
+        border: 0;
         position: absolute;
         top: 0;
         left: 0;
@@ -1008,10 +1009,6 @@ span.ref_toggle{
   font-weight: bold;
 }
 
-div.dropdown-pane {
-
-}
-
 /** Search **/
 
 // Search box
@@ -1360,7 +1357,7 @@ Animating the logo's diactrics
     // Carousel
 
     .orbit-figure {
-        display: inline-block;
+        // display: inline-block;
         float: left;
         height: 400px;
         width: 60%;
