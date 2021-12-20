@@ -33,7 +33,7 @@
                 </div>
                 {% if event.search_description %}
                 <p>{{ event.search_description|add_references|safe }}</p>
-                  {{ event.search_description|add_reference_dropdowns|safe }}
+
                 {% endif %}
             </div>
         {% if self.slug != 'home' %}
