@@ -459,51 +459,27 @@ def add_references(block):
     return RichText(value_str)
 
 
-@register.filter
-def add_reference_dropdowns(block):
+@register.simple_tag(takes_context=True)
+def add_reference_dropdowns(context):
     """ Create the dropdown content for both bibliography references
     and glossary terms
     could be refactored to be a bit more nimble
     [ref_4] [term_2]
     """
-    value_str = get_value_string(block)
+
     dropdown_text = ''
-    ref_path = re.compile(r'\[(\w+)_(\d+)_*(.*?)\]')
-    while True:
-        result = ref_path.search(value_str)
-        if result:
-            ref_id = int(result.group(2))
-            reference_key = result.group(1)
-            if ref_id > 0:
-                try:
+    if 'ref_dict' in context:
+        for ref in context['ref_dict']:
+            page = None
+            for usage in ref.get_usage():
+                # make sure we've got the right
+                # linked object
+                if type(usage.specific) == get_page_model(ref):
+                    page = usage
+            # create a link to the page
+            # that jumps to our ref if present
 
-                    if reference_key == 'ref':
-                        ref = BibliographyEntry.objects.get(pk=ref_id)
-                    elif reference_key == 'term':
-                        ref = GlossaryTerm.objects.get(pk=ref_id)
-                    else:
-                        ref = None
+            dropdown_text = dropdown_text + add_dropdowns(ref,
+                                                          page)
 
-                    if ref:
-                        page = None
-                        for usage in ref.get_usage():
-                            # make sure we've got the right
-                            # linked object
-                            if type(usage.specific) == get_page_model(ref):
-                                page = usage
-                        # create a link to the page
-                        # that jumps to our ref if present
-                        value_str = value_str.replace(
-                            result.group(0), create_ref_link(ref)
-                        )
-                        dropdown_text = dropdown_text + add_dropdowns(ref,
-                                                                      page)
-
-                except ObjectDoesNotExist:
-                    print(" ref not found ")
-                    value_str = value_str.replace(
-                        result.group(0), ''
-                    )
-        else:
-            break
     return RichText(dropdown_text)
