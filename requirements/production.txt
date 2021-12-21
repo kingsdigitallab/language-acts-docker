@@ -21,6 +21,7 @@ django-activecollab-digger==0.7.2  # via -r requirements/production.in
 django-allauth==0.41.0    # via -r requirements/./base.txt
 django-anymail[mailgun]==7.0.0  # via -r requirements/production.in
 django-appconf==1.0.4     # via -r requirements/./base.txt, django-compressor
+django-sekizai==2.0.0
 django-auth-ldap==2.2.0   # via -r requirements/production.in, django-kdl-ldap
 django-compressor==2.4    # via -r requirements/./base.txt, django-libsass
 django-crispy-forms==1.8.1  # via -r requirements/./base.txt

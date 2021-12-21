@@ -11,7 +11,9 @@
 {% addtoblock "extra_js" %}
 
 {% for file in value.additional_files|lines %}
+{% if file %}
 <script src="{{file}}"></script>
+{% endif %}
 {% endfor %}
 <script>
     window.onload = function()
