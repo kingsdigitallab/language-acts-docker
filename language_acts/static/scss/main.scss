@@ -24,10 +24,8 @@ a {
 
 a.exsource {
     &::before {
-        // content: "\f14c";
         content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/solid/external-link-square.svg");
         display: inline-block;
-        // font-family: "FontAwesome";
         padding-right: 0.25rem;
         width: 16px;
     }
@@ -282,6 +280,7 @@ time {
     clear: both;
 
     iframe {
+        border: 0;
         position: absolute;
         top: 0;
         left: 0;
@@ -1008,10 +1007,6 @@ span.ref_toggle{
   font-weight: bold;
 }
 
-div.dropdown-pane {
-
-}
-
 /** Search **/
 
 // Search box
@@ -1169,10 +1164,8 @@ footer {
         color: scale-color($dark-gray, $lightness: -50%);
 
         &::before {
-            // content: "\f079";
             content: url("/static/vendor/fontawesome-pro-5.15.3-web/svgs/solid/retweet.svg");
             display: inline-block;
-            // font-family: "FontAwesome";
             padding-right: rem-calc(8);
             position: relative;
             width: 24px;
@@ -1360,7 +1353,6 @@ Animating the logo's diactrics
     // Carousel
 
     .orbit-figure {
-        display: inline-block;
         float: left;
         height: 400px;
         width: 60%;
@@ -1414,6 +1406,12 @@ Animating the logo's diactrics
     .strapline-block {
         font-size: rem-calc(18);
         padding: rem-calc(21 24 0);
+    }
+
+    .section-header {
+        h1 {
+            padding-top: 1rem;
+        }
     }
 }
 
