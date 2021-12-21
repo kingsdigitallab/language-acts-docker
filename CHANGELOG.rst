@@ -15,6 +15,17 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 [Unreleased] - yyyy-mm-dd
 --------------------
 
+[5.0.0] - 2021-12-21
+--------------------
+* Improved glossary (rich text)
+* Improved bibliographic references
+* Improved colour contrast for accessibilty
+* Improved secondary navigation
+* Fixed d3_block (Wagtail) - Valid CSS output
+* Fixed single ID references for LM word records
+* Improved media object embed
+* Added custom styles to Wagtail editor
+* Upgraded Foundation
 
 [4.0.1] - 2020-07-30
 --------------------
