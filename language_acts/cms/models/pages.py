@@ -1,11 +1,10 @@
 from __future__ import unicode_literals
 
 import logging
+import re
 import typing
-
-from elasticsearch.exceptions import NotFoundError
 from datetime import date
-from language_acts.cms.search import RecordPageSearch
+
 # from django.contrib.auth.models import User
 from django import forms
 from django.conf import settings
@@ -15,6 +14,7 @@ from django.db import models
 from django.db.models import Q, QuerySet
 from django.shortcuts import render
 from django.utils.text import slugify
+from elasticsearch.exceptions import NotFoundError
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from taggit.models import TaggedItemBase
@@ -25,13 +25,16 @@ from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.core import blocks
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Page
+from wagtail.core.rich_text import RichText
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.snippets.models import register_snippet
 
+from language_acts.cms.search import RecordPageSearch
 from .behaviours import WithFeedImage, WithStreamField
+from .snippets import GlossaryTerm, BibliographyEntry
 from .streamfield import RecordEntryStreamBlock, CMSStreamBlock
 
 logger = logging.getLogger(__name__)
@@ -197,12 +200,140 @@ class RecordPage(Page):
 
     search_fields = Page.search_fields + [
     ]
+    ref_term = 'ref'
+    gloss_term = 'term'
 
     subpage_types = ['RecordEntry']
 
     def get_languages(self):
         return RecordEntry.objects.live().descendant_of(self).order_by(
             'language__order_by')
+
+    def find_references(self, value: str, ref_type: str, ref_dict):
+        # ref_path = re.compile(
+        #     r'<span data-reference_id="(\d+)">(.*?)(\[ref_\d+\])(
+        #     .*?)</span>('
+        #     r'</span>)*'
+        # )
+        if ref_type == 'ref':
+            ref_path = re.compile(
+                r'\[{}_(\d+)\]'.format(ref_type)
+            )
+        else:
+            ref_path = re.compile(
+                r'\[term_(\d+)_*(.*?)\]'
+            )
+        found = False
+        for block in value:
+            text = block.value
+            if type(block.value) == RichText:
+                text = block.value.source
+            while True:
+                found = False
+                result = ref_path.search(text)
+                if result:
+                    found = True
+                    ref_id = int(result.group(1))
+                    if ref_id > 0:
+                        if ref_type == 'ref':
+                            try:
+                                ref = BibliographyEntry.objects.get(pk=ref_id)
+                                if ref and ref not in ref_dict:
+                                    # Add to dict
+                                    ref_dict[ref] = 1
+
+                            except ObjectDoesNotExist:
+                                print(" ref not found ")
+                        elif ref_type == 'term':
+                            try:
+                                ref = GlossaryTerm.objects.get(pk=ref_id)
+                                if ref and ref not in ref_dict:
+                                    # Add to dict
+                                    ref_dict[ref] = 1
+                            except ObjectDoesNotExist:
+                                print(" ref not found ")
+                        text = text.replace(
+                            result.group(0),
+                            ''
+                        )
+
+                if not found:
+                    break
+
+        return ref_dict
+
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        # For every entry, extract the references to make a single unified list
+        ref_dict = {}
+
+        for entry in self.get_children():
+            ref_dict = self.find_references(
+                entry.recordentry.semantic_history, self.ref_term, ref_dict
+            )
+            ref_dict = self.find_references(
+                entry.recordentry.semantic_history, self.gloss_term, ref_dict
+            )
+
+            ref_dict = self.find_references(
+                entry.recordentry.collocational_history, self.ref_term,
+                ref_dict
+            )
+            ref_dict = self.find_references(
+                entry.recordentry.collocational_history, self.gloss_term,
+                ref_dict
+            )
+
+            ref_dict = self.find_references(
+                entry.recordentry.diatopic_variation, self.ref_term, ref_dict
+            )
+            ref_dict = self.find_references(
+                entry.recordentry.diatopic_variation, self.gloss_term,
+                ref_dict
+            )
+
+            ref_dict = self.find_references(
+                entry.recordentry.diaphasic_variation, self.ref_term, ref_dict
+            )
+            ref_dict = self.find_references(
+                entry.recordentry.diaphasic_variation, self.gloss_term,
+                ref_dict
+            )
+
+            ref_dict = self.find_references(
+                entry.recordentry.morph_related_words, self.ref_term, ref_dict
+            )
+            ref_dict = self.find_references(
+                entry.recordentry.morph_related_words, self.gloss_term,
+                ref_dict
+            )
+
+            ref_dict = self.find_references(
+                entry.recordentry.variants, self.ref_term, ref_dict
+            )
+            ref_dict = self.find_references(
+                entry.recordentry.variants, self.gloss_term,
+                ref_dict
+            )
+
+            ref_dict = self.find_references(
+                entry.recordentry.ranking_freq, self.ref_term, ref_dict
+            )
+            ref_dict = self.find_references(
+                entry.recordentry.ranking_freq, self.gloss_term,
+                ref_dict
+            )
+
+            ref_dict = self.find_references(
+                entry.recordentry.first_attest, self.ref_term, ref_dict
+            )
+            ref_dict = self.find_references(
+                entry.recordentry.first_attest, self.gloss_term,
+                ref_dict
+            )
+
+        context['ref_dict'] = ref_dict
+        return context
 
 
 RecordPage.content_panels = [
@@ -826,7 +957,7 @@ class Event(Page, WithStreamField, WithFeedImage):
             try:
                 strand = StrandPage.objects.get(title=strand_name)
                 return self.objects.filter(strands=strand).filter(
-                        Q(date_from__isnull=False)
+                    Q(date_from__isnull=False)
                 ).order_by('date_from')
             except ObjectDoesNotExist:
                 return self.objects.none()
@@ -1077,7 +1208,7 @@ class UpcomingEventSlideBlock(blocks.StaticBlock):
         context = super().get_context(value, parent_context=parent_context)
         event = None
         if Event.objects.live().filter(
-                date_from__gte=date.today()
+            date_from__gte=date.today()
         ).order_by('date_from').count() > 0:
             event = Event.objects.live().filter(
                 date_from__gte=date.today()
