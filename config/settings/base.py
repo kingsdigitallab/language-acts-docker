@@ -72,6 +72,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'modelcluster',
     'rest_framework',
+    'sekizai',
     'taggit',
     'wagtail.core',
     'wagtail.admin',
@@ -221,6 +222,7 @@ TEMPLATES = [
                 "django.template.context_processors.media",
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
+                "sekizai.context_processors.sekizai",
                 "django.contrib.messages.context_processors.messages",
                 "language_acts.utils.context_processors.settings_context",
             ],

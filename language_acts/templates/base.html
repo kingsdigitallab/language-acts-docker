@@ -1,4 +1,4 @@
-{% load static cms_tags compress %}
+{% load static cms_tags compress sekizai_tags %}
 <!doctype html>
 <html lang="en-gb">
 <head>
@@ -12,13 +12,17 @@
 
   <!-- favicons -->
   {% include 'includes/favicon.html' %}
+  {% render_block "extra_css" %}
 
   {% compress css %}
   <link rel="stylesheet" type="text/x-scss" href="{% static 'scss/main.scss' %}">
   {% endcompress %}
 
+  
   {% block header_scripts %}
   {% endblock %}
+  {% render_block "extra_js" %}
+
 </head>
 <body{% block bodyclass %}{% endblock %}>
   <div role="complementary" class="skip-main"><a href="#maincontent">Skip to main content</a></div>
