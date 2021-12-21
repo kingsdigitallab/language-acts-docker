@@ -1,4 +1,4 @@
-{% load static cms_tags compress %}
+{% load static cms_tags compress sekizai_tags %}
 <!doctype html>
 <html lang="en-gb">
 <head>
@@ -6,19 +6,24 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta property="og:title" content="Language Acts">
   <meta property="og:image" content="{{ self.get_site.root_url }}{% static 'images/logos/lawm-logo.png' %}">
-  <title>{% block meta_title %}{% endblock %} | {{ settings.WAGTAIL_SITE_NAME }}</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>{% block meta_title %}{% endblock %} | {{ settings.WAGTAIL_SITE_NAME }}</title>
 
   <!-- favicons -->
   {% include 'includes/favicon.html' %}
+  {% render_block "extra_css" %}
 
   {% compress css %}
   <link rel="stylesheet" type="text/x-scss" href="{% static 'scss/main.scss' %}">
   {% endcompress %}
 
+  
   {% block header_scripts %}
   {% endblock %}
+  {% render_block "extra_js" %}
+
 </head>
 <body{% block bodyclass %}{% endblock %}>
   <div role="complementary" class="skip-main"><a href="#maincontent">Skip to main content</a></div>

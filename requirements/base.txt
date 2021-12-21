@@ -19,6 +19,7 @@ django-appconf==1.0.4     # via django-compressor
 django-compressor==2.4    # via -r requirements/base.in, django-libsass
 django-crispy-forms==1.8.1  # via -r requirements/base.in
 django-elasticsearch-dsl==7.1.4  # via -r requirements/base.in
+django-sekizai==2.0.0
 django-environ==0.4.5     # via -r requirements/base.in
 django-filter==2.4.0      # via wagtail
 django-libsass==0.8       # via -r requirements/base.in
