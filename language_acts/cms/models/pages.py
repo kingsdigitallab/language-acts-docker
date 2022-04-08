@@ -138,6 +138,7 @@ StrandPage.content_panels = [
     FieldPanel('blogs_contextual_information'),
     FieldPanel('events_contextual_information'),
     FieldPanel('news_contextual_information'),
+    FieldPanel('body'),
 ]
 
 
