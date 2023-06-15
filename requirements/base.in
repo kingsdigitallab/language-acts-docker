@@ -31,4 +31,4 @@ django-classy-tags==3.0.1
 django-sekizai
 
 # Twitter Hut (Removed after API charging)
-#twython==3.8.2
+twython==3.8.2
