@@ -182,11 +182,15 @@ def main_menu(context, root, current_page=None):
     try:
         menu_pages = root.get_children().live().in_menu()
         root.active = current_page.url == root.url if current_page else False
-        for page in menu_pages:
-            page.active = (
-                current_page.url.startswith(
-                    page.url) if current_page else False
-            )
+        if menu_pages:
+            try:
+                for page in menu_pages:
+                    page.active = (
+                        current_page.url.startswith(
+                            page.url) if current_page else False
+                    )
+            except ValueError:
+                print("Valure error for {}".format(page))
     except AttributeError:
         print("Error in root: {}:{}".format(root, current_page))
         menu_pages = []

@@ -27,8 +27,8 @@ elasticsearch-dsl>=7.0.0,<8.0.0  # https://github.com/elastic/elasticsearch-dsl-
 django-elasticsearch-dsl>=7.1,<7.2  # https://github.com/django-es/django-elasticsearch-dsl
 wagtail>=2.9,<3 # https://github.com/wagtail/wagtail
 # django-kdl-wagtail==0.9.0  # https://github.com/kingsdigitallab/django-kdl-wagtail
-
-django-sekizai==2.0.0
+django-classy-tags==3.0.1
+django-sekizai
 
 # Twitter Hut
 twython==3.8.2
