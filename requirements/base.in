@@ -30,5 +30,5 @@ wagtail>=2.9,<3 # https://github.com/wagtail/wagtail
 django-classy-tags==3.0.1
 django-sekizai
 
-# Twitter Hut
-twython==3.8.2
+# Twitter Hut (Removed after API charging)
+#twython==3.8.2
