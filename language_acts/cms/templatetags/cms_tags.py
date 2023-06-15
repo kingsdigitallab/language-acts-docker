@@ -28,8 +28,8 @@ def get_section(current_page):
     homepage = HomePage.objects.first()
     current_section = (
         Page.objects.ancestor_of(current_page, inclusive=True)
-            .child_of(homepage)
-            .first()
+        .child_of(homepage)
+        .first()
     )
     return current_section
 
@@ -175,26 +175,26 @@ def main_menu(context, root, current_page=None):
         request = context["request"]
     else:
         request = None
-    if request is not None and root is None:
-        root = Site.find_for_request(context["request"]).root_page
-    if root is None:
-        root = current_page
-    try:
-        menu_pages = root.get_children().live().in_menu()
-        root.active = current_page.url == root.url if current_page else False
-        if menu_pages:
-            try:
-                for page in menu_pages:
-                    page.active = (
-                        current_page.url.startswith(
-                            page.url) if current_page else False
-                    )
-            except ValueError:
-                print("Valure error for {}".format(page))
-    except AttributeError:
-        print("Error in root: {}:{}".format(root, current_page))
-        menu_pages = []
-
+    # if request is not None and root is None:
+    #     root = Site.find_for_request(context["request"]).root_page
+    # if root is None:
+    #     root = current_page
+    # try:
+    #     menu_pages = root.get_children().live().in_menu()
+    #     root.active = current_page.url == root.url if current_page else False
+    #     if menu_pages:
+    #         try:
+    #             for page in menu_pages:
+    #                 page.active = (
+    #                     current_page.url.startswith(
+    #                         page.url) if current_page else False
+    #                 )
+    #         except ValueError:
+    #             print("Valure error for {}".format(page))
+    # except AttributeError:
+    #     print("Error in root: {}:{}".format(root, current_page))
+    #     menu_pages = []
+    menu_pages = []
     return {
         "request": request,
         "root": root,
