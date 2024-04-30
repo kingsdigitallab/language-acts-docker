@@ -13,6 +13,9 @@ LOGIN_URL = '/wagtail/login/'
 ROOT_DIR = (
     environ.Path(__file__) - 3
 )  # (language_acts/config/settings/base.py - 3 = language_acts/)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+COMPOSE_DIR = os.path.join(BASE_DIR, "compose")
+
 APPS_DIR = ROOT_DIR.path("language_acts")
 
 env = environ.Env()
