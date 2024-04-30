@@ -324,7 +324,7 @@ Session.vim
 language_acts/media/
 
 .pytest_cache/
-
+volumes/*
 
 .ipython/
 .env

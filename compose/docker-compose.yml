@@ -1,0 +1,83 @@
+name: 'languageacts_openstack'
+
+services:
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy:1.4
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  nginx:
+    build:
+      context: ..
+      dockerfile: ./compose/production/nginx/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8001"
+    volumes:
+      - ../volumes/django/static:/usr/share/nginx/static:ro
+    environment:
+      VIRTUAL_HOST: "owri.kdl.kcl.ac.uk,owri-os.kdl.kcl.ac.uk,owri.app.cch.kcl.ac.uk,localhost,127.0.0.1"
+      VIRTUAL_PATH: "~^/(static/|redist/|robots.txt)"
+      VIRTUAL_PROTO: http
+      VIRTUAL_PORT: 8001
+
+  postgres:
+    build:
+      context: ../
+      dockerfile: ./compose/production/postgres/Dockerfile
+    user: ${POSTGRES_USER}
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    restart: unless-stopped
+    volumes:
+      - ../volumes/postgres/postgres_data:/var/lib/postgresql/data:Z
+      - ../volumes/postgres/postgres_data_backups:/backups:z
+    env_file:
+      - .env
+    expose:
+      - "5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  elasticsearch:
+    image: elasticsearch:7.10.1
+    volumes:
+      - ../volumes/elasticsearch/data:/usr/share/elasticsearch/data
+    env_file:
+      - .env
+    expose:
+      - "9200"
+      - "9300"
+    restart: unless-stopped
+
+  django:
+    build:
+      context: ../
+      dockerfile: ./compose/production/django/Dockerfile
+    command: /start
+    depends_on:
+      elasticsearch:
+        condition: service_started
+      postgres:
+          condition: service_healthy
+
+    env_file:
+      - .env
+    restart: unless-stopped
+    volumes:
+      - ../volumes/django/static:/app/static
+    expose:
+      - 8000
+    environment:
+      VIRTUAL_HOST: "owri.kdl.kcl.ac.uk,owri-os.kdl.kcl.ac.uk,owri.app.cch.kcl.ac.uk,localhost,127.0.0.1"
+      VIRTUAL_PATH: "/"
+      VIRTUAL_PROTO: http
+      VIRTUAL_PORT: 8000
+
+
