@@ -19,12 +19,12 @@ services:
     volumes:
       - ../volumes/django/static:/usr/share/nginx/static:ro
     environment:
-      VIRTUAL_HOST: "owri.kdl.kcl.ac.uk,owri-os.kdl.kcl.ac.uk,owri.app.cch.kcl.ac.uk,localhost,127.0.0.1"
+      VIRTUAL_HOST: ${DJANGO_ALLOWED_HOSTS}
       VIRTUAL_PATH: "~^/(static/|redist/|robots.txt)"
       VIRTUAL_PROTO: http
       VIRTUAL_PORT: 8001
 
-  postgres:
+  db:
     build:
       context: ../
       dockerfile: ./compose/production/postgres/Dockerfile
@@ -47,8 +47,8 @@ services:
 
   elasticsearch:
     image: elasticsearch:7.10.1
-    volumes:
-      - ../volumes/elasticsearch/data:/usr/share/elasticsearch/data
+    #volumes:
+    #  - ../volumes/elasticsearch/data:/usr/share/elasticsearch/data
     env_file:
       - .env
     expose:
@@ -64,18 +64,18 @@ services:
     depends_on:
       elasticsearch:
         condition: service_started
-      postgres:
-          condition: service_healthy
+      db:
+        condition: service_healthy
 
     env_file:
       - .env
     restart: unless-stopped
     volumes:
       - ../volumes/django/static:/app/static
-    expose:
-      - 8000
+    ports:
+      - "8000:8000"
     environment:
-      VIRTUAL_HOST: "owri.kdl.kcl.ac.uk,owri-os.kdl.kcl.ac.uk,owri.app.cch.kcl.ac.uk,localhost,127.0.0.1"
+      VIRTUAL_HOST: ${DJANGO_ALLOWED_HOSTS}
       VIRTUAL_PATH: "/"
       VIRTUAL_PROTO: http
       VIRTUAL_PORT: 8000

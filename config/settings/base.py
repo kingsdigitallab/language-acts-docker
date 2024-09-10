@@ -169,7 +169,7 @@ MIDDLEWARE = [
 STATICFILES_STORAGE = \
     "language_acts.storage.CompressedManifestStaticFilesStorage"
 
-STATIC_ROOT = str(ROOT_DIR("staticfiles"))
+STATIC_ROOT = str(ROOT_DIR("static"))
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting
