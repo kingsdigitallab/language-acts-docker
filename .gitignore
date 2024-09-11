@@ -328,6 +328,7 @@ volumes/*
 
 .ipython/
 .env
+.env64
 .envs/*
 !.envs/.local/
 # api keys etc. for local django
