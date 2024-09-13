@@ -11,7 +11,9 @@
 
         {% block main_menu %}
         {% get_site_root as site_root %}
+          {% if site_root %}
         {% main_menu root=site_root current_page=self %}
+          {% endif %}
         {% endblock %}
 
       </div>

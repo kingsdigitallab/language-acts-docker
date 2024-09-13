@@ -23,7 +23,7 @@ env = environ.Env()
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
-    env.read_env(str(ROOT_DIR.path(".env")))
+    environ.Env.read_env(os.path.join(COMPOSE_DIR, '.env'))
 
 # GENERAL
 # ------------------------------------------------------------------------------

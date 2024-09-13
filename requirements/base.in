@@ -26,6 +26,9 @@ coreapi==2.3.3  # https://github.com/core-api/python-client
 elasticsearch-dsl>=7.0.0,<8.0.0  # https://github.com/elastic/elasticsearch-dsl-py
 django-elasticsearch-dsl>=7.1,<7.2  # https://github.com/django-es/django-elasticsearch-dsl
 wagtail>=2.9,<3 # https://github.com/wagtail/wagtail
+django-auth-ldap==2.2.0  # https://github.com/django-auth-ldap/django-auth-ldap
+django-kdl-ldap==1.2
+
 # django-kdl-wagtail==0.9.0  # https://github.com/kingsdigitallab/django-kdl-wagtail
 django-classy-tags==3.0.1
 django-sekizai
