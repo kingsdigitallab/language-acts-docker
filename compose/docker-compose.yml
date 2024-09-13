@@ -30,7 +30,9 @@ services:
       dockerfile: ./compose/production/postgres/Dockerfile
     user: ${POSTGRES_USER}
     environment:
+      #POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
     restart: unless-stopped
     volumes:
       - ../volumes/postgres/postgres_data:/var/lib/postgresql/data:Z
