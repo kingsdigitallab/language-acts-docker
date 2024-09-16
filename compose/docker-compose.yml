@@ -35,8 +35,8 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     restart: unless-stopped
     volumes:
-      - ../volumes/postgres/postgres_data:/var/lib/postgresql/data:Z
-      - ../volumes/postgres/postgres_data_backups:/backups:z
+      - ../volumes/postgres/postgres_data:/var/lib/postgresql/data
+      - ../volumes/postgres/postgres_data_backups:/backups
     env_file:
       - .env
     expose:
