@@ -25,27 +25,22 @@ services:
       VIRTUAL_PORT: 8001
 
   db:
-    build:
-      context: ../
-      dockerfile: ./compose/production/postgres/Dockerfile
-    user: ${POSTGRES_USER}
-    environment:
-      #POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      PGDATA: /var/lib/postgresql/data/pgdata
-    restart: unless-stopped
-    #volumes:
-      #- ../volumes/postgres/postgres_data:/var/lib/postgresql
-      #- ../volumes/postgres/postgres_data_backups:/backups
+    #    build:
+    #      context: ../
+    #      dockerfile: ./compose/local/postgres/Dockerfile
+    image: postgres:12.3
+    volumes:
+      - ../volumes/local_postgres_data:/var/lib/postgresql/data
     env_file:
       - .env
     expose:
       - "5432"
+    restart: unless-stopped
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: /usr/bin/pg_isready
+      timeout: 10s
+      interval: 5s
+      retries: 10
 
   elasticsearch:
     image: elasticsearch:7.10.1
