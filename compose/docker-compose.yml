@@ -34,8 +34,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /var/lib/postgresql/data/pgdata
     restart: unless-stopped
-    volumes:
-      - ../volumes/postgres/postgres_data:/var/lib/postgresql
+    #volumes:
+      #- ../volumes/postgres/postgres_data:/var/lib/postgresql
       #- ../volumes/postgres/postgres_data_backups:/backups
     env_file:
       - .env
