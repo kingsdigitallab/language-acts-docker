@@ -37,7 +37,7 @@ services:
       - "5432"
     restart: unless-stopped
     healthcheck:
-      test: /usr/bin/pg_isready
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'" ]
       timeout: 10s
       interval: 5s
       retries: 10
@@ -68,6 +68,7 @@ services:
     restart: unless-stopped
     volumes:
       - ../volumes/django/static:/app/static
+      - ../volumes/django/media:/app/language_acts/media
     ports:
       - "8000:8000"
     environment:
