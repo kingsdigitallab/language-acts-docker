@@ -15,8 +15,9 @@
   {% include 'includes/favicon.html' %}
   {% render_block "extra_css" %}
 
+<link rel="stylesheet" type="text/x-scss" href="{% static 'scss/main.scss' %}">
   {% compress css %}
-  <link rel="stylesheet" type="text/x-scss" href="{% static 'scss/main.scss' %}">
+  
   {% endcompress %}
 
 
