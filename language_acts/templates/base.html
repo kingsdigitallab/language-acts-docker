@@ -15,10 +15,11 @@
   {% include 'includes/favicon.html' %}
   {% render_block "extra_css" %}
 
-  {% compress css %}
-  <link rel="stylesheet" type="text/x-scss" href="{% static 'scss/main.scss' %}">
-  {% endcompress %}
-
+<!-- Replaced with cached css because of scss compile issues caused by foundation -->
+{#  {% compress css %}#}
+{#  <link rel="stylesheet" type="text/x-scss" href="{% static 'scss/main.scss' %}">#}
+{#  {% endcompress %}#}
+<link rel="stylesheet" type="text/css" href="{% static 'css/output.008c99aac442.css' %}">
 
   {% block header_scripts %}
   {% endblock %}
