@@ -1,5 +1,10 @@
 {
+  "name": "language_acts",
   "dependencies": {
-    "foundation-sites": "^6.6.3"
+    "foundation-sites": "^6.6.3",
+    "gulp-sass": "^5",
+    "jquery": ">=2.2.0",
+    "sass": "^1.79.5",
+    "what-input": ">=4.1.0"
   }
 }

@@ -1,6 +1,6 @@
 # npm packages install
 # from https://github.com/kingsdigitallab/radical_translations/blob/develop/compose/production/django/Dockerfile
-FROM node:10-stretch-slim as client-builder
+FROM node:18-slim as client-builder
 
 WORKDIR /app
 COPY ./package.json /app

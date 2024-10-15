@@ -327,9 +327,9 @@ COMPRESS_CSS_FILTERS = [
     'compressor.filters.cssmin.CSSMinFilter'
 ]
 
-COMPRESS_PRECOMPILERS = (
-    ('text/x-scss', 'django_libsass.SassCompiler'),
-)
+# COMPRESS_PRECOMPILERS = (
+#    ('text/x-scss', 'django_libsass.SassCompiler'),
+# )
 
 # Wagtail
 # ------------------------------------------------------------------------------
