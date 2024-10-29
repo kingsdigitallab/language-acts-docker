@@ -115,8 +115,9 @@ def get_site_root(context):
     Object-comparison to self will return false as objects would differ.
 
     :rtype: `wagtail.core.models.Page`
+    hasattr(context["request"], "site")
     """
-    if "request" in context and hasattr(context["request"], "site"):
+    if "request" in context and Site.find_for_request(context["request"]):
         return Site.find_for_request(context["request"]).root_page
     else:
         return None
