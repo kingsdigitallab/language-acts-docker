@@ -1,7 +1,5 @@
-Language Acts
-=============
-
 Language Acts and Worldmaking
+=============
 
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
     :target: https://opensource.org/licenses/MIT
@@ -19,6 +17,109 @@ Language Acts and Worldmaking
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/ambv/black
     :alt: Black code style
+
+Overview
+-----------
+
+This is the repository for the Language Acts and Worldmaking, currently maintained by [King's Digital Lab](https://github.com/kingsdigitallab/).
+
+This project has been redesigned to run in a Docker container, aimed at an Openstack deployment.
+
+Containers:
+-----------
+
+- [nginx-proxy](https://hub.docker.com/r/nginxproxy/nginx-proxy): This is the primary entry point for the stack, running on 80.  It automatically builds a proxy to other containers.
+- [django 3.2](https://hub.docker.com/layers/library/python/3.6-slim-buster/images/sha256-5dd134d6d97c67dd02e4642ab24ecbb9d23059ea018a8b5185784d29dce2f37a?context=explore): The main container for the project (see more detailed description below.)
+- [nginx](https://hub.docker.com/_/nginx): This is the static data container, serving Django's static content.
+- db ([Postgres 12.3](https://www.postgresql.org/docs/12/index.html)): The database container for Django above.
+- elasticsearch [7.10](https://hub.docker.com/_/elasticsearch): The indexing container, used by Haystack 3.2.1. (Pre-migration, Haystack 2 was using Solr 6.)
+
+ENV file
+-----------
+
+The compose file will look for deployment variables in a compose/.env file.  Below is a sample file::
+
+
+    # Django
+    DJANGO_READ_DOT_ENV_FILE=True
+    DJANGO_SETTINGS_MODULE=config.settings.production
+    DJANGO_ALLOWED_HOSTS=
+    DJANGO_SECRET_KEY=
+    DJANGO_ADMIN_URL=
+
+
+    # Security
+    # ------------------------------------------------------------------------------
+    # TIP: better off using DNS, however, redirect is OK too
+    DJANGO_SECURE_SSL_REDIRECT=False
+
+    # Email
+    # ------------------------------------------------------------------------------
+    MAILGUN_API_KEY=
+    DJANGO_SERVER_EMAIL=
+    MAILGUN_DOMAIN=
+
+    # django-allauth
+    # ------------------------------------------------------------------------------
+    DJANGO_ACCOUNT_ALLOW_REGISTRATION=True
+
+
+
+    # Elasticsearch
+    # ------------------------------------------------------------------------------
+    discovery.type=single-node
+
+    # Database
+    # ------------------------------------------------------------------------------
+    # PostgreSQL
+    # ------------------------------------------------------------------------------
+    POSTGRES_HOST=db
+    POSTGRES_PORT=5432
+    POSTGRES_DB=
+    POSTGRES_USER=
+    POSTGRES_PASSWORD=
+    DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+
+
+
+    # django-allauth
+    # ------------------------------------------------------------------------------
+    DJANGO_ACCOUNT_ALLOW_REGISTRATION=True
+
+    # django-compressor
+    # ------------------------------------------------------------------------------
+    COMPRESS_ENABLED=False
+    COMPRESS_OFFLINE=True
+
+    # Gunicorn
+    # ------------------------------------------------------------------------------
+    WEB_CONCURRENCY=4
+
+
+    # Redis
+    # ------------------------------------------------------------------------------
+    REDIS_URL=redis://redis:6379/0
+
+    # https://django-auth-ldap.readthedocs.io/
+    # ------------------------------------------------------------------------------
+    LDAP_SERVER_URI=
+    LDAP_BIND_DN=
+    LDAP_BIND_PASSWORD=
+
+    LDAP_BASE_DC=
+    LDAP_BASE_GROUP=
+
+    LDAP_FIRST_NAME_FIELD=givenName
+    LDAP_LAST_NAME_FIELD=sn
+    LDAP_EMAIL_FIELD=mail
+
+
+Fill in the database credentials and Django variables.  If deploying via a CI pipeline such as Gitlab, this file will need to be included in its variables (in the KDL setup, we encode this in base64 and add it to the CI/CD variables in the repository settings.)
+
+Deployment notes
+----------------
+
+- After deployment, don't forget to run python manage.py update_index to build the Haystack index.  This won't happen automatically.
 
 Settings
 --------
