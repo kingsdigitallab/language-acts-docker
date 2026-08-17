@@ -4,8 +4,10 @@
 <div class="media-object stack-for-small">
     <div class="media-object-section">
         <div class="thumbnail">
+            {% if value.image %}
             {% image value.image width-300 as theimage %}
             <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}">
+            {% endif %}
         </div>
         {% if value.caption %}
         <div class="caption">
@@ -28,8 +30,10 @@
     </div>
     <div class="media-object-section">
         <div class="thumbnail">
+            {% if value.image %}
             {% image value.image width-300 as theimage %}
             <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}">
+            {% endif %}
         </div>
         {% if value.caption %}
         <div class="caption">
@@ -41,8 +45,10 @@
 {% else %}
 
 <div class="full-width">
+    {% if value.image %}
     {% image value.image width-1024 as theimage %}
     <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}">
+    {% endif %}
     {% if value.caption %}
     <div class="caption">
         {{ value.caption|richtext }}

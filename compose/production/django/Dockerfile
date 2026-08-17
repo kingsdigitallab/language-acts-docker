@@ -13,7 +13,10 @@ FROM python:3.7-slim-buster
 ENV PYTHONUNBUFFERED 1
 
 
-RUN apt-get update \
+RUN sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list \
+  && sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list \
+  && sed -i '/buster-updates/d' /etc/apt/sources.list \
+  && apt-get update \
   # dependencies for building Python packages
   && apt-get install -y build-essential \
   # curl for node
